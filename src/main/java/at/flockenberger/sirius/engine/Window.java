@@ -1,6 +1,8 @@
 package at.flockenberger.sirius.engine;
 
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.GLFW_SAMPLES;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
@@ -12,6 +14,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_COCOA_RETINA_FRAMEBUFFER;
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
@@ -23,6 +27,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Platform;
 
@@ -46,6 +51,23 @@ public class Window {
 	private long id;
 	private String title;
 	private boolean showing = false;
+	private boolean windowedFullscreen = false;
+
+	public Window(boolean windowedFullscreen) {
+		this(windowedFullscreen, "Sirius");
+	}
+
+	public Window(boolean windowedFullscreen, String title) {
+		this(windowedFullscreen, title, null);
+	}
+
+	public Window(boolean windowedFullscreen, String title, WindowIcon icon) {
+		this.windowedFullscreen = windowedFullscreen;
+		this.title = title;
+
+		initGLFW();
+		this.setIcon(icon);
+	}
 
 	/**
 	 * Creates a new {@link Window}.
@@ -107,8 +129,22 @@ public class Window {
 
 		glfwWindowHint(GLFW_SAMPLES, 4);
 
+		long monitor = NULL;
+
+		if (windowedFullscreen) {
+			monitor = GLFW.glfwGetPrimaryMonitor();
+			GLFWVidMode mode = GLFW.glfwGetVideoMode(monitor);
+			glfwWindowHint(GLFW.GLFW_RED_BITS, mode.redBits());
+			glfwWindowHint(GLFW.GLFW_GREEN_BITS, mode.greenBits());
+			glfwWindowHint(GLFW.GLFW_BLUE_BITS, mode.blueBits());
+			glfwWindowHint(GLFW.GLFW_REFRESH_RATE, mode.refreshRate());
+			this.width = mode.width();
+			this.height = mode.height();
+
+		}
+		id = GLFW.glfwCreateWindow(this.width, this.height, title, monitor, NULL);
+
 		// create this window
-		id = GLFW.glfwCreateWindow(width, height, title, NULL, NULL);
 
 		// check if creation was successfull
 		if (id == NULL)
@@ -116,12 +152,20 @@ public class Window {
 
 		GLFW.glfwMakeContextCurrent(id);
 		GL.createCapabilities();
-		
+
+		if (windowedFullscreen) {
+			glfwSetKeyCallback(id, (windowHnd, key, scancode, action, mods) -> {
+				if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
+					glfwSetWindowShouldClose(windowHnd, true);
+				}
+			});
+		}
+
 		GLFW.glfwSetInputMode(id, GLFW.GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
-		
 		glViewport(0, 0, this.width, this.height);
 		Keyboard.assign(this);
 		Mouse.assign(this);
+
 	}
 
 	/**
@@ -130,7 +174,7 @@ public class Window {
 	 * @param icon the icon to set the window to
 	 */
 	public void setIcon(WindowIcon icon) {
-		if (SUtils.checkNull(icon, "WindowIcon")) {
+		if (icon == null) {
 			GLFW.glfwSetWindowIcon(id, GLFWImage.malloc(0));
 			return;
 		}
@@ -222,7 +266,7 @@ public class Window {
 	public void update() {
 		glfwPollEvents();
 		glfwSwapBuffers(id); // swap the color buffers
-		
+
 	}
 
 	/**
