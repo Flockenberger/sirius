@@ -12,11 +12,11 @@ import at.flockenberger.sirius.engine.gl.IVertexData;
 import at.flockenberger.sirius.engine.gl.VAO;
 import at.flockenberger.sirius.engine.gl.VertexAttribute;
 import at.flockenberger.sirius.engine.gl.shader.ShaderProgram;
+import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.texture.ITextureBase;
 import at.flockenberger.sirius.engine.texture.Texture;
 import at.flockenberger.sirius.engine.texture.TextureRegion;
 import at.flockenberger.sirius.engine.texture.UV;
-import at.flockenberger.sirius.graphic.Color;
 import at.flockenberger.sirius.utillity.SUtils;
 
 public class SpriteBatch

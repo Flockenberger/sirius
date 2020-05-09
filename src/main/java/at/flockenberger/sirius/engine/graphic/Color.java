@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.graphic;
+package at.flockenberger.sirius.engine.graphic;
 
 import java.io.Serializable;
 

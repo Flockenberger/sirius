@@ -1,7 +1,7 @@
 package at.flockenberger.sirius.game;
 
 import at.flockenberger.sirius.engine.Window;
-import at.flockenberger.sirius.graphic.WindowIcon;
+import at.flockenberger.sirius.engine.graphic.WindowIcon;
 
 /**
  * <h1>GameBaes</h1><br>
@@ -12,8 +12,6 @@ import at.flockenberger.sirius.graphic.WindowIcon;
  */
 public abstract class GameBase extends Window implements IGame
 {
-	// Whether our game loop is running
-	protected boolean running = false;
 
 	/** time at last frame */
 	private long lastFrame;
@@ -76,18 +74,16 @@ public abstract class GameBase extends Window implements IGame
 	{
 		show();
 		init();
-		running = true;
-	
+
 		delta = tick();
 		lastFPS = (long) Window.getTime();
-		resize();
 		
-		while (running && !askClose())
+		resize();
+		while (!askClose())
 		{
 			delta = tick();
 			render();
 			update();
-			
 			updateFPS();
 
 		}
@@ -96,14 +92,15 @@ public abstract class GameBase extends Window implements IGame
 	@Override
 	public void stop()
 	{
-		running = false;
 		free();
 	}
-	
+
 	public abstract void render();
+
 	public abstract void init();
+
 	public abstract void resize();
-	
+
 	private int tick()
 	{
 		long time = (long) Window.getTime();

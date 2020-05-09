@@ -161,7 +161,7 @@ public class ShaderProgram
 		fetchUniforms();
 
 		for (Shader s : shader)
-			s.deleteShader();
+			s.free();
 
 	}
 

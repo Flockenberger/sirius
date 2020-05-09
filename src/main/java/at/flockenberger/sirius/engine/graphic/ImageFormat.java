@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.graphic;
+package at.flockenberger.sirius.engine.graphic;
 
 /**
  * <h1>ImageType</h1><br>

@@ -2,6 +2,8 @@ package at.flockenberger.sirius.engine.gl.shader;
 
 import org.lwjgl.opengl.GL20;
 
+import at.flockenberger.sirius.engine.IFreeable;
+
 /**
  * <h1>Shader</h1><br>
  * Base class for all shaders.
@@ -9,7 +11,7 @@ import org.lwjgl.opengl.GL20;
  * @author Florian Wagner
  *
  */
-public abstract class Shader
+public abstract class Shader implements IFreeable
 {
 	protected ShaderCode code;
 	protected int id;
@@ -44,7 +46,8 @@ public abstract class Shader
 	/**
 	 * Deletes the shader after compilation and linking
 	 */
-	public void deleteShader()
+	@Override
+	public void free()
 	{
 		GL20.glDeleteShader(getID());
 	}

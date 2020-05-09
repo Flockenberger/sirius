@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.graphic.text;
+package at.flockenberger.sirius.engine.graphic.text;
 
 import at.flockenberger.sirius.engine.texture.TextureRegion;
 

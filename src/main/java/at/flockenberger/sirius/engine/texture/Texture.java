@@ -35,8 +35,8 @@ import org.lwjgl.opengl.GL;
 
 import at.flockenberger.sirius.engine.IBindable;
 import at.flockenberger.sirius.engine.IFreeable;
-import at.flockenberger.sirius.graphic.Color;
-import at.flockenberger.sirius.graphic.Image;
+import at.flockenberger.sirius.engine.graphic.Color;
+import at.flockenberger.sirius.engine.graphic.Image;
 
 public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 {

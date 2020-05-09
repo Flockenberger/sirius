@@ -3,13 +3,13 @@ package sirius;
 import java.net.URISyntaxException;
 
 import at.flockenberger.sirius.engine.Window;
+import at.flockenberger.sirius.engine.graphic.Cursor;
+import at.flockenberger.sirius.engine.graphic.WindowIcon;
 import at.flockenberger.sirius.engine.input.KeyCode;
 import at.flockenberger.sirius.engine.input.Keyboard;
 import at.flockenberger.sirius.engine.input.Mouse;
 import at.flockenberger.sirius.engine.resource.ImageResource;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
-import at.flockenberger.sirius.graphic.Cursor;
-import at.flockenberger.sirius.graphic.WindowIcon;
 
 public class WindowTest
 {

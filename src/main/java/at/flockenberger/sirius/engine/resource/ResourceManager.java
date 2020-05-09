@@ -97,12 +97,6 @@ public class ResourceManager
 			return null;
 		}
 
-		if (!(res.get(name) instanceof ImageResource))
-		{
-			SLogger.getSystemLogger().error("Found resource is not an ImageResource!");
-			return null;
-		}
-
 		return (ResourceBase) res.get(name);
 	}
 

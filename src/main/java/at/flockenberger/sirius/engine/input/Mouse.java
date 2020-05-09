@@ -6,7 +6,7 @@ import java.util.Map;
 import org.lwjgl.glfw.GLFW;
 
 import at.flockenberger.sirius.engine.Window;
-import at.flockenberger.sirius.graphic.Cursor;
+import at.flockenberger.sirius.engine.graphic.Cursor;
 
 /**
  * <h1>Mouse</h1><br>

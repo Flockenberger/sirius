@@ -2,7 +2,7 @@ package at.flockenberger.sirius.engine.resource;
 
 import java.nio.file.Path;
 
-import at.flockenberger.sirius.graphic.Image;
+import at.flockenberger.sirius.engine.graphic.Image;
 
 /**
  * </h1>ImageResource</h1><br>

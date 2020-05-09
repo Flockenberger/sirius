@@ -30,9 +30,9 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Platform;
 
+import at.flockenberger.sirius.engine.graphic.WindowIcon;
 import at.flockenberger.sirius.engine.input.Keyboard;
 import at.flockenberger.sirius.engine.input.Mouse;
-import at.flockenberger.sirius.graphic.WindowIcon;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
 /**
