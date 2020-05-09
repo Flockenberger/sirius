@@ -1,26 +1,15 @@
 package at.flockenberger.sirius.engine.input;
 
-public abstract class InputDevice {
+/**
+ * <h1>InputDevice</h1><br>
+ * The {@link InputDevice} class is the base class for all input devices such as
+ * the {@link Keyboard} or {@link Mouse} class.
+ * 
+ * @author Florian Wagner
+ * @see Keyboard
+ * @see Mouse
+ */
+public interface InputDevice
+{
 
-	private InputState oldState = InputState.RELEASED;
-
-	protected boolean onClicked(InputState newState) {
-		boolean retVal = false;
-		if (newState.equals(InputState.PRESSED) && oldState.equals(InputState.RELEASED))
-			retVal = true;
-		oldState = newState;
-		return retVal;
-	}
-
-	protected boolean onPressed(InputState newState) {
-		return newState.equals(InputState.PRESSED);
-	}
-
-	protected boolean onReleased(InputState newState) {
-		boolean retVal = false;
-		if (newState.equals(InputState.RELEASED) && oldState.equals(InputState.PRESSED))
-			retVal = true;
-		oldState = newState;
-		return retVal;
-	}
 }

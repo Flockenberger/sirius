@@ -16,20 +16,40 @@ import at.flockenberger.sirius.utillity.logging.SLogger;
  * @author Florian Wagner
  *
  */
-public class ResourceManager {
+public class ResourceManager
+{
 
 	private Map<String, ResourceBase> res;
 
 	private static ResourceManager GLOBAL_MANAGER;
 
-	public static ResourceManager get() {
+	public static ResourceManager get()
+	{
 		if (GLOBAL_MANAGER == null)
 			GLOBAL_MANAGER = new ResourceManager();
 		return GLOBAL_MANAGER;
 	}
 
-	private ResourceManager() {
+	private ResourceManager()
+	{
 		res = new HashMap<String, ResourceBase>();
+	}
+
+	public URLResource loadURLResource(String name, String p)
+	{
+		if (getResource(name) != null)
+			return (URLResource) getResource(name);
+
+		URLResource resouce = null;
+		try
+		{
+			resouce = new URLResource(Paths.get(ResourceManager.class.getResource(p).toURI()));
+		} catch (URISyntaxException e)
+		{
+			SLogger.getSystemLogger().except(e);
+		}
+		res.put(name, resouce);
+		return resouce;
 	}
 
 	/**
@@ -40,15 +60,18 @@ public class ResourceManager {
 	 * @param p    the location of the resource on the hard drive
 	 * @return a new {@link ImageResource} object with the loaded image
 	 */
-	public ImageResource loadImageResource(String name, String p) {
-		
-		if(getImageResource(name) != null)
-			return getImageResource(name);
-		
+	public ImageResource loadImageResource(String name, String p)
+	{
+
+		if (getResource(name) != null)
+			return (ImageResource) getResource(name);
+
 		ImageResource resouce = null;
-		try {
+		try
+		{
 			resouce = new ImageResource(Paths.get(ResourceManager.class.getResource(p).toURI()));
-		} catch (URISyntaxException e) {
+		} catch (URISyntaxException e)
+		{
 			SLogger.getSystemLogger().except(e);
 		}
 		res.put(name, resouce);
@@ -62,21 +85,25 @@ public class ResourceManager {
 	 * @param name the name under which the resource has been cached
 	 * @return the found {@link ImageResource} or null if it has not been found
 	 */
-	public ImageResource getImageResource(String name) {
-		
-		if(SUtils.checkNull(name, "String"))return null;
-		
-		if (res.get(name) == null) {
+	public ResourceBase getResource(String name)
+	{
+
+		if (SUtils.checkNull(name, "String"))
+			return null;
+
+		if (res.get(name) == null)
+		{
 			SLogger.getSystemLogger().warn("No cached resource for '" + name + "' has been found!");
 			return null;
 		}
-		
-		if (!(res.get(name) instanceof ImageResource)) {
+
+		if (!(res.get(name) instanceof ImageResource))
+		{
 			SLogger.getSystemLogger().error("Found resource is not an ImageResource!");
 			return null;
 		}
-		
-		return (ImageResource) res.get(name);
+
+		return (ResourceBase) res.get(name);
 	}
 
 }

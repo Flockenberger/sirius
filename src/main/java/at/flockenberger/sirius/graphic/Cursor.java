@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWImage;
 
+import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.input.CursorType;
 
 /**
@@ -14,7 +15,8 @@ import at.flockenberger.sirius.engine.input.CursorType;
  * @author Florian Wagner
  *
  */
-public class Cursor extends Image {
+public class Cursor extends Image implements IFreeable
+{
 
 	private static final long serialVersionUID = 121973262138123279L;
 	private long id;
@@ -26,7 +28,8 @@ public class Cursor extends Image {
 	/**
 	 * @return the default cursor
 	 */
-	public static Cursor getDefault() {
+	public static Cursor getDefault()
+	{
 		if (cDefault == null)
 			cDefault = new Cursor(CursorType.ARROW);
 		return cDefault;
@@ -39,7 +42,8 @@ public class Cursor extends Image {
 	 * 
 	 * @param type the type of cursor to create
 	 */
-	public Cursor(CursorType type) {
+	public Cursor(CursorType type)
+	{
 		super();
 		this.type = type;
 		if (!this.type.equals(CursorType.CUSTOM))
@@ -56,7 +60,8 @@ public class Cursor extends Image {
 	 * @param xhot  the desired x-coordinate, in pixels, of the cursor hotspot
 	 * @param yhot  the desired y-coordinate, in pixels, of the cursor hotspot
 	 */
-	public Cursor(Image image, int xhot, int yhot) {
+	public Cursor(Image image, int xhot, int yhot)
+	{
 		super(image);
 		this.type = CursorType.CUSTOM;
 		setCursor(xhot, yhot);
@@ -69,7 +74,8 @@ public class Cursor extends Image {
 	 * 
 	 * @param image the image to set this cursor
 	 */
-	public Cursor(Image image) {
+	public Cursor(Image image)
+	{
 		this(image, 0, 0);
 	}
 
@@ -80,7 +86,8 @@ public class Cursor extends Image {
 	 * 
 	 * @param img the path to the image to load for this cursor
 	 */
-	public Cursor(Path img) {
+	public Cursor(Path img)
+	{
 		super(img);
 		setCursor(0, 0);
 	}
@@ -88,25 +95,30 @@ public class Cursor extends Image {
 	/**
 	 * @return the type of this cursor
 	 */
-	public CursorType getType() {
+	public CursorType getType()
+	{
 		return this.type;
 	}
 
 	/**
 	 * @return the id of this cursor
 	 */
-	public long getID() {
+	public long getID()
+	{
 		return this.id;
 	}
 
 	/**
 	 * Frees this cursor.
 	 */
-	public void free() {
+	@Override
+	public void free()
+	{
 		GLFW.glfwDestroyCursor(getID());
 	}
 
-	protected void setCursor(int xhot, int yhot) {
+	protected void setCursor(int xhot, int yhot)
+	{
 		GLFWImage img = GLFWImage.malloc();
 		img.width(getWidth()).height(getHeight()).pixels(getPixelData());
 		this.id = GLFW.glfwCreateCursor(img, xhot, yhot);

@@ -8,13 +8,13 @@ public class ResourceTest {
 	public static void main(String[] args) {
 		
 		ImageResource res1 = ResourceManager.get().loadImageResource("windowIcon", "/texture.png");
-		assert ResourceManager.get().getImageResource("windowIcon") != null;
+		assert ResourceManager.get().getResource("windowIcon") != null;
 		
 		ImageResource res2 =ResourceManager.get().loadImageResource("windowIcon", "/texture.png");
 		assert res1 == res2;
 		
-		ResourceManager.get().getImageResource("test");
-		ResourceManager.get().getImageResource(null);
+		ResourceManager.get().getResource("test");
+		ResourceManager.get().getResource(null);
 		
 	}
 
