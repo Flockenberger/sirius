@@ -4,7 +4,7 @@ import java.net.URISyntaxException;
 
 import at.flockenberger.sirius.engine.Window;
 import at.flockenberger.sirius.engine.graphic.Cursor;
-import at.flockenberger.sirius.engine.graphic.WindowIcon;
+import at.flockenberger.sirius.engine.graphic.Icon;
 import at.flockenberger.sirius.engine.input.KeyCode;
 import at.flockenberger.sirius.engine.input.Keyboard;
 import at.flockenberger.sirius.engine.input.Mouse;
@@ -19,7 +19,7 @@ public class WindowTest
 
 		ImageResource imgicon = ResourceManager.get().loadImageResource("windowIcon", "/texture.png");
 
-		WindowIcon ico = new WindowIcon(imgicon.getImage());
+		Icon ico = new Icon(imgicon.getImage());
 		Window window = new Window();
 
 		window.show();

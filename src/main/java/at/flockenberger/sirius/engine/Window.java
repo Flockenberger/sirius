@@ -1,12 +1,11 @@
 package at.flockenberger.sirius.engine;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
-import static org.lwjgl.glfw.GLFW.GLFW_COCOA_RETINA_FRAMEBUFFER;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_SAMPLES;
-import static org.lwjgl.glfw.GLFW.GLFW_SCALE_TO_MONITOR;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
@@ -23,14 +22,26 @@ import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.system.Platform;
 
-import at.flockenberger.sirius.engine.graphic.WindowIcon;
+import at.flockenberger.sirius.engine.event.WindowCloseEvent;
+import at.flockenberger.sirius.engine.event.WindowContentScaleEvent;
+import at.flockenberger.sirius.engine.event.WindowFrameBufferSizeEvent;
+import at.flockenberger.sirius.engine.event.WindowPositionEvent;
+import at.flockenberger.sirius.engine.event.WindowSizeEvent;
+import at.flockenberger.sirius.engine.event.listener.WindowCloseListener;
+import at.flockenberger.sirius.engine.event.listener.WindowContentScaleListener;
+import at.flockenberger.sirius.engine.event.listener.WindowFramebufferSizeListener;
+import at.flockenberger.sirius.engine.event.listener.WindowPositionListener;
+import at.flockenberger.sirius.engine.event.listener.WindowSizeListener;
+import at.flockenberger.sirius.engine.graphic.Icon;
 import at.flockenberger.sirius.engine.input.Keyboard;
 import at.flockenberger.sirius.engine.input.Mouse;
 import at.flockenberger.sirius.utillity.logging.SLogger;
@@ -52,7 +63,15 @@ public class Window implements IFreeable
 	private boolean showing = false;
 	private boolean windowedFullscreen = false;
 	private boolean initialized = false;
-	private WindowIcon icon;
+	private Icon icon;
+	private boolean vsync = false;
+	private boolean needSetIcon = false;
+
+	private List<WindowCloseListener> closeListener;
+	private List<WindowSizeListener> sizeListener;
+	private List<WindowFramebufferSizeListener> fbSizeListener;
+	private List<WindowContentScaleListener> contentScaleListener;
+	private List<WindowPositionListener> positionListener;
 
 	public static int getActiveWidth()
 	{
@@ -83,16 +102,17 @@ public class Window implements IFreeable
 		size[1] = height[0];
 		return size;
 	}
-	
-	public static double getTime() {
+
+	public static double getTime()
+	{
 		return (GLFW.glfwGetTime() * 1000) / GLFW.glfwGetTimerFrequency();
-		
+
 	}
-	
+
 	public static long getActiveHandle()
 	{
 		long _id = GLFW.glfwGetCurrentContext();
-		
+
 		return _id;
 	}
 
@@ -106,7 +126,7 @@ public class Window implements IFreeable
 		this(windowedFullscreen, title, null);
 	}
 
-	public Window(boolean windowedFullscreen, String title, WindowIcon icon)
+	public Window(boolean windowedFullscreen, String title, Icon icon)
 	{
 		this.windowedFullscreen = windowedFullscreen;
 		this.title = title;
@@ -153,7 +173,7 @@ public class Window implements IFreeable
 	 * @param title  the title of the window
 	 * @param icon   the icon of the window
 	 */
-	public Window(int width, int height, String title, WindowIcon icon)
+	public Window(int width, int height, String title, Icon icon)
 	{
 		this.width = width;
 		this.height = height;
@@ -171,13 +191,11 @@ public class Window implements IFreeable
 			SLogger.getSystemLogger().except(new IllegalStateException("Unable to initialize GLFW"));
 			return;
 		}
+		GLFW.glfwDefaultWindowHints(); // optional, the current window hints are already the default
 
-		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-		glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
-		if (Platform.get() == Platform.MACOSX)
-			glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
-
-		glfwWindowHint(GLFW_SAMPLES, 4);
+		GLFW.glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
+		GLFW.glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+		GLFW.glfwWindowHint(GLFW_SAMPLES, 8);
 
 		long monitor = NULL;
 
@@ -195,13 +213,11 @@ public class Window implements IFreeable
 		}
 		id = GLFW.glfwCreateWindow(this.width, this.height, title, monitor, NULL);
 
-		// create this window
-
-		// check if creation was successfull
 		if (id == NULL)
 			GLFW.glfwTerminate();
 
 		GLFW.glfwMakeContextCurrent(id);
+		enableVSync(true);
 		GL.createCapabilities();
 
 		if (windowedFullscreen)
@@ -215,23 +231,17 @@ public class Window implements IFreeable
 				});
 		}
 
-		GLFW.glfwSetInputMode(id, GLFW.GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
-		glViewport(0, 0, this.width, this.height);
+		closeListener = new ArrayList<>();
+		sizeListener = new ArrayList<>();
+		fbSizeListener = new ArrayList<>();
+		contentScaleListener = new ArrayList<>();
+		positionListener = new ArrayList<>();
 
 		Keyboard.assign(this);
 		Mouse.assign(this);
 
-	}
+		glViewport(0, 0, this.width, this.height);
 
-	/**
-	 * Sets the window icon to the given {@link WindowIcon} <code>icon</code> <br>
-	 * <b>NOTE: It method may only be called <b> after </b> the
-	 * {@link Window#show()} method has been called!</b>
-	 * 
-	 * @param icon the icon to set the window to
-	 */
-	public void setIcon(WindowIcon icon)
-	{
 		if (icon == null)
 		{
 			GLFW.glfwSetWindowIcon(id, GLFWImage.malloc(0));
@@ -239,6 +249,29 @@ public class Window implements IFreeable
 		}
 
 		GLFW.glfwSetWindowIcon(id, icon.getIcon());
+
+	}
+
+	/**
+	 * Sets the window icon to the given {@link Icon} <code>icon</code> <br>
+	 * <b>NOTE: It method may only be called <b> after </b> the
+	 * {@link Window#show()} method has been called!</b>
+	 * 
+	 * @param icon the icon to set the window to
+	 */
+	public void setIcon(Icon icon)
+	{
+		this.icon = icon;
+		if (isShowing())
+		{
+			if (icon == null)
+			{
+				GLFW.glfwSetWindowIcon(id, GLFWImage.malloc(0));
+				return;
+			}
+
+			GLFW.glfwSetWindowIcon(id, icon.getIcon());
+		}
 	}
 
 	/**
@@ -249,6 +282,7 @@ public class Window implements IFreeable
 	public void enableVSync(boolean vsync)
 	{
 		glfwSwapInterval((vsync == true) ? 1 : 0);
+		this.vsync = vsync;
 	}
 
 	/**
@@ -334,11 +368,12 @@ public class Window implements IFreeable
 	{
 		return GLFW.glfwWindowShouldClose(id);
 	}
-	
-	public void setFullscreen() {
+
+	public void setFullscreen()
+	{
 		this.windowedFullscreen = true;
 	}
-	
+
 	/**
 	 * Updates the window<br>
 	 * Swaps the front and back buffers of the specified window when rendering with
@@ -376,6 +411,11 @@ public class Window implements IFreeable
 	public long getID()
 	{
 		return id;
+	}
+
+	public boolean isVSyncEnabled()
+	{
+		return this.vsync;
 	}
 
 }

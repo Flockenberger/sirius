@@ -13,7 +13,8 @@ import at.flockenberger.sirius.utillity.logging.SLogger;
  * @author Florian Wagner
  *
  */
-public class Color implements Serializable {
+public class Color implements Serializable
+{
 
 	private static final long serialVersionUID = -9079657496497537564L;
 
@@ -30,10 +31,11 @@ public class Color implements Serializable {
 	 * some colors I thought look good pretty :) going to add more in the future
 	 */
 
-	public static Color random() {
+	public static Color random()
+	{
 		return new Color(Math.random(), Math.random(), Math.random());
 	}
-	
+
 	public static final Color WHITE = new Color(1, 1, 1);
 
 	public static final Color BLACK = new Color(0, 0, 0);
@@ -112,7 +114,8 @@ public class Color implements Serializable {
 	 * @param gray a value between 0-255.
 	 * @return a new gray color.
 	 */
-	public static Color grayRgb(int gray) {
+	public static Color grayRgb(int gray)
+	{
 		return rgb(gray, gray, gray);
 	}
 
@@ -125,7 +128,8 @@ public class Color implements Serializable {
 	 * @param blue  blue channel
 	 * @return a new color
 	 */
-	public static Color rgb(int red, int green, int blue) {
+	public static Color rgb(int red, int green, int blue)
+	{
 		checkRGB(red, green, blue);
 		return new Color(red / (float) 255.0, green / (float) 255.0, blue / (float) 255.0);
 	}
@@ -139,7 +143,8 @@ public class Color implements Serializable {
 	 * @param blue  blue channel
 	 * @return a new color
 	 */
-	public static Color rgb(byte red, byte green, byte blue) {
+	public static Color rgb(byte red, byte green, byte blue)
+	{
 		checkRGB(red, green, blue);
 		return new Color(red / (float) 255.0, green / (float) 255.0, blue / (float) 255.0);
 	}
@@ -153,7 +158,8 @@ public class Color implements Serializable {
 	 * @param b blue channel
 	 * @param a the opacity component
 	 */
-	public Color(byte r, byte g, byte b, byte a) {
+	public Color(byte r, byte g, byte b, byte a)
+	{
 		this(r / (float) 255.0, g / (float) 255.0, b / (float) 255.0, a / (float) 255.0);
 	}
 
@@ -165,7 +171,8 @@ public class Color implements Serializable {
 	 * @param b blue channel
 	 * @param a the opacity component
 	 */
-	public void set(float r, float g, float b, float a) {
+	public void set(float r, float g, float b, float a)
+	{
 		setRed(r);
 		setGreen(g);
 		setBlue(b);
@@ -180,7 +187,8 @@ public class Color implements Serializable {
 	 * @param b blue channel
 	 * @param a the opacity component
 	 */
-	public void set(int r, int g, int b, int a) {
+	public void set(int r, int g, int b, int a)
+	{
 		checkRGB(r, g, b);
 		set(r / (float) 255.0, g / (float) 255.0, b / (float) 255.0, a / (float) 255.0);
 	}
@@ -192,7 +200,8 @@ public class Color implements Serializable {
 	 * @param g green channel
 	 * @param b blue channel
 	 */
-	public void set(int r, int g, int b) {
+	public void set(int r, int g, int b)
+	{
 		checkRGB(r, g, b);
 		setRed(r / (float) 255.0);
 		setGreen(g / (float) 255.0);
@@ -204,7 +213,8 @@ public class Color implements Serializable {
 	 * 
 	 * @param gray between 0-1
 	 */
-	public Color(int gray) {
+	public Color(int gray)
+	{
 		this(gray, gray, gray);
 	}
 
@@ -216,7 +226,8 @@ public class Color implements Serializable {
 	 * @param g the green component
 	 * @param b the blue component
 	 */
-	private Color(float r, float g, float b) {
+	private Color(float r, float g, float b)
+	{
 		this(r, g, b, 1.0f);
 
 	}
@@ -230,7 +241,8 @@ public class Color implements Serializable {
 	 * @param b       the blue component
 	 * @param opacity the opacity component
 	 */
-	public Color(float r, float g, float b, float opacity) {
+	public Color(float r, float g, float b, float opacity)
+	{
 		this.red = r;
 		this.green = g;
 		this.blue = b;
@@ -247,7 +259,8 @@ public class Color implements Serializable {
 	 * @param b the blue component
 	 * @param a the opacity component
 	 */
-	public Color(int r, int g, int b, int a) {
+	public Color(int r, int g, int b, int a)
+	{
 		checkRGB(r, g, b);
 		setRed(r / (float) 255.0);
 		setGreen(g / (float) 255.0);
@@ -263,7 +276,8 @@ public class Color implements Serializable {
 	 * @param g the green component
 	 * @param b the blue component
 	 */
-	public Color(double r, double g, double b) {
+	public Color(double r, double g, double b)
+	{
 		this.red = (float) r;
 		this.green = (float) g;
 		this.blue = (float) b;
@@ -274,7 +288,8 @@ public class Color implements Serializable {
 	/**
 	 * Creates a new White Color.
 	 */
-	public Color() {
+	public Color()
+	{
 		this(1, 1, 1);
 	}
 
@@ -287,7 +302,8 @@ public class Color implements Serializable {
 	 * @param b     the blue component
 	 * @param alpha the opacity component
 	 */
-	public Color(double d, double e, double f, double g) {
+	public Color(double d, double e, double f, double g)
+	{
 		this.red = (float) d;
 		this.green = (float) e;
 		this.blue = (float) f;
@@ -297,49 +313,56 @@ public class Color implements Serializable {
 	/**
 	 * @return Hue component in the range in the range {@code 0.0-360.0}.
 	 */
-	public double getHue() {
+	public double getHue()
+	{
 		return RGBtoHSB_(red, green, blue)[0];
 	}
 
 	/**
 	 * @return Saturation component in the range in the range {@code 0.0-1.0}.
 	 */
-	public double getSaturation() {
+	public double getSaturation()
+	{
 		return RGBtoHSB_(red, green, blue)[1];
 	}
 
 	/**
 	 * @return Brightness component in the range in the range {@code 0.0-1.0}.
 	 */
-	public double getBrightness() {
+	public double getBrightness()
+	{
 		return RGBtoHSB_(red, green, blue)[2];
 	}
 
 	/**
 	 * @return the red channel of this color
 	 */
-	public float getRed() {
+	public float getRed()
+	{
 		return red;
 	}
 
 	/**
 	 * @return the green channel of this color
 	 */
-	public float getGreen() {
+	public float getGreen()
+	{
 		return green;
 	}
 
 	/**
 	 * @return the blue channel of this color
 	 */
-	public float getBlue() {
+	public float getBlue()
+	{
 		return blue;
 	}
 
 	/**
 	 * @return the alpha channel of this color
 	 */
-	public float getAlpha() {
+	public float getAlpha()
+	{
 		return alpha;
 	}
 
@@ -351,7 +374,8 @@ public class Color implements Serializable {
 	 * @param brightness the brightness between 0-1
 	 * @return a new Color with these values
 	 */
-	public static Color hsb(double hue, double saturation, double brightness) {
+	public static Color hsb(double hue, double saturation, double brightness)
+	{
 		checkSB(saturation, brightness);
 		return HSBtoRGB(hue, saturation, brightness);
 	}
@@ -364,7 +388,8 @@ public class Color implements Serializable {
 	 * @param brightness the brightness between 0-1
 	 * @return a new Color with these values
 	 */
-	public static Color hsb(double hue, double saturation, double brightness, double opacity) {
+	public static Color hsb(double hue, double saturation, double brightness, double opacity)
+	{
 		checkSB(saturation, brightness);
 		Color c = HSBtoRGB(hue, saturation, brightness);
 		c.setAlpha((float) opacity);
@@ -376,7 +401,8 @@ public class Color implements Serializable {
 	 * 
 	 * @param red the red component
 	 */
-	public void setRed(float red) {
+	public void setRed(float red)
+	{
 		red = SUtils.putInBounds(red, 0, 1);
 		this.red = red;
 	}
@@ -386,7 +412,8 @@ public class Color implements Serializable {
 	 * 
 	 * @param green the green component
 	 */
-	public void setGreen(float green) {
+	public void setGreen(float green)
+	{
 		green = SUtils.putInBounds(green, 0, 1);
 		this.green = green;
 	}
@@ -396,7 +423,8 @@ public class Color implements Serializable {
 	 * 
 	 * @param blue the blue component
 	 */
-	public void setBlue(float blue) {
+	public void setBlue(float blue)
+	{
 		blue = SUtils.putInBounds(blue, 0, 1);
 		this.blue = blue;
 	}
@@ -406,7 +434,8 @@ public class Color implements Serializable {
 	 * 
 	 * @param opacity the opacity component
 	 */
-	public void setAlpha(float opacity) {
+	public void setAlpha(float opacity)
+	{
 		opacity = SUtils.putInBounds(opacity, 0, 1);
 		this.alpha = opacity;
 	}
@@ -414,28 +443,32 @@ public class Color implements Serializable {
 	/**
 	 * @return a Color that is brighter than this Color
 	 */
-	public Color brighter() {
+	public Color brighter()
+	{
 		return brighter(FACTOR);
 	}
 
 	/**
 	 * @return a Color that is darker than this Color
 	 */
-	public Color darker() {
+	public Color darker()
+	{
 		return darker(FACTOR);
 	}
 
 	/**
 	 * @return a Color that is more saturated than this Color
 	 */
-	public Color saturate() {
+	public Color saturate()
+	{
 		return saturate(FACTOR);
 	}
 
 	/**
 	 * @return a Color that is less saturated than this Color
 	 */
-	public Color desaturate() {
+	public Color desaturate()
+	{
 		return desaturate(FACTOR);
 	}
 
@@ -445,7 +478,8 @@ public class Color implements Serializable {
 	 * @param factor the color factor, must be between 0-1
 	 * @return a Color that is brighter than this Color
 	 */
-	public Color brighter(float factor) {
+	public Color brighter(float factor)
+	{
 		factor = SUtils.putInBounds(factor, 0, 1);
 		return deriveColor(0, 1.0, 1.0 / factor, 1.0);
 	}
@@ -456,7 +490,8 @@ public class Color implements Serializable {
 	 * @param factor the color factor, must be between 0-1
 	 * @return a Color that is darker than this Color
 	 */
-	public Color darker(float factor) {
+	public Color darker(float factor)
+	{
 		factor = SUtils.putInBounds(factor, 0, 1);
 		return deriveColor(0, 1.0, factor, 1.0);
 	}
@@ -467,7 +502,8 @@ public class Color implements Serializable {
 	 * @param factor the color factor, must be between 0-1
 	 * @return a Color that is more saturated than this Color
 	 */
-	public Color saturate(float factor) {
+	public Color saturate(float factor)
+	{
 		factor = SUtils.putInBounds(factor, 0, 1);
 		return deriveColor(0, 1.0 / factor, 1.0, 1.0);
 	}
@@ -478,7 +514,8 @@ public class Color implements Serializable {
 	 * @param factor the color factor, must be between 0-1
 	 * @return a Color that is less saturated than this Color
 	 */
-	public Color desaturate(float factor) {
+	public Color desaturate(float factor)
+	{
 		factor = SUtils.putInBounds(factor, 0, 1);
 		return deriveColor(0, factor, 1.0, 1.0);
 	}
@@ -490,7 +527,8 @@ public class Color implements Serializable {
 	 * @param t        the strength
 	 * @return the newly interpolated color
 	 */
-	public Color interpolate(Color endValue, double t) {
+	public Color interpolate(Color endValue, double t)
+	{
 		if (t <= 0.0)
 			return this;
 		if (t >= 1.0)
@@ -508,21 +546,25 @@ public class Color implements Serializable {
 	 * @param brightness the brightness of the color to convert
 	 * @return an array of double with size 3 representing RGB
 	 */
-	public static double[] HSBtoRGB_(double hue, double saturation, double brightness) {
+	public static double[] HSBtoRGB_(double hue, double saturation, double brightness)
+	{
 		// normalize the hue
 		double normalizedHue = ((hue % 360) + 360) % 360;
 		hue = normalizedHue / 360;
 
 		double r = 0, g = 0, b = 0;
-		if (saturation == 0) {
+		if (saturation == 0)
+		{
 			r = g = b = brightness;
-		} else {
+		} else
+		{
 			double h = (hue - Math.floor(hue)) * 6.0;
 			double f = h - java.lang.Math.floor(h);
 			double p = brightness * (1.0 - saturation);
 			double q = brightness * (1.0 - saturation * f);
 			double t = brightness * (1.0 - (saturation * (1.0 - f)));
-			switch ((int) h) {
+			switch ((int) h)
+			{
 			case 0:
 				r = brightness;
 				g = t;
@@ -570,7 +612,8 @@ public class Color implements Serializable {
 	 * @param brightness the brightness of the color to convert
 	 * @return a color representing the RGB values
 	 */
-	public static Color HSBtoRGB(double hue, double saturation, double brightness) {
+	public static Color HSBtoRGB(double hue, double saturation, double brightness)
+	{
 		double[] rgb = HSBtoRGB_(hue, saturation, brightness);
 		return new Color(rgb[0], rgb[1], rgb[2], 1D);
 	}
@@ -583,7 +626,8 @@ public class Color implements Serializable {
 	 * @param b the blue component of the color
 	 * @return an array of size 3 with the HSV values
 	 */
-	public static double[] RGBtoHSB_(double r, double g, double b) {
+	public static double[] RGBtoHSB_(double r, double g, double b)
+	{
 		double hue, saturation, brightness;
 		double[] hsbvals = new double[3];
 		double cmax = (r > g) ? r : g;
@@ -599,9 +643,11 @@ public class Color implements Serializable {
 		else
 			saturation = 0;
 
-		if (saturation == 0) {
+		if (saturation == 0)
+		{
 			hue = 0;
-		} else {
+		} else
+		{
 			double redc = (cmax - r) / (cmax - cmin);
 			double greenc = (cmax - g) / (cmax - cmin);
 			double bluec = (cmax - b) / (cmax - cmin);
@@ -629,7 +675,8 @@ public class Color implements Serializable {
 	 * @param b the blue component of the color
 	 * @return the converted Color
 	 */
-	public static Color RGBtoHSB(double r, double g, double b) {
+	public static Color RGBtoHSB(double r, double g, double b)
+	{
 		double[] hsv = RGBtoHSB_(r, g, b);
 		return Color.hsb(hsv[0], hsv[1], hsv[2]);
 	}
@@ -637,25 +684,29 @@ public class Color implements Serializable {
 	/**
 	 * @return a float array with r, g, b, a stored inside
 	 */
-	public float[] toFloatArray() {
+	public float[] toFloatArray()
+	{
 		return new float[] { (float) getRed(), (float) getGreen(), (float) getBlue(), (float) getAlpha() };
 	}
 
 	/**
 	 * @return a double array with r, g, b, a stored inside
 	 */
-	public double[] toDoubleArray() {
+	public double[] toDoubleArray()
+	{
 		double[] f = { getRed(), getGreen(), getBlue(), getAlpha() };
 		return f;
 	}
 
-	private Color deriveColor(double hueShift, double saturationFactor, double brightnessFactor, double opacityFactor) {
+	private Color deriveColor(double hueShift, double saturationFactor, double brightnessFactor, double opacityFactor)
+	{
 
 		double[] hsb = RGBtoHSB_(red, green, blue);
 
 		/* Allow brightness increase of black color */
 		double b = hsb[2];
-		if (b == 0 && brightnessFactor > 1.0) {
+		if (b == 0 && brightnessFactor > 1.0)
+		{
 			b = 0.05;
 		}
 
@@ -667,34 +718,42 @@ public class Color implements Serializable {
 		return hsb(h, s, b, a);
 	}
 
-	private static void checkSB(double saturation, double brightness) {
-		if (saturation < 0.0 || saturation > 1.0) {
+	private static void checkSB(double saturation, double brightness)
+	{
+		if (saturation < 0.0 || saturation > 1.0)
+		{
 			SLogger.getSystemLogger().except(new IllegalArgumentException(
 					"Color.hsb's saturation parameter (" + saturation + ") expects values 0.0-1.0"));
 		}
-		if (brightness < 0.0 || brightness > 1.0) {
+		if (brightness < 0.0 || brightness > 1.0)
+		{
 			SLogger.getSystemLogger().except(new IllegalArgumentException(
 					"Color.hsb's brightness parameter (" + brightness + ") expects values 0.0-1.0"));
 		}
 	}
 
-	private static void checkRGB(int red, int green, int blue) {
-		if (red < 0 || red > 255) {
+	private static void checkRGB(int red, int green, int blue)
+	{
+		if (red < 0 || red > 255)
+		{
 			SLogger.getSystemLogger().except(
 					new IllegalArgumentException("Color.rgb's red parameter (" + red + ") expects color values 0-255"));
 		}
-		if (green < 0 || green > 255) {
+		if (green < 0 || green > 255)
+		{
 			SLogger.getSystemLogger().except(new IllegalArgumentException(
 					"Color.rgb's green parameter (" + green + ") expects color values 0-255"));
 		}
-		if (blue < 0 || blue > 255) {
+		if (blue < 0 || blue > 255)
+		{
 			SLogger.getSystemLogger().except(new IllegalArgumentException(
 					"Color.rgb's blue parameter (" + blue + ") expects color values 0-255"));
 		}
 	}
 
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "Color [red=" + red + ", green=" + green + ", blue=" + blue + ", opacity=" + alpha + "]";
 	}
 

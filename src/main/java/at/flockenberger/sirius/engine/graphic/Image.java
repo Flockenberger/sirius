@@ -12,6 +12,7 @@ import org.lwjgl.stb.STBImageResize;
 import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryStack;
 
+import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.utillity.SUtils;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
@@ -27,7 +28,8 @@ import at.flockenberger.sirius.utillity.logging.SLogger;
  * @author Florian Wagner
  *
  */
-public class Image implements IImage, Serializable, Cloneable {
+public class Image implements IImage, Serializable, Cloneable, IFreeable
+{
 	/**
 	 * Serial id
 	 */
@@ -56,7 +58,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param type the type of image
 	 * @return true if the file was saved successfully otherwise false
 	 */
-	public boolean write(String out, ImageFormat type) {
+	public boolean write(String out, ImageFormat type)
+	{
 		return write(Paths.get(out), type);
 	}
 
@@ -68,10 +71,12 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param type the type of image
 	 * @return true if the file was saved successfully otherwise false
 	 */
-	public boolean write(Path out, ImageFormat type) {
+	public boolean write(Path out, ImageFormat type)
+	{
 		String filename = out.toAbsolutePath().toString();
 
-		switch (type) {
+		switch (type)
+		{
 		case BMP:
 			return STBImageWrite.stbi_write_bmp(filename, getWidth(), getHeight(), 4, data);
 
@@ -99,9 +104,12 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param type the type of image
 	 * @return true if the file was saved successfully otherwise false
 	 */
-	public static boolean write(Image img, Path out, ImageFormat format) {
-		if(SUtils.checkNull(img, "Image"))return false;
-		if(SUtils.checkNull(out, "Path"))return false;
+	public static boolean write(Image img, Path out, ImageFormat format)
+	{
+		if (SUtils.checkNull(img, "Image"))
+			return false;
+		if (SUtils.checkNull(out, "Path"))
+			return false;
 		return img.write(out, format);
 	}
 
@@ -113,7 +121,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param imagePath the path to the image
 	 * @return the read image
 	 */
-	public static Image read(Path imagePath) {
+	public static Image read(Path imagePath)
+	{
 		SUtils.checkNull(imagePath, "Path");
 		return new Image(imagePath);
 	}
@@ -124,7 +133,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * {@link #load(Path)} later on.<br>
 	 * It is guaranteed that {@link #data} is never null!
 	 */
-	protected Image() {
+	protected Image()
+	{
 		data = BufferUtils.createByteBuffer(0);
 	}
 
@@ -139,7 +149,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param width  the width of the image
 	 * @param height the height of the image
 	 */
-	public Image(int width, int height) {
+	public Image(int width, int height)
+	{
 		this.width = width;
 		this.height = height;
 		data = BufferUtils.createByteBuffer(width * height * 4);
@@ -151,7 +162,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * 
 	 * @param img the image to copy
 	 */
-	public Image(Image img) {
+	public Image(Image img)
+	{
 
 		this.data = SUtils.clone(img.getPixelData());
 		this.height = img.getHeight();
@@ -168,7 +180,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param height the height of the image
 	 * @param data   the pixel data of the image
 	 */
-	public Image(int width, int height, ByteBuffer data) {
+	public Image(int width, int height, ByteBuffer data)
+	{
 		this.width = width;
 		this.height = height;
 		this.data = data;
@@ -183,7 +196,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param reqWidth  the width the image should be resized to
 	 * @param reqHeight the height the image should be resized to
 	 */
-	public Image(Path imagePath, int reqWidth, int reqHeight) {
+	public Image(Path imagePath, int reqWidth, int reqHeight)
+	{
 		load(imagePath);
 		resize(reqWidth, reqHeight);
 	}
@@ -197,7 +211,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param reqWidth  the width the image should be resized to
 	 * @param reqHeight the height the image should be resized to
 	 */
-	public Image(String imagePath, int reqWidth, int reqHeight) {
+	public Image(String imagePath, int reqWidth, int reqHeight)
+	{
 		this(Paths.get(imagePath), reqWidth, reqHeight);
 	}
 
@@ -207,7 +222,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * 
 	 * @param imagePath the path to the image to load
 	 */
-	public Image(Path imagePath) {
+	public Image(Path imagePath)
+	{
 		this();
 		load(imagePath);
 	}
@@ -219,7 +235,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param newHeight the new height of this image
 	 * @return this image, resized
 	 */
-	public Image resize(int newWidth, int newHeight) {
+	public Image resize(int newWidth, int newHeight)
+	{
 		if (newWidth > getWidth() || newHeight > getHeight())
 			throw new IllegalArgumentException("New width and height must be smaller than current!");
 		STBImageResize.stbir_resize_uint8(this.data, getWidth(), getHeight(), 0, this.data, newWidth, newHeight, 0, 4);
@@ -241,7 +258,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param h  the height of the new image region
 	 * @return a new image with the sub region as its data
 	 */
-	public Image getSubImage(int x1, int y1, int w, int h) {
+	public Image getSubImage(int x1, int y1, int w, int h)
+	{
 		SUtils.checkIndex(x1 + w, getWidth() + 1);
 		SUtils.checkIndex(y1 + h, getHeight() + 1);
 
@@ -258,7 +276,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @return a copy of this image
 	 */
 	@Override
-	public Object clone() {
+	public Object clone()
+	{
 		return new Image(this);
 	}
 
@@ -269,7 +288,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param y the y coordinate of this pixel
 	 * @return the color value of this pixel
 	 */
-	public Color getPixel(int x, int y) {
+	public Color getPixel(int x, int y)
+	{
 		SUtils.checkIndex(x, getWidth());
 		SUtils.checkIndex(y, getHeight());
 		int[] data = new int[4];
@@ -285,7 +305,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param y the y coordinate of this pixel@param x
 	 * @return the RGBA value of this pixel
 	 */
-	public int getRGB(int x, int y) {
+	public int getRGB(int x, int y)
+	{
 		SUtils.checkIndex(x, getWidth());
 		SUtils.checkIndex(y, getHeight());
 		int[] data = new int[4];
@@ -312,7 +333,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param dst the destination array to store the retrieved data to
 	 * 
 	 */
-	public void getPixelDataRaw(int x, int y, int[] dst) {
+	public void getPixelDataRaw(int x, int y, int[] dst)
+	{
 		if (dst.length < 4)
 			throw new IllegalArgumentException("Destination array must be at least size 4!");
 		int r = this.data.get(4 * (y * getWidth() + x) + 0) & 0xFF;
@@ -333,7 +355,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param y    the y coordinate of the pixel
 	 * @param rgba the rgba color value to set
 	 */
-	public void setRGB(int x, int y, int rgba) {
+	public void setRGB(int x, int y, int rgba)
+	{
 		SUtils.checkIndex(x, getWidth());
 		SUtils.checkIndex(y, getHeight());
 
@@ -351,7 +374,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param y the y coordinate of the pixel
 	 * @param c the color to set
 	 */
-	public void setPixel(int x, int y, Color c) {
+	public void setPixel(int x, int y, Color c)
+	{
 		SUtils.checkIndex(x, getWidth());
 		SUtils.checkIndex(y, getHeight());
 
@@ -376,7 +400,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * @param b the blue component of the color
 	 * @param a the alpha component of the color
 	 */
-	public void setPixel(int x, int y, byte r, byte g, byte b, byte a) {
+	public void setPixel(int x, int y, byte r, byte g, byte b, byte a)
+	{
 		this.data.put(4 * (y * getWidth() + x) + 0, r);
 		this.data.put(4 * (y * getWidth() + x) + 1, g);
 		this.data.put(4 * (y * getWidth() + x) + 2, b);
@@ -387,7 +412,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int getWidth() {
+	public int getWidth()
+	{
 		return this.width;
 	}
 
@@ -395,7 +421,8 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int getHeight() {
+	public int getHeight()
+	{
 		return this.height;
 	}
 
@@ -403,7 +430,9 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ByteBuffer getPixelData() {
+	public ByteBuffer getPixelData()
+	{
+
 		return this.data;
 	}
 
@@ -411,21 +440,26 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void load(Path imagePath) {
-		if(SUtils.checkNull(imagePath, "Path"))return;
+	public void load(Path imagePath)
+	{
+		if (SUtils.checkNull(imagePath, "Path"))
+			return;
 		String input = null;
-		try {
+		try
+		{
 			input = imagePath.toString();
 
 			STBImage.stbi_set_flip_vertically_on_load(true);
 
-			try (MemoryStack stack = MemoryStack.stackPush()) {
+			try (MemoryStack stack = MemoryStack.stackPush())
+			{
 				IntBuffer comp = stack.mallocInt(1);
 				IntBuffer w = stack.mallocInt(1);
 				IntBuffer h = stack.mallocInt(1);
 
 				this.data = STBImage.stbi_load(input, w, h, comp, 4);
-				if (this.data == null) {
+				if (this.data == null)
+				{
 					SLogger.getSystemLogger().error("Could not load image: " + input);
 					return;
 				}
@@ -434,7 +468,8 @@ public class Image implements IImage, Serializable, Cloneable {
 				this.height = h.get();
 			}
 
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			SLogger.getSystemLogger().except(e);
 		}
 	}
@@ -443,8 +478,15 @@ public class Image implements IImage, Serializable, Cloneable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "Image [width=" + width + ", height=" + height + ", dataSize: " + data.capacity() + "]";
+	}
+
+	@Override
+	public void free()
+	{
+		SUtils.closeDirectBuffer(data);
 	}
 
 }

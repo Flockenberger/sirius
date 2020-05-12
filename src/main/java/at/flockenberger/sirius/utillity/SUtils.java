@@ -1,7 +1,13 @@
 package at.flockenberger.sirius.utillity;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.file.Path;
 
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -40,6 +46,104 @@ public class SUtils
 	}
 
 	/**
+	 * Creates a orthographic projection matrix. Similar to
+	 * <code>glOrtho(left, right, bottom, top, near, far)</code>.
+	 *
+	 * @param left   Coordinate for the left vertical clipping pane
+	 * @param right  Coordinate for the right vertical clipping pane
+	 * @param bottom Coordinate for the bottom horizontal clipping pane
+	 * @param top    Coordinate for the bottom horizontal clipping pane
+	 * @param near   Coordinate for the near depth clipping pane
+	 * @param far    Coordinate for the far depth clipping pane
+	 *
+	 * @return Orthographic matrix
+	 */
+	public static Matrix4f orthographic(float left, float right, float bottom, float top, float near, float far)
+	{
+		Matrix4f ortho = new Matrix4f();
+
+		float tx = -(right + left) / (right - left);
+		float ty = -(top + bottom) / (top - bottom);
+		float tz = -(far + near) / (far - near);
+
+		ortho.m00(2f / (right - left));
+		ortho.m11(2f / (top - bottom));
+		ortho.m22(-2f / (far - near));
+		ortho.m03(tx);
+		ortho.m13(ty);
+		ortho.m23(tz);
+
+		return ortho;
+	}
+
+	/**
+	 * 
+	 * Checks if the given {@link Object} <code> t </code> is null. <br>
+	 * If the given object is null a new {@link NullPointerException} will be
+	 * thrown.
+	 * 
+	 * @param t the object to check for null
+	 */
+	public static boolean checkNull(Object t)
+	{
+		return checkNull(t, "Unknown");
+	}
+
+	public static void toBuffer(Matrix4f mat, FloatBuffer buffer)
+	{
+		buffer.put(mat.m00()).put(mat.m10()).put(mat.m20()).put(mat.m30());
+		buffer.put(mat.m01()).put(mat.m11()).put(mat.m21()).put(mat.m31());
+		buffer.put(mat.m02()).put(mat.m12()).put(mat.m22()).put(mat.m32());
+		buffer.put(mat.m03()).put(mat.m13()).put(mat.m23()).put(mat.m33());
+		buffer.flip();
+	}
+
+	public static void closeDirectBuffer(ByteBuffer cb)
+	{
+		if (cb == null || !cb.isDirect())
+			return;
+		// we could use this type cast and call functions without reflection code,
+		// but static import from sun.* package is risky for non-SUN virtual machine.
+		// try { ((sun.nio.ch.DirectBuffer)cb).cleaner().clean(); } catch (Exception ex)
+		// { }
+
+		// JavaSpecVer: 1.6, 1.7, 1.8, 9, 10
+		boolean isOldJDK = System.getProperty("java.specification.version", "99").startsWith("1.");
+		try
+		{
+			if (isOldJDK)
+			{
+				Method cleaner = cb.getClass().getMethod("cleaner");
+				cleaner.setAccessible(true);
+				Method clean = Class.forName("sun.misc.Cleaner").getMethod("clean");
+				clean.setAccessible(true);
+				clean.invoke(cleaner.invoke(cb));
+			} else
+			{
+				Class<?> unsafeClass;
+				try
+				{
+					unsafeClass = Class.forName("sun.misc.Unsafe");
+				} catch (Exception ex)
+				{
+					// jdk.internal.misc.Unsafe doesn't yet have an invokeCleaner() method,
+					// but that method should be added if sun.misc.Unsafe is removed.
+					unsafeClass = Class.forName("jdk.internal.misc.Unsafe");
+				}
+				Method clean = unsafeClass.getMethod("invokeCleaner", ByteBuffer.class);
+				clean.setAccessible(true);
+				Field theUnsafeField = unsafeClass.getDeclaredField("theUnsafe");
+				theUnsafeField.setAccessible(true);
+				Object theUnsafe = theUnsafeField.get(null);
+				clean.invoke(theUnsafe, cb);
+			}
+		} catch (Exception ex)
+		{
+		}
+		cb = null;
+	}
+
+	/**
 	 * Checks if the given float value <code> f </code> is within the bounds of
 	 * <code> min, max </code>. <br>
 	 * If f is greater than max, f will be set to max. <br>
@@ -69,6 +173,7 @@ public class SUtils
 	 * @param original the {@link ByteBuffer} to copy
 	 * @return a clone of the given buffer
 	 */
+
 	public static ByteBuffer clone(ByteBuffer original)
 	{
 		ByteBuffer clone = BufferUtils.createByteBuffer(original.capacity());
@@ -122,6 +227,7 @@ public class SUtils
 	 */
 	public static Matrix4f toOrtho2D(Matrix4f m, float x, float y, float width, float height, float near, float far)
 	{
+
 		return toOrtho(m, x, x + width, y, y + height, near, far);
 	}
 
@@ -278,6 +384,31 @@ public class SUtils
 		dest.put(offset + 7, m.m21());
 		dest.put(offset + 8, m.m22());
 
+	}
+
+	/**
+	 * Reads a file as whole and returns it as String.
+	 * 
+	 * @param path the path to the file
+	 * @return the contents of the file as String
+	 */
+	public static String readFile(Path path)
+	{
+		File file = path.toFile();
+		FileInputStream fis;
+		byte[] data = null;
+		try
+		{
+			fis = new FileInputStream(file);
+			data = new byte[(int) file.length()];
+			fis.read(data);
+			fis.close();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
+		return new String(data);
 	}
 
 }

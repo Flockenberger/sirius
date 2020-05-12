@@ -3,9 +3,7 @@ package at.flockenberger.sirius.engine.graphic;
 import java.nio.file.Path;
 
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWImage;
 
-import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.input.CursorType;
 
 /**
@@ -15,7 +13,7 @@ import at.flockenberger.sirius.engine.input.CursorType;
  * @author Florian Wagner
  *
  */
-public class Cursor extends Image implements IFreeable
+public class Cursor extends Icon
 {
 
 	private static final long serialVersionUID = 121973262138123279L;
@@ -44,11 +42,22 @@ public class Cursor extends Image implements IFreeable
 	 */
 	public Cursor(CursorType type)
 	{
-		super();
 		this.type = type;
 		if (!this.type.equals(CursorType.CUSTOM))
 			this.id = GLFW.glfwCreateStandardCursor(type.getID());
 
+	}
+
+	/**
+	 * Creates a new cursor using an {@link Icon}.
+	 * 
+	 * @param icon
+	 */
+	public Cursor(Icon icon)
+	{
+		super(icon.getSubImage(0, 0, icon.getWidth(), icon.getHeight()));
+		this.type = CursorType.CUSTOM;
+		setCursor(0, 0);
 	}
 
 	/**
@@ -114,14 +123,14 @@ public class Cursor extends Image implements IFreeable
 	@Override
 	public void free()
 	{
+		super.free();
 		GLFW.glfwDestroyCursor(getID());
 	}
 
 	protected void setCursor(int xhot, int yhot)
 	{
-		GLFWImage img = GLFWImage.malloc();
-		img.width(getWidth()).height(getHeight()).pixels(getPixelData());
-		this.id = GLFW.glfwCreateCursor(img, xhot, yhot);
+		update();
+		this.id = GLFW.glfwCreateCursor(glfwImage, xhot, yhot);
 	}
 
 }

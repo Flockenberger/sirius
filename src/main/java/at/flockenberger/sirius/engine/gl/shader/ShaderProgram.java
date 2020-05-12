@@ -22,6 +22,7 @@ import static org.lwjgl.opengl.GL20.glUniform3f;
 import static org.lwjgl.opengl.GL20.glUniform3i;
 import static org.lwjgl.opengl.GL20.glUniform4f;
 import static org.lwjgl.opengl.GL20.glUniform4i;
+import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindFragDataLocation;
 
@@ -39,7 +40,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.system.MemoryStack;
 
 import at.flockenberger.sirius.engine.gl.VertexAttribute;
 import at.flockenberger.sirius.utillity.SUtils;
@@ -56,8 +57,6 @@ public class ShaderProgram
 {
 	private int id = -1;
 	private List<Shader> shader;
-	// temporary buffer to store matrix into
-	private FloatBuffer buffer;
 
 	private static FloatBuffer fbuf16;
 	private static IntBuffer ibuf4;
@@ -68,7 +67,7 @@ public class ShaderProgram
 	public ShaderProgram()
 	{
 		shader = new ArrayList<Shader>();
-		buffer = BufferUtils.createFloatBuffer(16);
+
 	}
 
 	public ShaderProgram(Shader... shaders)
@@ -261,6 +260,23 @@ public class ShaderProgram
 			throw new IllegalArgumentException(
 					"no active uniform by name '" + name + "' " + "(disable strict compiling to suppress warnings)");
 		return location;
+	}
+
+	/**
+	 * Sets the uniform variable for specified location.
+	 *
+	 * @param location Uniform location
+	 * @param value    Value to set
+	 */
+	public void setUniformMatrix(int location, Matrix4f value)
+	{
+		try (MemoryStack stack = MemoryStack.stackPush())
+		{
+			FloatBuffer buffer = stack.mallocFloat(4 * 4);
+			SUtils.toBuffer(value, buffer);
+
+			glUniformMatrix4fv(location, false, buffer);
+		}
 	}
 
 	/**

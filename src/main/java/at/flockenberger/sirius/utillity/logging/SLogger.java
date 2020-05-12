@@ -4,29 +4,38 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import at.flockenberger.sirius.engine.IFreeable;
+
 /**
  * <h1>SLogger</h1><br>
- * The SLogger class is the main logger of the Sirius System.
+ * The SLogger class is the main logger of the Sirius System. <br>
  * 
  * @author Florian Wagner
  *
  */
-public class SLogger {
+public class SLogger implements IFreeable
+{
 
 	private static SLogger SYSTEM_LOGGER;
+	
 	private List<LogHandler> handlers;
 	private LogConsoleHandler logch;
+	
+	private boolean debug = false;
+	private boolean suppressWarning = false;
 
 	/**
 	 * @return the CardinalSystem Logger.
 	 */
-	public static SLogger getSystemLogger() {
+	public static SLogger getSystemLogger()
+	{
 		if (SYSTEM_LOGGER == null)
 			SYSTEM_LOGGER = new SLogger();
 		return SYSTEM_LOGGER;
 	}
 
-	private SLogger() {
+	private SLogger()
+	{
 		handlers = new ArrayList<LogHandler>();
 
 		// add default console handler
@@ -35,9 +44,40 @@ public class SLogger {
 	}
 
 	/**
+	 * Enables the debug output.<br>
+	 * Debug messages can be print using any {@link #debug(Object)} methods.
+	 */
+	public void enableDebugOutput()
+	{
+		this.debug = true;
+	}
+
+	/**
+	 * Disables the debug output<br>
+	 */
+	public void disableDebugOutput()
+	{
+		this.debug = false;
+	}
+
+	/**
+	 * Suppresses warning messages.<br>
+	 */
+	public void suppressWarnings()
+	{
+		this.suppressWarning = true;
+	}
+
+	public void enableWarnings()
+	{
+		this.suppressWarning = false;
+	}
+
+	/**
 	 * Removes the default {@link LogConsoleHandler} from this logger.
 	 */
-	public void removeDefaultConsoleHandler() {
+	public void removeDefaultConsoleHandler()
+	{
 		if (handlers.contains(logch))
 			handlers.remove(logch);
 	}
@@ -45,7 +85,8 @@ public class SLogger {
 	/**
 	 * Adds the default {@link LogConsoleHandler} to this logger.
 	 */
-	public void addDefaultConsoleHandler() {
+	public void addDefaultConsoleHandler()
+	{
 		if (!handlers.contains(logch))
 			handlers.add(logch);
 	}
@@ -55,7 +96,8 @@ public class SLogger {
 	 * 
 	 * @param hndl the handler to add
 	 */
-	public void addHandler(LogHandler hndl) {
+	public void addHandler(LogHandler hndl)
+	{
 		this.handlers.add(hndl);
 	}
 
@@ -64,7 +106,8 @@ public class SLogger {
 	 * 
 	 * @param hndl the logger to remove
 	 */
-	public void removeHandlre(LogHandler hndl) {
+	public void removeHandlre(LogHandler hndl)
+	{
 		this.handlers.remove(hndl);
 	}
 
@@ -73,7 +116,8 @@ public class SLogger {
 	 * 
 	 * @param e the {@link Exception} to log
 	 */
-	public void except(Exception e) {
+	public void except(Exception e)
+	{
 		error(e);
 	}
 
@@ -82,7 +126,8 @@ public class SLogger {
 	 * 
 	 * @param trace the stack trace to log
 	 */
-	public void trace(StackTraceElement[] trace) {
+	public void trace(StackTraceElement[] trace)
+	{
 		StackTraceElement[] _trace;
 		_trace = Arrays.copyOfRange(trace, 1, trace.length);
 		for (StackTraceElement traceElement : _trace)
@@ -95,7 +140,8 @@ public class SLogger {
 	 * @param lvl the {@link LogLevel} to assign this message to
 	 * @param msg the message to log
 	 */
-	public void log(LogLevel lvl, String msg) {
+	public void log(LogLevel lvl, String msg)
+	{
 		_log(new LogEntry(System.currentTimeMillis(), msg, lvl));
 	}
 
@@ -105,7 +151,8 @@ public class SLogger {
 	 * @param lvl the {@link LogLevel} to assign this message to
 	 * @param msg the message to log
 	 */
-	public void log(LogLevel lvl, Object msg) {
+	public void log(LogLevel lvl, Object msg)
+	{
 		log(lvl, msg.toString());
 	}
 
@@ -115,7 +162,8 @@ public class SLogger {
 	 * @param lvl the {@link LogLevel} to assign this message to
 	 * @param msg the message to log
 	 */
-	public void log(LogLevel lvl, int msg) {
+	public void log(LogLevel lvl, int msg)
+	{
 		log(lvl, String.valueOf(msg));
 	}
 
@@ -125,7 +173,8 @@ public class SLogger {
 	 * @param lvl the {@link LogLevel} to assign this message to
 	 * @param msg the message to log
 	 */
-	public void log(LogLevel lvl, boolean msg) {
+	public void log(LogLevel lvl, boolean msg)
+	{
 		log(lvl, String.valueOf(msg));
 	}
 
@@ -135,7 +184,8 @@ public class SLogger {
 	 * @param lvl the {@link LogLevel} to assign this message to
 	 * @param msg the message to log
 	 */
-	public void log(LogLevel lvl, double msg) {
+	public void log(LogLevel lvl, double msg)
+	{
 		log(lvl, String.valueOf(msg));
 	}
 
@@ -145,7 +195,8 @@ public class SLogger {
 	 * @param lvl the {@link LogLevel} to assign this message to
 	 * @param msg the message to log
 	 */
-	public void log(LogLevel lvl, float msg) {
+	public void log(LogLevel lvl, float msg)
+	{
 		log(lvl, String.valueOf(msg));
 	}
 
@@ -155,7 +206,8 @@ public class SLogger {
 	 * @param lvl the {@link LogLevel} to assign this message to
 	 * @param msg the message to log
 	 */
-	public void log(LogLevel lvl, long msg) {
+	public void log(LogLevel lvl, long msg)
+	{
 		log(lvl, String.valueOf(msg));
 	}
 
@@ -165,7 +217,8 @@ public class SLogger {
 	 * @param lvl the {@link LogLevel} to assign this message to
 	 * @param msg the message to log
 	 */
-	public void log(LogLevel lvl, char msg) {
+	public void log(LogLevel lvl, char msg)
+	{
 		log(lvl, String.valueOf(msg));
 	}
 
@@ -175,7 +228,8 @@ public class SLogger {
 	 * @param lvl the {@link LogLevel} to assign this message to
 	 * @param msg the message to log
 	 */
-	public void log(LogLevel lvl, byte msg) {
+	public void log(LogLevel lvl, byte msg)
+	{
 		log(lvl, String.valueOf(msg));
 	}
 
@@ -184,7 +238,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void info(String msg) {
+	public void info(String msg)
+	{
 		log(LogLevel.INFO, msg);
 	}
 
@@ -193,7 +248,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void info(int msg) {
+	public void info(int msg)
+	{
 		log(LogLevel.INFO, msg);
 	}
 
@@ -202,7 +258,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void info(long msg) {
+	public void info(long msg)
+	{
 		log(LogLevel.INFO, msg);
 	}
 
@@ -211,7 +268,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void info(float msg) {
+	public void info(float msg)
+	{
 		log(LogLevel.INFO, msg);
 	}
 
@@ -220,7 +278,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void info(double msg) {
+	public void info(double msg)
+	{
 		log(LogLevel.INFO, msg);
 	}
 
@@ -229,7 +288,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void info(boolean msg) {
+	public void info(boolean msg)
+	{
 		log(LogLevel.INFO, msg);
 	}
 
@@ -238,7 +298,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void info(byte msg) {
+	public void info(byte msg)
+	{
 		log(LogLevel.INFO, msg);
 	}
 
@@ -247,7 +308,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void info(char msg) {
+	public void info(char msg)
+	{
 		log(LogLevel.INFO, msg);
 	}
 
@@ -256,7 +318,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void info(Object msg) {
+	public void info(Object msg)
+	{
 		log(LogLevel.INFO, msg.toString());
 	}
 
@@ -265,8 +328,10 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void warn(String msg) {
-		log(LogLevel.WARN, msg);
+	public void warn(String msg)
+	{
+		if (!suppressWarning)
+			log(LogLevel.WARN, msg);
 	}
 
 	/**
@@ -274,8 +339,10 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void warn(int msg) {
-		log(LogLevel.WARN, msg);
+	public void warn(int msg)
+	{
+		if (!suppressWarning)
+			log(LogLevel.WARN, msg);
 	}
 
 	/**
@@ -283,8 +350,11 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void warn(long msg) {
-		log(LogLevel.WARN, msg);
+	public void warn(long msg)
+	{
+		if (!suppressWarning)
+
+			log(LogLevel.WARN, msg);
 	}
 
 	/**
@@ -292,8 +362,11 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void warn(float msg) {
-		log(LogLevel.WARN, msg);
+	public void warn(float msg)
+	{
+		if (!suppressWarning)
+
+			log(LogLevel.WARN, msg);
 	}
 
 	/**
@@ -301,8 +374,11 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void warn(double msg) {
-		log(LogLevel.WARN, msg);
+	public void warn(double msg)
+	{
+		if (!suppressWarning)
+
+			log(LogLevel.WARN, msg);
 	}
 
 	/**
@@ -310,8 +386,11 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void warn(boolean msg) {
-		log(LogLevel.WARN, msg);
+	public void warn(boolean msg)
+	{
+		if (!suppressWarning)
+
+			log(LogLevel.WARN, msg);
 	}
 
 	/**
@@ -319,8 +398,11 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void warn(char msg) {
-		log(LogLevel.WARN, msg);
+	public void warn(char msg)
+	{
+		if (!suppressWarning)
+
+			log(LogLevel.WARN, msg);
 	}
 
 	/**
@@ -328,8 +410,11 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void warn(byte msg) {
-		log(LogLevel.WARN, msg);
+	public void warn(byte msg)
+	{
+		if (!suppressWarning)
+
+			log(LogLevel.WARN, msg);
 	}
 
 	/**
@@ -337,8 +422,11 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void warn(Object msg) {
-		log(LogLevel.WARN, msg.toString());
+	public void warn(Object msg)
+	{
+		if (!suppressWarning)
+
+			log(LogLevel.WARN, msg.toString());
 	}
 
 	/**
@@ -346,7 +434,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void error(String msg) {
+	public void error(String msg)
+	{
 		log(LogLevel.ERROR, msg);
 	}
 
@@ -355,7 +444,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void error(Object msg) {
+	public void error(Object msg)
+	{
 		log(LogLevel.ERROR, msg);
 	}
 
@@ -364,7 +454,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void error(int msg) {
+	public void error(int msg)
+	{
 		log(LogLevel.ERROR, msg);
 	}
 
@@ -373,7 +464,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void error(double msg) {
+	public void error(double msg)
+	{
 		log(LogLevel.ERROR, msg);
 	}
 
@@ -382,7 +474,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void error(float msg) {
+	public void error(float msg)
+	{
 		log(LogLevel.ERROR, msg);
 	}
 
@@ -391,7 +484,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void error(long msg) {
+	public void error(long msg)
+	{
 		log(LogLevel.ERROR, msg);
 	}
 
@@ -400,7 +494,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void error(boolean msg) {
+	public void error(boolean msg)
+	{
 		log(LogLevel.ERROR, msg);
 	}
 
@@ -409,7 +504,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void error(char msg) {
+	public void error(char msg)
+	{
 		log(LogLevel.ERROR, msg);
 	}
 
@@ -418,7 +514,8 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void error(byte msg) {
+	public void error(byte msg)
+	{
 		log(LogLevel.ERROR, msg);
 	}
 
@@ -427,8 +524,10 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void debug(String msg) {
-		log(LogLevel.DEBUG, msg);
+	public void debug(String msg)
+	{
+		if (debug)
+			log(LogLevel.DEBUG, msg);
 	}
 
 	/**
@@ -436,8 +535,10 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void debug(Object msg) {
-		log(LogLevel.DEBUG, msg);
+	public void debug(Object msg)
+	{
+		if (debug)
+			log(LogLevel.DEBUG, msg);
 	}
 
 	/**
@@ -445,8 +546,10 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void debug(int msg) {
-		log(LogLevel.DEBUG, msg);
+	public void debug(int msg)
+	{
+		if (debug)
+			log(LogLevel.DEBUG, msg);
 	}
 
 	/**
@@ -454,8 +557,10 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void debug(long msg) {
-		log(LogLevel.DEBUG, msg);
+	public void debug(long msg)
+	{
+		if (debug)
+			log(LogLevel.DEBUG, msg);
 	}
 
 	/**
@@ -463,8 +568,10 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void debug(double msg) {
-		log(LogLevel.DEBUG, msg);
+	public void debug(double msg)
+	{
+		if (debug)
+			log(LogLevel.DEBUG, msg);
 	}
 
 	/**
@@ -472,8 +579,10 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void debug(boolean msg) {
-		log(LogLevel.DEBUG, msg);
+	public void debug(boolean msg)
+	{
+		if (debug)
+			log(LogLevel.DEBUG, msg);
 	}
 
 	/**
@@ -481,8 +590,10 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void debug(float msg) {
-		log(LogLevel.DEBUG, msg);
+	public void debug(float msg)
+	{
+		if (debug)
+			log(LogLevel.DEBUG, msg);
 	}
 
 	/**
@@ -490,8 +601,10 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void debug(char msg) {
-		log(LogLevel.DEBUG, msg);
+	public void debug(char msg)
+	{
+		if (debug)
+			log(LogLevel.DEBUG, msg);
 	}
 
 	/**
@@ -499,21 +612,28 @@ public class SLogger {
 	 * 
 	 * @param msg the message to log
 	 */
-	public void debug(byte msg) {
-		log(LogLevel.DEBUG, msg);
+	public void debug(byte msg)
+	{
+		if (debug)
+			log(LogLevel.DEBUG, msg);
 	}
 
 	// caller method to all handlers
-	private void _log(LogEntry entry) {
+	private void _log(LogEntry entry)
+	{
 		for (LogHandler h : handlers)
 			h.log(entry);
 	}
 
 	/**
-	 * Closes all log handlers
+	 * Closes all log handlers.<br>
+	 * {@inheritDoc}
 	 */
-	public void free() {
-		for (LogHandler h : handlers) {
+	@Override
+	public void free()
+	{
+		for (LogHandler h : handlers)
+		{
 			h.close();
 		}
 	}

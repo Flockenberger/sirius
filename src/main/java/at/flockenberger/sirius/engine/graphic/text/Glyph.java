@@ -1,55 +1,35 @@
 package at.flockenberger.sirius.engine.graphic.text;
 
-import at.flockenberger.sirius.engine.texture.TextureRegion;
-
 /**
- * <h1>Glyph</h1><br>
- * 
- * @author Florian Wagner
+ * This class represents a font glyph.
  *
+ * @author Heiko Brumme
  */
 public class Glyph
 {
-	protected int character;
-	protected int x;
-	protected int y;
-	protected int width;
-	protected int height;
-	protected int offY;
-	protected int offX;
-	protected int advX;
-	protected int[] kerning;
-	protected int page;
-	protected TextureRegion region;
 
-	public Glyph()
-	{
-
-	}
+	public final int width;
+	public final int height;
+	public final int x;
+	public final int y;
+	public final float advance;
 
 	/**
-	 * Get the kerning offset between this character and the specified character.
-	 * 
-	 * @param c The other code point
-	 * @return the kerning offset
+	 * Creates a font Glyph.
+	 *
+	 * @param width   Width of the Glyph
+	 * @param height  Height of the Glyph
+	 * @param x       X coordinate on the font texture
+	 * @param y       Y coordinate on the font texture
+	 * @param advance Advance width
 	 */
-	public int getKerning(int c)
+	public Glyph(int width, int height, int x, int y, float advance)
 	{
-		if (kerning == null)
-			return 0;
-		return kerning[c];
-	}
-
-	/**
-	 * Updates the texture region.
-	 * 
-	 * @param tex the texture region
-	 */
-	protected void updateRegion(TextureRegion tex)
-	{
-		if (region == null)
-			region = new TextureRegion(tex, 0, 0, tex.getWidth(), tex.getHeight());
-		region.set(tex, x, y, width, height);
+		this.width = width;
+		this.height = height;
+		this.x = x;
+		this.y = y;
+		this.advance = advance;
 	}
 
 }

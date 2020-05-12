@@ -1,10 +1,13 @@
 package at.flockenberger.sirius.engine.resource;
 
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import at.flockenberger.sirius.engine.graphic.Image;
 import at.flockenberger.sirius.utillity.SUtils;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
@@ -76,6 +79,73 @@ public class ResourceManager
 		}
 		res.put(name, resouce);
 		return resouce;
+	}
+
+	public ShaderResource loadShaderResource(String name, String path)
+	{
+		if (getResource(name) != null)
+			return (ShaderResource) getResource(name);
+
+		ShaderResource resouce = null;
+		try
+		{
+			resouce = new ShaderResource(Paths.get(ResourceManager.class.getResource(path).toURI()));
+		} catch (URISyntaxException e)
+		{
+			SLogger.getSystemLogger().except(e);
+		}
+
+		res.put(name, resouce);
+		return resouce;
+	}
+
+	/**
+	 * Returns an {@link Image} which has already been loaded and cached.<br>
+	 * If the {@link Image} was not previously loaded it will throw an error.
+	 * 
+	 * @param cache the cached resource name
+	 * @return the found image or null
+	 */
+	public Image getImage(String cache)
+	{
+		ResourceBase res = getResource(cache);
+		if (res == null)
+		{
+			SLogger.getSystemLogger().warn("Image " + cache + " was not found!");
+			return null;
+		}
+
+		if (!(res instanceof ImageResource))
+		{
+			SLogger.getSystemLogger().warn("Found Resource is not an ImageResource!");
+		}
+
+		return ((ImageResource) res).getImage();
+	}
+
+	/**
+	 * Returns an {@link URL} which has been previously loaded and cached using
+	 * {@link #loadURLResource(String, String)}.
+	 * 
+	 * @param cache the string under which the resource has been loaded
+	 * @return the found {@link URL} or null
+	 * @throws MalformedURLException
+	 */
+	public URL getURL(String cache) throws MalformedURLException
+	{
+		ResourceBase res = getResource(cache);
+		if (res == null)
+		{
+			SLogger.getSystemLogger().warn("URL " + cache + " was not found!");
+			return null;
+		}
+
+		if (!(res instanceof URLResource))
+		{
+			SLogger.getSystemLogger().warn("Found Resource is not an URLResource!");
+		}
+
+		return ((URLResource) res).getURL();
 	}
 
 	/**

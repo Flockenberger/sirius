@@ -7,44 +7,31 @@ import static org.lwjgl.opengl.GL11.GL_LINEAR_MIPMAP_NEAREST;
 import static org.lwjgl.opengl.GL11.GL_NEAREST;
 import static org.lwjgl.opengl.GL11.GL_NEAREST_MIPMAP_LINEAR;
 import static org.lwjgl.opengl.GL11.GL_NEAREST_MIPMAP_NEAREST;
-import static org.lwjgl.opengl.GL11.GL_PACK_ALIGNMENT;
 import static org.lwjgl.opengl.GL11.GL_REPEAT;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_RGBA8;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
-import static org.lwjgl.opengl.GL11.GL_UNPACK_ALIGNMENT;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDeleteTextures;
-import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glGenTextures;
-import static org.lwjgl.opengl.GL11.glPixelStorei;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
-import static org.lwjgl.opengl.GL11.glTexSubImage2D;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
+import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 
 import java.nio.ByteBuffer;
-import java.nio.file.Path;
-
-import org.lwjgl.opengl.EXTFramebufferObject;
-import org.lwjgl.opengl.GL;
 
 import at.flockenberger.sirius.engine.IBindable;
 import at.flockenberger.sirius.engine.IFreeable;
-import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.graphic.Image;
 
-public class Texture extends Image implements ITextureBase, IBindable, IFreeable
+public class Texture implements ITextureBase, IBindable, IFreeable
 {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7990433432552419455L;
 
 	private int id;
 	private UV uv = new UV();
@@ -61,200 +48,96 @@ public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 	public static final int DEFAULT_FILTER = NEAREST;
 	public static final int DEFAULT_WRAP = REPEAT;
 
-	protected Texture()
-	{
-		super();
-		initTexture();
-
-	}
-
 	/**
-	 * Instantiates a new {@link Image}. <br>
-	 * Internally allocates a new pixel buffer with the size of
-	 * <code> width * height * 4 </code>.<br>
-	 * The pixels can then be filled/set using {@link #setPixel(int, int, Color)},
-	 * {@link #setPixel(int, int, byte, byte, byte, byte)} or
-	 * {@link #setRGB(int, int, int)}.
-	 * 
-	 * @param width  the width of the image
-	 * @param height the height of the image
+	 * Width of the texture.
 	 */
-	public Texture(int width, int height)
-	{
-		super(width, height);
-		initTexture();
-
-	}
-
+	private int width;
 	/**
-	 * Instantiates a new {@link Image}. <br>
-	 * This constructor is a copy constructor. The underlying data will be copied.
-	 * 
-	 * @param img the image to copy
+	 * Height of the texture.
 	 */
-	public Texture(Image img)
+	private int height;
+
+	/** Creates a texture. */
+	public Texture()
 	{
-		super(img);
-		initTexture();
-
-	}
-
-	/**
-	 * Instantiates a new {@link Image}. <br>
-	 * Sets the width and height of the image as well as the raw pixel data.<br>
-	 * No internal checking if width and height correspond to the given pixel data
-	 * so make sure to do this beforehand.
-	 * 
-	 * @param width  the width of the image
-	 * @param height the height of the image
-	 * @param data   the pixel data of the image
-	 */
-	public Texture(int width, int height, ByteBuffer data)
-	{
-		super(width, height, data);
-		initTexture();
-
-	}
-
-	/**
-	 * Instantiates a new {@link Image}. <br>
-	 * Tries to load an {@link Image} from the given {@link Path}. <br>
-	 * In addition the image is resized to the given width and height.
-	 * 
-	 * @param imagePath the path to the image to load
-	 * @param reqWidth  the width the image should be resized to
-	 * @param reqHeight the height the image should be resized to
-	 */
-	public Texture(Path imagePath, int reqWidth, int reqHeight)
-	{
-		super(imagePath, reqWidth, reqHeight);
-		initTexture();
-
-	}
-
-	/**
-	 * Instantiates a new {@link Image}. <br>
-	 * Tries to load an {@link Image} from the given {@link Path}. <br>
-	 * In addition the image is resized to the given width and height.
-	 * 
-	 * @param imagePath the path to the image to load
-	 * @param reqWidth  the width the image should be resized to
-	 * @param reqHeight the height the image should be resized to
-	 */
-	public Texture(String imagePath, int reqWidth, int reqHeight)
-	{
-		super(imagePath, reqWidth, reqHeight);
-		initTexture();
-
-	}
-
-	/**
-	 * Instantiates a new {@link Image}. <br>
-	 * Tries to load an {@link Image} from the given {@link Path}.
-	 * 
-	 * @param imagePath the path to the image to load
-	 */
-	public Texture(Path imagePath)
-	{
-		super(imagePath);
-		initTexture();
-
-	}
-
-	public Texture(int width, int height, int filter, int wrap)
-	{
-		super(width, height);
-		initTexture(filter, wrap);
-	}
-
-	protected void initTexture(int filter, int wrap)
-	{
-		glEnable(getTarget());
 		id = glGenTextures();
-		bind();
-
-		setFilter(filter);
-		setWrap(wrap);
-
-		upload(GL_RGBA, getPixelData());
-
-		EXTFramebufferObject.glGenerateMipmapEXT(getTarget());
-	}
-
-	protected void initTexture()
-	{
-		glEnable(getTarget());
-		id = glGenTextures();
-		bind();
-
-		setFilter(DEFAULT_FILTER);
-		setWrap(DEFAULT_WRAP);
-
-		upload(GL_RGBA, getPixelData());
-
-		EXTFramebufferObject.glGenerateMipmapEXT(getTarget());
-	}
-
-	public int getTarget()
-	{
-		return GL_TEXTURE_2D;
-	}
-
-	protected void setUnpackAlignment()
-	{
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	}
 
 	/**
-	 * Uploads image data with the dimensions of this Texture.
+	 * Creates a texture with specified width, height and data.
 	 * 
-	 * @param dataFormat the format, e.g. GL_RGBA
-	 * @param data       the byte data
+	 * @param img the image to load into this texture.
+	 * @return a new Texture fromm the specified image
 	 */
-	public void upload(int dataFormat, ByteBuffer data)
+	public static Texture createTexture(Image img)
 	{
-		bind();
-		setUnpackAlignment();
-		glTexImage2D(getTarget(), 0, GL_RGBA, getWidth(), getHeight(), 0, dataFormat, GL_UNSIGNED_BYTE, data);
+		return createTexture(img.getWidth(), img.getHeight(), img.getPixelData());
 	}
 
 	/**
-	 * Uploads a sub-image within this texture.
-	 * 
-	 * @param x          the destination x offset
-	 * @param y          the destination y offset, with lower-left origin
-	 * @param width      the width of the sub image data
-	 * @param height     the height of the sub image data
-	 * @param dataFormat the format of the sub image data, e.g. GL_RGBA
-	 * @param data       the sub image data
+	 * Creates a texture with specified width, height and data.
+	 *
+	 * @param width  Width of the texture
+	 * @param height Height of the texture
+	 * @param data   Picture Data in RGBA format
+	 *
+	 * @return Texture from the specified data
 	 */
-	public void upload(int x, int y, int width, int height, int dataFormat, ByteBuffer data)
+	public static Texture createTexture(int width, int height, ByteBuffer data)
 	{
-		bind();
-		setUnpackAlignment();
-		glTexSubImage2D(getTarget(), 0, x, y, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
+		Texture texture = new Texture();
+		texture.setWidth(width);
+		texture.setHeight(height);
+
+		texture.bind();
+
+		texture.setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		texture.setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		texture.setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		texture.setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		texture.uploadData(GL_RGBA8, width, height, GL_RGBA, data);
+
+		return texture;
 	}
 
-	public void setFilter(int filter)
+	/**
+	 * Sets a parameter of the texture.
+	 *
+	 * @param name  Name of the parameter
+	 * @param value Value to set
+	 */
+	public void setParameter(int name, int value)
 	{
-		setFilter(filter, filter);
+		glTexParameteri(GL_TEXTURE_2D, name, value);
 	}
 
-	public void setFilter(int minFilter, int magFilter)
+	/**
+	 * Uploads image data with specified width and height.
+	 *
+	 * @param width  Width of the image
+	 * @param height Height of the image
+	 * @param data   Pixel data of the image
+	 */
+	public void uploadData(int width, int height, ByteBuffer data)
 	{
-		bind();
-		glTexParameteri(getTarget(), GL_TEXTURE_MIN_FILTER, minFilter);
-		glTexParameteri(getTarget(), GL_TEXTURE_MAG_FILTER, magFilter);
+		uploadData(GL_RGBA8, width, height, GL_RGBA, data);
 	}
 
-	public void setWrap(int wrap)
+	/**
+	 * Uploads image data with specified internal format, width, height and image
+	 * format.
+	 *
+	 * @param internalFormat Internal format of the image data
+	 * @param width          Width of the image
+	 * @param height         Height of the image
+	 * @param format         Format of the image data
+	 * @param data           Pixel data of the image
+	 */
+	public void uploadData(int internalFormat, int width, int height, int format, ByteBuffer data)
 	{
-		bind();
-		glTexParameteri(getTarget(), GL_TEXTURE_WRAP_S, wrap);
-		glTexParameteri(getTarget(), GL_TEXTURE_WRAP_T, wrap);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 	}
-
 
 	/**
 	 * Returns true if this texture is valid, aka it has not been disposed.
@@ -269,13 +152,39 @@ public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 	@Override
 	public int getWidth()
 	{
-		return super.getWidth();
+		return width;
+	}
+
+	/**
+	 * Sets the texture width.
+	 *
+	 * @param width The width to set
+	 */
+	public void setWidth(int width)
+	{
+		if (width > 0)
+		{
+			this.width = width;
+		}
 	}
 
 	@Override
 	public int getHeight()
 	{
-		return super.getHeight();
+		return height;
+	}
+
+	/**
+	 * Sets the texture height.
+	 *
+	 * @param height The height to set
+	 */
+	public void setHeight(int height)
+	{
+		if (height > 0)
+		{
+			this.height = height;
+		}
 	}
 
 	@Override
@@ -295,6 +204,7 @@ public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 	{
 		if (valid())
 		{
+			unbind();
 			glDeleteTextures(id);
 			id = 0;
 		}
@@ -305,14 +215,14 @@ public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 	{
 		if (!valid())
 			throw new IllegalStateException("trying to bind a texture that was disposed");
-		glBindTexture(getTarget(), id);
+		glBindTexture(GL_TEXTURE_2D, id);
 
 	}
 
 	@Override
 	public void unbind()
 	{
-		glBindTexture(getTarget(), 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 
 	}
 
@@ -320,21 +230,6 @@ public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 	public int getID()
 	{
 		return id;
-	}
-
-	public static int toPowerOfTwo(int n)
-	{
-		return 1 << (32 - Integer.numberOfLeadingZeros(n - 1));
-	}
-
-	public static boolean isPowerOfTwo(int n)
-	{
-		return (n & -n) == n;
-	}
-
-	public static boolean isNPOTSupported()
-	{
-		return GL.getCapabilities().GL_ARB_texture_non_power_of_two;
 	}
 
 }

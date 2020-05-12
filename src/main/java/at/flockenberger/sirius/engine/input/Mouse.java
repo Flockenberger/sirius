@@ -1,11 +1,19 @@
 package at.flockenberger.sirius.engine.input;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.lwjgl.glfw.GLFW;
 
 import at.flockenberger.sirius.engine.Window;
+import at.flockenberger.sirius.engine.event.MouseButtonEvent;
+import at.flockenberger.sirius.engine.event.MouseMoveEvent;
+import at.flockenberger.sirius.engine.event.MouseScrollEvent;
+import at.flockenberger.sirius.engine.event.listener.MouseButtonListener;
+import at.flockenberger.sirius.engine.event.listener.MouseMoveListener;
+import at.flockenberger.sirius.engine.event.listener.MouseScrollListener;
 import at.flockenberger.sirius.engine.graphic.Cursor;
 
 /**
@@ -26,13 +34,15 @@ import at.flockenberger.sirius.engine.graphic.Cursor;
  * 
  * @author Florian Wagner
  * @see InputDevice
+ * @see MouseButton
  */
 public class Mouse implements InputDevice
 {
 	private static double[] x;
 	private static double[] y;
 	private static double oldX;
-	
+	private static double oldY;
+
 	private static double dx;
 	private static double dy;
 
@@ -40,9 +50,11 @@ public class Mouse implements InputDevice
 	private static double deltaScrollY;
 	private static double scrollX;
 	private static double scrollY;
-	
-	
+
 	private static Map<Long, Mouse> windowCache;
+	private List<MouseScrollListener> scrollListener;
+	private List<MouseButtonListener> buttonListener;
+	private List<MouseMoveListener> moveListener;
 
 	static
 	{
@@ -69,11 +81,114 @@ public class Mouse implements InputDevice
 	}
 
 	private long id;
+
 	private Mouse(long _id)
 	{
 		this.id = _id;
 		x = new double[1];
 		y = new double[1];
+
+		scrollListener = new ArrayList<>();
+		buttonListener = new ArrayList<>();
+		moveListener = new ArrayList<>();
+
+		GLFW.glfwSetScrollCallback(id, (w, x, y) ->
+			{
+				deltaScrollX = x;
+				deltaScrollY = y;
+				scrollX += deltaScrollX;
+				scrollY += deltaScrollY;
+				for (MouseScrollListener l : scrollListener)
+					l.onScroll(new MouseScrollEvent(this, System.nanoTime(), scrollX, scrollY, x, y));
+			});
+
+		GLFW.glfwSetMouseButtonCallback(id, (w, b, a, m) ->
+			{
+				double[] x = new double[1];
+				double[] y = new double[1];
+
+				GLFW.glfwGetCursorPos(id, x, y);
+				// y[0] = CardinalUtils.map(y[0], 0, Window.getActiveWindow().getHeight(),
+				// Window.getActiveWindow().getHeight(), 0);
+
+				for (MouseButtonListener bt : buttonListener)
+					bt.onMouseButton(new MouseButtonEvent(this, System.nanoTime(), MouseButton.getFromInt(b),
+							InputState.getFromInt(a), x[0], y[0]));
+			});
+
+		GLFW.glfwSetCursorPosCallback(id, (w, x, y) ->
+			{
+				dx = oldX - x;
+				dy = oldY - y;
+
+				for (MouseMoveListener m : moveListener)
+					m.onMouseMoved(new MouseMoveEvent(this, System.nanoTime(), x, y));
+
+				oldX = x;
+				oldY = y;
+
+			});
+
+	}
+
+	/**
+	 * Adds a {@link MouseMoveListener} to this mouse.
+	 * 
+	 * @param mml the {@link MouseMoveListener} to add
+	 */
+	public void addMoveListener(MouseMoveListener mml)
+	{
+		this.moveListener.add(mml);
+	}
+
+	/**
+	 * Removes a {@link MouseMoveListener} from this mouse
+	 * 
+	 * @param mml the {@link MouseMoveListener} to remove
+	 */
+	public void removeMoveListener(MouseMoveListener mml)
+	{
+		this.moveListener.remove(mml);
+	}
+
+	/**
+	 * Adds a {@link MouseScrollListener} to this mouse
+	 * 
+	 * @param msl the {@link MouseScrollListener} to add
+	 */
+	public void addScrollListener(MouseScrollListener msl)
+	{
+		this.scrollListener.add(msl);
+	}
+
+	/**
+	 * Removes a {@link MouseScrollListener} from this mouse
+	 * 
+	 * @param msl the {@link MouseScrollListener} to remove
+	 */
+	public void removeScrollListener(MouseScrollListener msl)
+	{
+		this.scrollListener.remove(msl);
+	}
+
+	/**
+	 * Adds a {@link MouseButtonListener} to this mouse
+	 * 
+	 * @param mbl the {@link MouseButtonListener} to add
+	 */
+	public void addButtonListener(MouseButtonListener mbl)
+	{
+		this.buttonListener.add(mbl);
+	}
+
+	/**
+	 * Removes a {@link MouseButtonListener} from this mouse
+	 * 
+	 * @param mbl the {@link MouseButtonListener} to remove
+	 */
+	public void removeButtonListener(MouseButtonListener mbl)
+	{
+		this.buttonListener.remove(mbl);
 	}
 
 	/**
@@ -207,7 +322,7 @@ public class Mouse implements InputDevice
 
 	/**
 	 * @return the current y position of the mouse <br>
-	 *         0 is the bottom left corner of the window.
+	 *         0 is the top left corner of the window.
 	 */
 	public static double getY()
 	{
@@ -315,9 +430,9 @@ public class Mouse implements InputDevice
 	{
 		GLFW.glfwGetCursorPos(get().id, x, y);
 	}
-	
-private static InputState oldState = InputState.RELEASED;
-	
+
+	private static InputState oldState = InputState.RELEASED;
+
 	/**
 	 * Checks whether the the given state <code>newState</code> indicates that a
 	 * one-time click has been issued. <br>

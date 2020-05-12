@@ -1,11 +1,15 @@
 package at.flockenberger.sirius.engine.input;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.lwjgl.glfw.GLFW;
 
 import at.flockenberger.sirius.engine.Window;
+import at.flockenberger.sirius.engine.event.KeyEvent;
+import at.flockenberger.sirius.engine.event.listener.KeyListener;
 
 /**
  * <h1>Keyboard</h1><br>
@@ -57,6 +61,41 @@ public class Keyboard implements InputDevice
 	public Keyboard(long _id)
 	{
 		this.id = _id;
+		keyListener = new ArrayList<>();
+
+		GLFW.glfwSetKeyCallback(id, (w, k, s, a, m) ->
+			{
+				for (KeyListener l : keyListener)
+				{
+					l.onKey(new KeyEvent(this, System.nanoTime(), KeyCode.getFromInt(k), InputState.getFromInt(a)));
+				}
+			});
+
+	}
+
+	private static List<KeyListener> keyListener;
+
+	/**
+	 * Adds a {@link KeyListener} to this keyboard.
+	 * 
+	 * @param kl the {@link KeyListener} to add
+	 */
+	public static void addKeyListener(KeyListener kl)
+	{
+		keyListener.add(kl);
+	}
+
+	/**
+	 * Removes a {@link KeyListener} from this keyboard.
+	 * 
+	 * @param kl the {@link KeyListener} to remove
+	 */
+	/**
+	 * @param kl
+	 */
+	public static void removeKeyListener(KeyListener kl)
+	{
+		keyListener.remove(kl);
 	}
 
 	/**

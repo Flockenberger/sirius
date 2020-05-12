@@ -70,7 +70,6 @@ public class TextureRegion implements ITextureBase
 		{
 			float temp = uv.getU1();
 			uv.setU1(uv.getU2());
-			;
 			uv.setU2(temp);
 		}
 		if (y)

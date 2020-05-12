@@ -11,7 +11,8 @@ import java.nio.file.Path;
  * @author Florian Wagner
  *
  */
-public interface IImage {
+public interface IImage
+{
 	/**
 	 * @return the width of the image
 	 */
