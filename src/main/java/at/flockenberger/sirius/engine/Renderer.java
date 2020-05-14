@@ -57,7 +57,7 @@ import at.flockenberger.sirius.engine.graphic.text.SiriusFont;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
 import at.flockenberger.sirius.engine.texture.Texture;
 import at.flockenberger.sirius.engine.texture.TextureRegion;
-import at.flockenberger.sirius.utillity.SUtils;
+import at.flockenberger.sirius.utillity.logging.SLogger;
 
 public class Renderer implements IFreeable
 {
@@ -107,32 +107,24 @@ public class Renderer implements IFreeable
 		int uniModel = program.getUniformLocation("model");
 		program.setUniformMatrix(uniModel, model);
 
-		Matrix4f view = cam.getViewMatrix();
-
 		cam.recalculateMatrices(width, height);
-		Matrix4f projection = cam.getProjectionMatrix();
-		Matrix4f viewProj = view.mul(projection);
 
+		Matrix4f viewProj = cam.getViewProjectionMatrix();
 		int uniViewProj = program.getUniformLocation("projView");
 		program.setUniformMatrix(uniViewProj, viewProj);
 
 		long window = GLFW.glfwGetCurrentContext();
-
 		GLFW.glfwSetFramebufferSizeCallback(window, (id, width, height) ->
 			{
 				this.width = width;
 				this.height = height;
-				Matrix4f _view = cam.getViewMatrix();
-
 				cam.recalculateMatrices(width, height);
-				Matrix4f _projection = cam.getProjectionMatrix();
-				Matrix4f _viewProj = _view.mul(_projection);
-
 				int _uniViewProj = program.getUniformLocation("projView");
-				program.setUniformMatrix(_uniViewProj, _viewProj);
+				program.setUniformMatrix(_uniViewProj, cam.getViewProjectionMatrix());
 				glViewport(0, 0, width, height);
 
 			});
+
 		if (drawing)
 		{
 			throw new IllegalStateException("Renderer is already drawing!");
@@ -182,6 +174,7 @@ public class Renderer implements IFreeable
 
 			/* Clear vertex data for next batch */
 			vertices.clear();
+			SLogger.getSystemLogger().debug("Drawing: " + numVertices / 6 + " quads!");
 			numVertices = 0;
 		}
 	}
@@ -435,7 +428,7 @@ public class Renderer implements IFreeable
 		vbo.bind(GL_ARRAY_BUFFER);
 
 		/* Create FloatBuffer */
-		vertices = MemoryUtil.memAllocFloat(4096);
+		vertices = MemoryUtil.memAllocFloat(4096 * 2);
 
 		/* Upload null data to allocate storage for the VBO */
 		long size = vertices.capacity() * Float.BYTES;

@@ -12,6 +12,7 @@ import at.flockenberger.sirius.engine.graphic.text.SiriusFont;
 import at.flockenberger.sirius.engine.input.Mouse;
 import at.flockenberger.sirius.engine.particle.ParticleSystem;
 import at.flockenberger.sirius.engine.particle.SimpleParticleEmitter;
+import at.flockenberger.sirius.engine.postprocess.PostProcessor;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
 import at.flockenberger.sirius.engine.texture.Texture;
 import at.flockenberger.sirius.game.application.LayerBase;
@@ -24,7 +25,7 @@ public class TestLayer extends LayerBase
 	Texture fontTex;
 	Texture tiles;
 	Camera cam;
-	
+
 	SiriusFont font;
 	ParticleSystem system;
 	SimpleParticleEmitter emitter;
@@ -84,7 +85,7 @@ public class TestLayer extends LayerBase
 			float y = (float) Mouse.getY();
 			emitter.setPosition(new Vector3f(x, y, 0));
 		}
-		
+
 		cam.input();
 	}
 
@@ -98,11 +99,11 @@ public class TestLayer extends LayerBase
 	public void onRender(Renderer render, float alpha)
 	{
 		render.clear(Color.PINK);
-		
+
 		render.begin(cam);
 		system.render(render);
 		render.end();
-		
+
 		render.begin(cam);
 		tex.bind();
 		for (int i = 0; i < Window.getActiveWidth(); i += 32)
@@ -114,10 +115,16 @@ public class TestLayer extends LayerBase
 		tiles.bind();
 		render.drawTexture(tiles, 100, 100);
 		render.end();
-		
+
 		render.begin(cam);
 		render.drawText("Hello World", 10, 10, Color.BRIGHT_BLUE);
 		render.end();
+	}
+
+	@Override
+	public void onPostProcess(PostProcessor pp)
+	{
+		
 	}
 
 }

@@ -2,6 +2,7 @@ package at.flockenberger.sirius.game.application;
 
 import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.Renderer;
+import at.flockenberger.sirius.engine.postprocess.PostProcessor;
 
 /**
  * <h1>LayerBase</h1><br>
@@ -65,4 +66,12 @@ public abstract class LayerBase implements IFreeable
 	 */
 	public abstract void onRender(Renderer render, float alpha);
 
+	/**
+	 * Called after rendering is complete to add and carry out any post processing
+	 * filters. <br>
+	 * The filters have to be managed by the layer.
+	 * 
+	 * @param pp the renderer's {@link PostProcessor}
+	 */
+	public abstract void onPostProcess(PostProcessor pp);
 }

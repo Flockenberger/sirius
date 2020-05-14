@@ -39,14 +39,16 @@ public abstract class Game extends AbstractGame
 				timer.updateUPS();
 				accumulator -= interval;
 			}
-			
+
 			/* Calculate alpha value for interpolation */
 			alpha = accumulator / interval;
-			
-			/* Render game and update timer FPS */
+
 			render(alpha);
-			timer.updateFPS();
 			
+			applyPostProcessing(postProcessor);
+
+			timer.updateFPS();
+
 			/* Update timer */
 			timer.update();
 			renderer.begin(DEFAULT_CAM);
@@ -54,7 +56,7 @@ public abstract class Game extends AbstractGame
 			renderer.end();
 			/* Update window to show the new screen */
 			window.update();
-			
+
 			/* Synchronize if v-sync is disabled */
 			if (!window.isVSyncEnabled())
 			{

@@ -103,6 +103,18 @@ public class Window implements IFreeable
 		return size;
 	}
 
+	public static int[] getActiveFrameBufferSize()
+	{
+		long _id = GLFW.glfwGetCurrentContext();
+		int[] width = new int[1];
+		int[] height = new int[1];
+		GLFW.glfwGetFramebufferSize(_id, width, height);
+		int[] size = new int[2];
+		size[0] = width[0];
+		size[1] = height[0];
+		return size;
+	}
+
 	public static double getTime()
 	{
 		return (GLFW.glfwGetTime() * 1000) / GLFW.glfwGetTimerFrequency();
@@ -194,7 +206,7 @@ public class Window implements IFreeable
 		GLFW.glfwDefaultWindowHints(); // optional, the current window hints are already the default
 
 		GLFW.glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		GLFW.glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+		GLFW.glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will be resizable
 		GLFW.glfwWindowHint(GLFW_SAMPLES, 8);
 
 		long monitor = NULL;

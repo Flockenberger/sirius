@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import at.flockenberger.sirius.engine.Renderer;
+import at.flockenberger.sirius.engine.postprocess.PostProcessor;
 import at.flockenberger.sirius.utillity.SUtils;
 
 /**
@@ -168,6 +169,12 @@ public class LayerStack extends LayerBase
 	public void onRender(Renderer render, float alpha)
 	{
 		currentLayer.onRender(render, alpha);
+	}
+
+	@Override
+	public void onPostProcess(PostProcessor pp)
+	{
+		
 	}
 
 }

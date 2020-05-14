@@ -1,6 +1,7 @@
 package at.flockenberger.sirius.game.application;
 
 import at.flockenberger.sirius.engine.Renderer;
+import at.flockenberger.sirius.engine.postprocess.PostProcessor;
 
 /**
  * </h1>DefaultLayer</h1><br>
@@ -65,6 +66,12 @@ public class DefaultLayer extends LayerBase
 	public void onRender(Renderer render, float alpha)
 	{
 
+	}
+
+	@Override
+	public void onPostProcess(PostProcessor pp)
+	{
+		
 	}
 
 }

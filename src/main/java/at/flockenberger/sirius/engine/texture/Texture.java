@@ -26,6 +26,8 @@ import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 
 import java.nio.ByteBuffer;
 
+import org.lwjgl.BufferUtils;
+
 import at.flockenberger.sirius.engine.IBindable;
 import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.graphic.Image;
@@ -99,6 +101,12 @@ public class Texture implements ITextureBase, IBindable, IFreeable
 		texture.uploadData(GL_RGBA8, width, height, GL_RGBA, data);
 
 		return texture;
+	}
+
+	public static Texture createTexture(int i, int j)
+	{
+		ByteBuffer buffer = BufferUtils.createByteBuffer(i * j);
+		return createTexture(i, j, buffer);
 	}
 
 	/**

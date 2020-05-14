@@ -7,6 +7,7 @@ import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.Window;
 import at.flockenberger.sirius.engine.graphic.Icon;
+import at.flockenberger.sirius.engine.postprocess.PostProcessor;
 import at.flockenberger.sirius.utillity.Timer;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
@@ -42,7 +43,8 @@ public abstract class AbstractGame implements IFreeable
 	protected Icon icon;
 
 	private SLogger logger = SLogger.getSystemLogger();
-
+	
+	protected PostProcessor postProcessor;
 	/**
 	 * Default constructor for the game.
 	 */
@@ -52,7 +54,8 @@ public abstract class AbstractGame implements IFreeable
 		renderer = new Renderer();
 		layers = new LayerStack();
 		window = new Window(width, height, title);
-
+		postProcessor = new PostProcessor();
+		
 		// load resources
 		loadGameResources();
 	}
@@ -79,6 +82,7 @@ public abstract class AbstractGame implements IFreeable
 		renderer.free();
 		window.free();
 		layers.free();
+		postProcessor.free();
 		logger.debug("Freeing game resources.");
 	}
 
@@ -93,6 +97,7 @@ public abstract class AbstractGame implements IFreeable
 		timer.init();
 		renderer.init();
 		initGame(layers);
+		postProcessor.init();
 		running = true;
 		logger.debug("Initialization done!");
 	}
@@ -119,8 +124,8 @@ public abstract class AbstractGame implements IFreeable
 	 * Called as the very first method to load all game-resouces.
 	 */
 	public abstract void loadGameResources();
-
-	/**
+	
+	/**	
 	 * Sets the game to windowed fullscreen-mode.<br>
 	 * Note: This method needs to be called before the {@link #start()} method to
 	 * work
@@ -155,7 +160,11 @@ public abstract class AbstractGame implements IFreeable
 	{
 		layers.onUpdate();
 	}
-
+	
+	
+	public void applyPostProcessing(PostProcessor pp) {
+		layers.onPostProcess(pp);
+	}
 	/**
 	 * Updates the game (variable timestep).
 	 *

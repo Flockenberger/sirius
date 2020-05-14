@@ -1,8 +1,6 @@
 package at.flockenberger.sirius.engine;
 
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import at.flockenberger.sirius.ICamera;
 import at.flockenberger.sirius.engine.input.KeyCode;
@@ -14,14 +12,14 @@ public class Camera extends Entity implements ICamera
 {
 	private Matrix4f projection;
 	private Matrix4f view;
-	Vector3f forward = new Vector3f();
-	Matrix3f normal = new Matrix3f();
+	private Matrix4f viewProj;
 
 	public Camera()
 	{
 		super();
 		projection = new Matrix4f();
 		view = new Matrix4f();
+		viewProj = new Matrix4f();
 	}
 
 	@Override
@@ -35,6 +33,15 @@ public class Camera extends Entity implements ICamera
 	{
 		updateViewMatrix();
 		return view;
+	}
+
+	@Override
+	public Matrix4f getViewProjectionMatrix()
+	{
+		updateViewMatrix();
+		viewProj.identity();
+		view.mul(projection, viewProj);
+		return viewProj;
 	}
 
 	public void recalculateMatrices(int width, int height)
@@ -62,25 +69,25 @@ public class Camera extends Entity implements ICamera
 	public void input()
 	{
 		float mul = 1;
-		if(Keyboard.isShiftDown())
+		if (Keyboard.isShiftDown())
 			mul = 10;
 		if (Keyboard.isKeyPressed(KeyCode.W))
 		{
-			position.y += mul*1;
+			position.y += mul * 1;
 		}
 		if (Keyboard.isKeyPressed(KeyCode.A))
 		{
-			position.x -= mul*1;
+			position.x -= mul * 1;
 
 		}
 		if (Keyboard.isKeyPressed(KeyCode.S))
 		{
-			position.y -= mul*1;
+			position.y -= mul * 1;
 
 		}
 		if (Keyboard.isKeyPressed(KeyCode.D))
 		{
-			position.x += mul*1;
+			position.x += mul * 1;
 
 		}
 

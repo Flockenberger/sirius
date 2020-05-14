@@ -78,6 +78,11 @@ public class FBO implements ITextureBase, IBindable, IFreeable
 		this(texture, false);
 	}
 
+	public FBO()
+	{
+		this(Texture.createTexture(Window.getActiveFrameBufferSize()[0], Window.getActiveFrameBufferSize()[1]), true);
+	}
+
 	@Override
 	public void bind()
 	{
