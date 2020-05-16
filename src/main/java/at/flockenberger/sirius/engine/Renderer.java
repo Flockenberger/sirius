@@ -33,7 +33,6 @@ import static org.lwjgl.opengl.GL11.glBlendFunc;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 
@@ -47,23 +46,24 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import at.flockenberger.sirius.engine.gl.VertexArrayObject;
-import at.flockenberger.sirius.engine.gl.VertexBufferObject;
+import at.flockenberger.sirius.engine.allocate.Allocateable;
+import at.flockenberger.sirius.engine.gl.VAO;
+import at.flockenberger.sirius.engine.gl.VBO;
 import at.flockenberger.sirius.engine.gl.shader.FragmentShader;
 import at.flockenberger.sirius.engine.gl.shader.ShaderProgram;
 import at.flockenberger.sirius.engine.gl.shader.VertexShader;
 import at.flockenberger.sirius.engine.graphic.Color;
+import at.flockenberger.sirius.engine.graphic.Sprite;
 import at.flockenberger.sirius.engine.graphic.text.SiriusFont;
+import at.flockenberger.sirius.engine.graphic.texture.Texture;
+import at.flockenberger.sirius.engine.graphic.texture.TextureRegion;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
-import at.flockenberger.sirius.engine.texture.Texture;
-import at.flockenberger.sirius.engine.texture.TextureRegion;
-import at.flockenberger.sirius.utillity.logging.SLogger;
 
-public class Renderer implements IFreeable
+public class Renderer extends Allocateable
 {
 
-	private VertexArrayObject vao;
-	private VertexBufferObject vbo;
+	private VAO vao;
+	private VBO vbo;
 	private ShaderProgram program;
 
 	private FloatBuffer vertices;
@@ -71,8 +71,18 @@ public class Renderer implements IFreeable
 	private boolean drawing;
 	private int width;
 	private int height;
+	private Texture curTex;
 
 	private SiriusFont font;
+	/* Texture coordinates */
+	private float s1 = 0f;
+	private float t1 = 1f;
+
+	private float s2 = 1f;
+	private float t2 = 0f;
+	private Color WHITE = Color.WHITE;
+
+	private float r, g, b, a;
 
 	/** Initializes the renderer. */
 	public void init()
@@ -96,34 +106,28 @@ public class Renderer implements IFreeable
 		GL11.glClearColor(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
 	}
 
+	public void updateMatrix(Camera cam)
+	{
+		cam.recalculateMatrices(width, height);
+		program.setUniformMatrix(program.getUniformLocation("projView"), cam.getViewProjectionMatrix());
+	}
+
 	/**
 	 * Begin rendering.
 	 */
-	public void begin(Camera cam)
+	public void begin()
 	{
 
-		Matrix4f model = new Matrix4f();
-		model.identity();
-		int uniModel = program.getUniformLocation("model");
-		program.setUniformMatrix(uniModel, model);
-
-		cam.recalculateMatrices(width, height);
-
-		Matrix4f viewProj = cam.getViewProjectionMatrix();
-		int uniViewProj = program.getUniformLocation("projView");
-		program.setUniformMatrix(uniViewProj, viewProj);
-
-		long window = GLFW.glfwGetCurrentContext();
-		GLFW.glfwSetFramebufferSizeCallback(window, (id, width, height) ->
-			{
-				this.width = width;
-				this.height = height;
-				cam.recalculateMatrices(width, height);
-				int _uniViewProj = program.getUniformLocation("projView");
-				program.setUniformMatrix(_uniViewProj, cam.getViewProjectionMatrix());
-				glViewport(0, 0, width, height);
-
-			});
+		/*
+		 * long window = GLFW.glfwGetCurrentContext();
+		 * GLFW.glfwSetFramebufferSizeCallback(window, (id, width, height) -> {
+		 * this.width = width; this.height = height; cam.recalculateMatrices(width,
+		 * height); int _uniViewProj = program.getUniformLocation("projView");
+		 * program.setUniformMatrix(_uniViewProj, cam.getViewProjectionMatrix());
+		 * glViewport(0, 0, width, height);
+		 * 
+		 * });
+		 */
 
 		if (drawing)
 		{
@@ -144,6 +148,17 @@ public class Renderer implements IFreeable
 		}
 		drawing = false;
 		flush();
+	}
+
+	private void switchTexture(Texture texture)
+	{
+		if (curTex != texture)
+		{
+			flush();
+			curTex = texture;
+			if (curTex != null)
+				curTex.bind();
+		}
 	}
 
 	/**
@@ -174,7 +189,7 @@ public class Renderer implements IFreeable
 
 			/* Clear vertex data for next batch */
 			vertices.clear();
-			SLogger.getSystemLogger().debug("Drawing: " + numVertices / 6 + " quads!");
+			// SLogger.getSystemLogger().debug("Drawing: " + numVertices / 6 + " quads!");
 			numVertices = 0;
 		}
 	}
@@ -188,7 +203,7 @@ public class Renderer implements IFreeable
 	 */
 	public void drawTexture(Texture texture, float x, float y)
 	{
-		drawTexture(texture, x, y, Color.WHITE);
+		drawTexture(texture, x, y, WHITE);
 	}
 
 	/**
@@ -203,36 +218,22 @@ public class Renderer implements IFreeable
 	public void drawTexture(Texture texture, float x, float y, Color c)
 	{
 		/* Vertex positions */
-		float x1 = x;
-		float y1 = y;
-		float x2 = x1 + texture.getWidth();
-		float y2 = y1 + texture.getHeight();
+		s1 = 0f;
+		t1 = 1f;
 
-		/* Texture coordinates */
-		float s1 = 0f;
-		float t1 = 1f;
-
-		float s2 = 1f;
-		float t2 = 0f;
-
-		drawTextureRegion(x1, y1, x2, y2, s1, t1, s2, t2, c);
+		s2 = 1f;
+		t2 = 0f;
+		switchTexture(texture);
+		drawTextureRegion(x, y, x + texture.getWidth(), y + texture.getHeight(), s1, t1, s2, t2, c);
 	}
 
 	public void drawColor(float x, float y, float sizeX, float sizeY, Color c)
 	{
-		float x1 = x;
-		float y1 = y;
-		float x2 = x1 + sizeX;
-		float y2 = y1 + sizeY;
 
-		/* Texture coordinates */
-		float s1 = 0f;
-		float t1 = 1f;
+		if (curTex != null)
+			curTex.unbind();
 
-		float s2 = 1f;
-		float t2 = 0f;
-
-		drawTextureRegion(x1, y1, x2, y2, s1, t1, s2, t2, c);
+		drawTextureRegion(x, y, x + sizeX, y + sizeY, s1, t1, s2, t2, c);
 	}
 
 	/**
@@ -250,13 +251,14 @@ public class Renderer implements IFreeable
 	public void drawTextureRegion(Texture texture, float x, float y, float regX, float regY, float regWidth,
 			float regHeight)
 	{
-		drawTextureRegion(texture, x, y, regX, regY, regWidth, regHeight, Color.WHITE);
+		drawTextureRegion(texture, x, y, regX, regY, regWidth, regHeight, WHITE);
 	}
 
 	public void drawTextureRegion(TextureRegion region, float x, float y)
 	{
 		drawTextureRegion(region.getTexture(), x, y, region.getRegionX(), region.getRegionY(), region.getWidth(),
 				region.getHeight());
+
 	}
 
 	/**
@@ -275,18 +277,15 @@ public class Renderer implements IFreeable
 	public void drawTextureRegion(Texture texture, float x, float y, float regX, float regY, float regWidth,
 			float regHeight, Color c)
 	{
-		/* Vertex positions */
-		float x1 = x;
-		float y1 = y;
-		float x2 = x + regWidth;
-		float y2 = y + regHeight;
 
 		/* Texture coordinates */
-		float s1 = regX / texture.getWidth();
-		float t1 = (regY + regHeight) / texture.getHeight();
-		float s2 = (regX + regWidth) / texture.getWidth();
-		float t2 = regY / texture.getHeight();
-		drawTextureRegion(x1, y1, x2, y2, s1, t1, s2, t2, c);
+		s1 = regX / texture.getWidth();
+		t1 = (regY + regHeight) / texture.getHeight();
+		s2 = (regX + regWidth) / texture.getWidth();
+		t2 = regY / texture.getHeight();
+		switchTexture(texture);
+
+		drawTextureRegion(x, y, x + regWidth, y + regWidth, s1, t1, s2, t2, c);
 	}
 
 	/**
@@ -304,7 +303,7 @@ public class Renderer implements IFreeable
 	 */
 	public void drawTextureRegion(float x1, float y1, float x2, float y2, float s1, float t1, float s2, float t2)
 	{
-		drawTextureRegion(x1, y1, x2, y2, s1, t1, s2, t2, Color.WHITE);
+		drawTextureRegion(x1, y1, x2, y2, s1, t1, s2, t2, WHITE);
 	}
 
 	/**
@@ -375,26 +374,49 @@ public class Renderer implements IFreeable
 	{
 		if (vertices.remaining() < 7 * 6)
 		{
-			/* We need more space in the buffer, so flush it */
 			flush();
 		}
 
-		float r = c.getRed();
-		float g = c.getGreen();
-		float b = c.getBlue();
-		float a = c.getAlpha();
+		r = c.getRed();
+		g = c.getGreen();
+		b = c.getBlue();
+
+		a = c.getAlpha();
 
 		vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(s1).put(t1);
-
 		vertices.put(x1).put(y2).put(r).put(g).put(b).put(a).put(s1).put(t2);
-
 		vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(s2).put(t2);
-
 		vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(s1).put(t1);
 		vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(s2).put(t2);
 		vertices.put(x2).put(y1).put(r).put(g).put(b).put(a).put(s2).put(t1);
 
 		numVertices += 6;
+	}
+
+	public void draw(Texture texture, float[] v, int offset, int count)
+	{
+		if (!drawing)
+			throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+
+		if (vertices.remaining() < 7 * 6)
+		{
+			flush();
+		}
+
+		vertices.put(v[Sprite.X1]).put(v[Sprite.Y1]).put(v[Sprite.C1]).put(v[Sprite.C2]).put(v[Sprite.C3])
+				.put(v[Sprite.C4]).put(v[Sprite.U1]).put(v[Sprite.V1]);
+
+		vertices.put(v[Sprite.X2]).put(v[Sprite.Y2]).put(v[Sprite.C1]).put(v[Sprite.C2]).put(v[Sprite.C3])
+				.put(v[Sprite.C4]).put(v[Sprite.U2]).put(v[Sprite.V2]);
+
+		vertices.put(v[Sprite.X3]).put(v[Sprite.Y3]).put(v[Sprite.C1]).put(v[Sprite.C2]).put(v[Sprite.C3])
+				.put(v[Sprite.C4]).put(v[Sprite.U3]).put(v[Sprite.V3]);
+
+		vertices.put(v[Sprite.X4]).put(v[Sprite.Y4]).put(v[Sprite.C1]).put(v[Sprite.C2]).put(v[Sprite.C3])
+				.put(v[Sprite.C4]).put(v[Sprite.U4]).put(v[Sprite.V4]);
+
+		numVertices += 4;
+
 	}
 
 	/**
@@ -406,7 +428,7 @@ public class Renderer implements IFreeable
 
 		if (vao != null)
 		{
-			vao.delete();
+			vao.free();
 		}
 		vbo.free();
 		program.free();
@@ -420,11 +442,11 @@ public class Renderer implements IFreeable
 	{
 
 		/* Generate Vertex Array Object */
-		vao = new VertexArrayObject();
+		vao = new VAO();
 		vao.bind();
 
 		/* Generate Vertex Buffer Object */
-		vbo = new VertexBufferObject();
+		vbo = new VBO();
 		vbo.bind(GL_ARRAY_BUFFER);
 
 		/* Create FloatBuffer */
@@ -476,6 +498,12 @@ public class Renderer implements IFreeable
 		/* Set texture uniform */
 		int uniTex = program.getUniformLocation("texImage");
 		program.setUniform(uniTex, 0);
+
+		Matrix4f model = new Matrix4f();
+
+		model.identity();
+		int uniModel = program.getUniformLocation("model");
+		program.setUniformMatrix(uniModel, model);
 
 		/*
 		 * Matrix4f view = new Matrix4f(); view.identity(); int uniView =

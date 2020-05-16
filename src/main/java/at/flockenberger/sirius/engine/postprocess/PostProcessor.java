@@ -3,7 +3,9 @@ package at.flockenberger.sirius.engine.postprocess;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostProcessor implements PostProcessingPipeline
+import at.flockenberger.sirius.engine.allocate.Allocateable;
+
+public class PostProcessor extends Allocateable implements PostProcessingPipeline
 {
 
 	public List<PostProcessingFilter> filterList;

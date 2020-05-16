@@ -38,6 +38,20 @@ public class Timer implements IInitializable
 	 */
 	private int upsCount;
 
+	private static Timer sysTimer;
+
+	public static Timer getTimer()
+	{
+		if (sysTimer == null)
+			sysTimer = new Timer();
+		return sysTimer;
+	}
+
+	private Timer()
+	{
+
+	}
+
 	@Override
 	public void init()
 	{

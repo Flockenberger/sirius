@@ -6,10 +6,11 @@ import java.util.List;
 
 import org.magicwerk.brownies.collections.BigList;
 
+import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.graphic.Image;
-import at.flockenberger.sirius.engine.texture.Texture;
+import at.flockenberger.sirius.engine.graphic.texture.Texture;
 
 /**
  * <h1>ParticleSystem</h1><br>
@@ -17,7 +18,7 @@ import at.flockenberger.sirius.engine.texture.Texture;
  * @author Florian Wagner
  *
  */
-public class ParticleSystem
+public class ParticleSystem implements IFreeable
 {
 	// we use a big list here for performance.
 	private List<Particle> particles;
@@ -173,6 +174,14 @@ public class ParticleSystem
 			render.drawTexture(tex, p.getPosition().x, p.getPosition().y);
 		}
 
+	}
+
+	@Override
+	public void free()
+	{
+		particles.clear();
+		emitters.clear();
+		modifiers.clear();
 	}
 
 }

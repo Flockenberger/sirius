@@ -2,9 +2,9 @@ package at.flockenberger.sirius.engine;
 
 import org.joml.Matrix4f;
 
-import at.flockenberger.sirius.ICamera;
 import at.flockenberger.sirius.engine.input.KeyCode;
 import at.flockenberger.sirius.engine.input.Keyboard;
+import at.flockenberger.sirius.engine.input.Mouse;
 import at.flockenberger.sirius.game.Entity;
 import at.flockenberger.sirius.utillity.SUtils;
 
@@ -77,7 +77,7 @@ public class Camera extends Entity implements ICamera
 		}
 		if (Keyboard.isKeyPressed(KeyCode.A))
 		{
-			position.x -= mul * 1;
+			position.x += mul * 1;
 
 		}
 		if (Keyboard.isKeyPressed(KeyCode.S))
@@ -87,7 +87,7 @@ public class Camera extends Entity implements ICamera
 		}
 		if (Keyboard.isKeyPressed(KeyCode.D))
 		{
-			position.x += mul * 1;
+			position.x -= mul * 1;
 
 		}
 

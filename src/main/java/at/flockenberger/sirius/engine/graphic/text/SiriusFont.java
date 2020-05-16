@@ -22,7 +22,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.graphic.Color;
-import at.flockenberger.sirius.engine.texture.Texture;
+import at.flockenberger.sirius.engine.graphic.texture.Texture;
 
 public class SiriusFont
 {

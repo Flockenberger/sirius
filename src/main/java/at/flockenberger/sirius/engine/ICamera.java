@@ -1,4 +1,4 @@
-package at.flockenberger.sirius;
+package at.flockenberger.sirius.engine;
 
 import org.joml.Matrix4f;
 

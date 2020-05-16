@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.engine.texture;
+package at.flockenberger.sirius.engine.graphic.texture;
 
 import static org.lwjgl.opengl.GL11.GL_CLAMP;
 import static org.lwjgl.opengl.GL11.GL_LINEAR;
@@ -32,7 +32,7 @@ import at.flockenberger.sirius.engine.IBindable;
 import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.graphic.Image;
 
-public class Texture implements ITextureBase, IBindable, IFreeable
+public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 {
 
 	private int id;
@@ -50,17 +50,8 @@ public class Texture implements ITextureBase, IBindable, IFreeable
 	public static final int DEFAULT_FILTER = NEAREST;
 	public static final int DEFAULT_WRAP = REPEAT;
 
-	/**
-	 * Width of the texture.
-	 */
-	private int width;
-	/**
-	 * Height of the texture.
-	 */
-	private int height;
-
 	/** Creates a texture. */
-	public Texture()
+	private Texture()
 	{
 		id = glGenTextures();
 	}
@@ -90,7 +81,8 @@ public class Texture implements ITextureBase, IBindable, IFreeable
 		Texture texture = new Texture();
 		texture.setWidth(width);
 		texture.setHeight(height);
-
+		texture.data = data;
+		
 		texture.bind();
 
 		texture.setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);

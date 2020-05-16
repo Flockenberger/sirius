@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import at.flockenberger.sirius.engine.Renderer;
+import at.flockenberger.sirius.engine.allocate.Allocateable;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
 import at.flockenberger.sirius.utillity.SUtils;
+import at.flockenberger.sirius.utillity.Timer;
 
 /**
  * <h1>LayerStack</h1><br>
@@ -21,7 +23,7 @@ import at.flockenberger.sirius.utillity.SUtils;
  * @author Florian Wagner
  *
  */
-public class LayerStack extends LayerBase
+public class LayerStack extends Allocateable
 {
 	/**
 	 * A {@link Map} of layers that can be accessed using a {@link String}
@@ -38,10 +40,15 @@ public class LayerStack extends LayerBase
 	 */
 	public LayerStack()
 	{
-		super("_");
 		layers = new HashMap<>();
+		
+	}
+
+	public void init()
+	{
 		defLayer = new DefaultLayer("default");
 		addLayerActive(defLayer);
+
 	}
 
 	/**
@@ -129,52 +136,44 @@ public class LayerStack extends LayerBase
 		}
 	}
 
-	@Override
 	public void attach()
 	{
 		currentLayer.attach();
 	}
 
-	@Override
 	public void detach()
 	{
 		currentLayer.detach();
 	}
 
-	@Override
 	public void onUpdate(float ft)
 	{
 		currentLayer.onUpdate(ft);
 	}
 
-	@Override
 	public void onUpdate()
 	{
 		currentLayer.onUpdate();
 	}
 
-	@Override
 	public void onInput()
 	{
 		currentLayer.onInput();
 	}
 
-	@Override
 	public void onRender(Renderer render)
 	{
 		currentLayer.onRender(render);
 	}
 
-	@Override
 	public void onRender(Renderer render, float alpha)
 	{
 		currentLayer.onRender(render, alpha);
 	}
 
-	@Override
 	public void onPostProcess(PostProcessor pp)
 	{
-		
+
 	}
 
 }

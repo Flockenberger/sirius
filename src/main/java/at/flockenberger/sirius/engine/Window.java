@@ -6,7 +6,6 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_SAMPLES;
-import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
 import static org.lwjgl.glfw.GLFW.glfwInit;
@@ -31,11 +30,6 @@ import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
-import at.flockenberger.sirius.engine.event.WindowCloseEvent;
-import at.flockenberger.sirius.engine.event.WindowContentScaleEvent;
-import at.flockenberger.sirius.engine.event.WindowFrameBufferSizeEvent;
-import at.flockenberger.sirius.engine.event.WindowPositionEvent;
-import at.flockenberger.sirius.engine.event.WindowSizeEvent;
 import at.flockenberger.sirius.engine.event.listener.WindowCloseListener;
 import at.flockenberger.sirius.engine.event.listener.WindowContentScaleListener;
 import at.flockenberger.sirius.engine.event.listener.WindowFramebufferSizeListener;
@@ -114,7 +108,12 @@ public class Window implements IFreeable
 		size[1] = height[0];
 		return size;
 	}
-
+	
+	
+	public static void setActiveWindowIcon(Icon icon) {
+		long _id = GLFW.glfwGetCurrentContext();
+		GLFW.glfwSetWindowIcon(_id, icon.getIcon());
+	}
 	public static double getTime()
 	{
 		return (GLFW.glfwGetTime() * 1000) / GLFW.glfwGetTimerFrequency();

@@ -3,6 +3,7 @@ package at.flockenberger.sirius.game.application;
 import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
+import at.flockenberger.sirius.utillity.Timer;
 
 /**
  * <h1>LayerBase</h1><br>

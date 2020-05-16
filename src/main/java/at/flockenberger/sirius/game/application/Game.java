@@ -42,16 +42,20 @@ public abstract class Game extends AbstractGame
 
 			/* Calculate alpha value for interpolation */
 			alpha = accumulator / interval;
-
+			//fbo.bind();
 			render(alpha);
 			
 			applyPostProcessing(postProcessor);
-
+			//fbo.unbind();
+			
+			//drawFBO();
+			
 			timer.updateFPS();
 
 			/* Update timer */
 			timer.update();
-			renderer.begin(DEFAULT_CAM);
+			renderer.updateMatrix(DEFAULT_CAM);
+			renderer.begin();
 			renderer.drawText(String.valueOf(timer.getFPS()), 0, 0, Color.BLACK);
 			renderer.end();
 			/* Update window to show the new screen */

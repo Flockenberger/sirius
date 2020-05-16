@@ -1,8 +1,15 @@
 package at.flockenberger.sirius.engine.gl;
 
+import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferSubData;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import static org.lwjgl.opengl.GL15.*;
+
+import org.lwjgl.opengl.GL15;
 
 /**
  * <h1>VertexBufferObject</h1><br>
@@ -11,19 +18,24 @@ import static org.lwjgl.opengl.GL15.*;
  * @author Florian Wagner
  *
  */
-public class VertexBufferObject
+public class VBO extends GLObject
 {
-	/**
-	 * Stores the handle of the VBO.
-	 */
-	private final int id;
 
 	/**
 	 * Creates a Vertex Buffer Object (VBO).
 	 */
-	public VertexBufferObject()
+	public VBO()
 	{
 		id = glGenBuffers();
+	}
+
+	/**
+	 * Deletes this VBO.
+	 */
+	@Override
+	public void free()
+	{
+		glDeleteBuffers(id);
 	}
 
 	/**
@@ -34,6 +46,18 @@ public class VertexBufferObject
 	public void bind(int target)
 	{
 		glBindBuffer(target, id);
+	}
+
+	@Override
+	public void bind()
+	{
+		bind(GL15.GL_ARRAY_BUFFER);
+	}
+
+	@Override
+	public void unbind()
+	{
+
 	}
 
 	/**
@@ -85,18 +109,11 @@ public class VertexBufferObject
 	}
 
 	/**
-	 * Deletes this VBO.
-	 */
-	public void free()
-	{
-		glDeleteBuffers(id);
-	}
-
-	/**
 	 * Getter for the Vertex Buffer Object ID.
 	 *
 	 * @return Handle of the VBO
 	 */
+	@Override
 	public int getID()
 	{
 		return id;

@@ -22,7 +22,7 @@ public class TestGame extends Game
 	{
 		SLogger.getSystemLogger().enableDebugOutput();
 		SLogger.getSystemLogger().suppressWarnings();
-		
+
 		Game game = new TestGame(800, 600, "Sirius Game");
 
 		// this only works because loadGameResources is called in the

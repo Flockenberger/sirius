@@ -38,17 +38,17 @@ public class Image implements IImage, Serializable, Cloneable, IFreeable
 	 * The width of this image.<br>
 	 * If no image was loaded a default of -1 will be assigned.
 	 */
-	private int width = -1;
+	protected int width = -1;
 	/**
 	 * The height of this image.<br>
 	 * If no image was loaded a default of -1 will be assigned.
 	 */
-	private int height = -1;
+	protected int height = -1;
 
 	/**
 	 * The raw pixel data of this image.
 	 */
-	private ByteBuffer data;
+	protected ByteBuffer data;
 
 	/**
 	 * Writes this image to the given {@link Path} <code> out </code> in the given

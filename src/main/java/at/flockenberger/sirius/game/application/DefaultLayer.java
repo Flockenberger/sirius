@@ -2,6 +2,7 @@ package at.flockenberger.sirius.game.application;
 
 import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
+import at.flockenberger.sirius.utillity.Timer;
 
 /**
  * </h1>DefaultLayer</h1><br>

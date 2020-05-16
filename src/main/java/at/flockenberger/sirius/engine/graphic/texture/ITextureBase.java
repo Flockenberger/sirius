@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.engine.texture;
+package at.flockenberger.sirius.engine.graphic.texture;
 
 /**
  * <h1>ITextureBase</1h><br>

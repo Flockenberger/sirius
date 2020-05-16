@@ -15,12 +15,10 @@ import static org.lwjgl.opengl.GL30.glDeleteFramebuffers;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
-import at.flockenberger.sirius.engine.IBindable;
-import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.Window;
-import at.flockenberger.sirius.engine.texture.ITextureBase;
-import at.flockenberger.sirius.engine.texture.Texture;
-import at.flockenberger.sirius.engine.texture.UV;
+import at.flockenberger.sirius.engine.graphic.texture.ITextureBase;
+import at.flockenberger.sirius.engine.graphic.texture.Texture;
+import at.flockenberger.sirius.engine.graphic.texture.UV;
 import at.flockenberger.sirius.utillity.exceptions.SiriusException;
 
 /**
@@ -30,7 +28,7 @@ import at.flockenberger.sirius.utillity.exceptions.SiriusException;
  * @author Florian Wagner
  *
  */
-public class FBO implements ITextureBase, IBindable, IFreeable
+public class FBO extends GLObject implements ITextureBase
 {
 
 	public static boolean isSupported()
@@ -39,7 +37,6 @@ public class FBO implements ITextureBase, IBindable, IFreeable
 	}
 
 	/** The ID of the FBO in use */
-	protected int id;
 	protected Texture texture;
 	protected boolean ownsTexture;
 	protected UV uv = new UV(0, 1, 1, 0);
