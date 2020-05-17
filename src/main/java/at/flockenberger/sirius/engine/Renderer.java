@@ -58,7 +58,6 @@ import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.graphic.texture.TextureRegion;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
 import at.flockenberger.sirius.utillity.SUtils;
-import at.flockenberger.sirius.utillity.Timer;
 
 public class Renderer extends Allocateable
 {
@@ -68,6 +67,7 @@ public class Renderer extends Allocateable
 
 	private ShaderProgram program;
 	private FloatBuffer vertices;
+	private boolean quad;
 
 	private int numVertices;
 	private boolean drawing;
@@ -191,6 +191,7 @@ public class Renderer extends Allocateable
 			vbo.uploadSubData(GL_ARRAY_BUFFER, 0, vertices);
 
 			/* Draw batch */
+
 			glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
 			/* Clear vertex data for next batch */
@@ -394,6 +395,161 @@ public class Renderer extends Allocateable
 		vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(s1).put(t1);
 		vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(s2).put(t2);
 		vertices.put(x2).put(y1).put(r).put(g).put(b).put(a).put(s2).put(t1);
+
+		numVertices += 6;
+	}
+
+	public void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation, Color c)
+	{
+		draw(region.getTexture(), x, y, originX, originY, width, height, scaleX, scaleY, rotation, c);
+	}
+
+	public void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation)
+	{
+		draw(region.getTexture(), x, y, originX, originY, width, height, scaleX, scaleY, rotation, WHITE);
+	}
+
+	public void draw(Texture region, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation)
+	{
+		draw(region, x, y, originX, originY, width, height, scaleX, scaleY, rotation, WHITE);
+	}
+
+	public void draw(Texture region, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation, Color c)
+	{
+		if (!drawing)
+			throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
+
+		switchTexture(region);
+		if (vertices.remaining() < 7 * 6)
+		{
+			flush();
+		}
+
+		r = c.getRed();
+		g = c.getGreen();
+		b = c.getBlue();
+		a = c.getAlpha();
+		// bottom left and top right corner points relative to origin
+		final float worldOriginX = x + originX;
+		final float worldOriginY = y + originY;
+		float fx = -originX;
+		float fy = -originY;
+		float fx2 = width - originX;
+		float fy2 = height - originY;
+
+		// scale
+		if (scaleX != 1 || scaleY != 1)
+		{
+			fx *= scaleX;
+			fy *= scaleY;
+			fx2 *= scaleX;
+			fy2 *= scaleY;
+		}
+
+		// construct corner points, start from top left and go counter clockwise
+		final float p1x = fx;
+		final float p1y = fy;
+		final float p2x = fx;
+		final float p2y = fy2;
+		final float p3x = fx2;
+		final float p3y = fy2;
+		final float p4x = fx2;
+		final float p4y = fy;
+
+		float x1;
+		float y1;
+		float x2;
+		float y2;
+		float x3;
+		float y3;
+		float x4;
+		float y4;
+
+		// rotate
+		if (rotation != 0)
+		{
+			final float cos = (float) Math.cos(SUtils.degToRad(rotation));
+			final float sin = (float) Math.sin(SUtils.degToRad(rotation));
+
+			x1 = cos * p1x - sin * p1y;
+			y1 = sin * p1x + cos * p1y;
+
+			x2 = cos * p2x - sin * p2y;
+			y2 = sin * p2x + cos * p2y;
+
+			x3 = cos * p3x - sin * p3y;
+			y3 = sin * p3x + cos * p3y;
+
+			x4 = x1 + (x3 - x2);
+			y4 = y3 - (y2 - y1);
+		} else
+		{
+			x1 = p1x;
+			y1 = p1y;
+
+			x2 = p2x;
+			y2 = p2y;
+
+			x3 = p3x;
+			y3 = p3y;
+
+			x4 = p4x;
+			y4 = p4y;
+		}
+
+		x1 += worldOriginX;
+		y1 += worldOriginY;
+		x2 += worldOriginX;
+		y2 += worldOriginY;
+		x3 += worldOriginX;
+		y3 += worldOriginY;
+		x4 += worldOriginX;
+		y4 += worldOriginY;
+
+		final float u = region.getUV().getU1();
+		final float v = region.getUV().getV2();
+		final float u2 = region.getUV().getU2();
+		final float v2 = region.getUV().getV1();
+
+		vertices.put(x1);
+		vertices.put(y1);
+		vertices.put(r).put(g).put(b).put(a);
+		vertices.put(u);
+		vertices.put(v);
+
+		vertices.put(x2);
+		vertices.put(y2);
+		vertices.put(r).put(g).put(b).put(a);
+		vertices.put(u);
+		vertices.put(v2);
+
+		vertices.put(x4);
+		vertices.put(y4);
+		vertices.put(r).put(g).put(b).put(a);
+		vertices.put(u2);
+		vertices.put(v);
+
+		vertices.put(x2);
+		vertices.put(y2);
+		vertices.put(r).put(g).put(b).put(a);
+		vertices.put(u);
+		vertices.put(v2);
+
+		vertices.put(x3);
+		vertices.put(y3);
+		vertices.put(r).put(g).put(b).put(a);
+		vertices.put(u2);
+		vertices.put(v2);
+
+		vertices.put(x4);
+		vertices.put(y4);
+		vertices.put(r).put(g).put(b).put(a);
+		vertices.put(u2);
+		vertices.put(v);
 
 		numVertices += 6;
 	}

@@ -122,31 +122,32 @@ public class TestLayer extends LayerBase
 		render.updateMatrix(cam);
 
 		render.begin();
-		for (int i = 0; i < Window.getActiveWidth(); i += 34)
-			for (int j = 0; j < Window.getActiveHeight(); j += 34)
-				render.drawTexture(tex, i, j);
+		for (int i = 0; i < Window.getActiveWidth(); i += 32)
+			for (int j = 0; j < Window.getActiveHeight(); j += 32)
+				render.draw(tex, i, j, 16, 16, 32, 32, 1, 1, (float) Math.sin(Sirius.timer.getTime()) * 90);
 		render.end();
 
-		render.begin();
-		render.drawTexture(tiles, 100, 100);
+		// render.begin();
+		// render.draw(tiles, 0, 0, 182, 128, 256, 256, 1, 1,
+		// (float)Math.sin(Sirius.timer.getTime())*90);
 
-		render.end();
+		// render.end();
 
-		render.begin();
-		render.drawText("Hello World", 10, 10, Color.RED);
-		render.end();
+		// render.begin();
+		// render.drawText("Hello World", 10, 10, Color.RED);
+		// render.end();
 
-		stateTime += Timer.getTimer().getDelta();
-		TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
-		
-		Image tmp = currentFrame.getRegionImage();
-		Window.setActiveWindowIcon(Sirius.icon.set(tmp));
-		tmp.free();
-		tmp = null;
-		
-		render.begin();
-		render.drawTextureRegion(currentFrame, 50, 50); // Draw
-		render.end();
+		// stateTime += Timer.getTimer().getDelta();
+		// TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
+		//
+		// Image tmp = currentFrame.getRegionImage();
+		// Window.setActiveWindowIcon(Sirius.icon.set(tmp));
+		// tmp.free();
+		// tmp = null;
+
+		// render.begin();
+		// render.drawTextureRegion(currentFrame, 50, 50); // Draw
+		// render.end();
 	}
 
 	@Override
