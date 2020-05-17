@@ -55,7 +55,7 @@ public class Cursor extends Icon
 	 */
 	public Cursor(Icon icon)
 	{
-		super(icon.getSubImage(0, 0, icon.getWidth(), icon.getHeight()));
+		super(icon);
 		this.type = CursorType.CUSTOM;
 		setCursor(0, 0);
 	}

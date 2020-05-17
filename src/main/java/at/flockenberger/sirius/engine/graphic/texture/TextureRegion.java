@@ -1,5 +1,7 @@
 package at.flockenberger.sirius.engine.graphic.texture;
 
+import at.flockenberger.sirius.engine.graphic.Image;
+
 public class TextureRegion implements ITextureBase
 {
 	protected Texture texture;
@@ -75,13 +77,15 @@ public class TextureRegion implements ITextureBase
 	{
 		return Math.round(uv.getV1() * texture.getHeight());
 	}
-	
-	public void setRegion(float u1, float v1, float u2, float v2) {
+
+	public void setRegion(float u1, float v1, float u2, float v2)
+	{
 		uv.setU1(u1);
 		uv.setV1(v1);
 		uv.setU2(u2);
 		uv.setV2(v2);
 	}
+
 	public UV getUv()
 	{
 		return uv;
@@ -123,8 +127,12 @@ public class TextureRegion implements ITextureBase
 
 	public Texture getRegionTexture()
 	{
-		return Texture.createTexture(texture.getSubImage(getRegionX(), getRegionY(), regionWidth, regionHeight));
+		return Texture.createTexture(getRegionImage());
+	}
 
+	public Image getRegionImage()
+	{
+		return texture.getSubImage(getRegionX(), getRegionY(), regionWidth, regionHeight);
 	}
 
 	/**

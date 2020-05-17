@@ -1,5 +1,6 @@
 package at.flockenberger.sirius.game.application;
 
+import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.graphic.Color;
 
 public abstract class Game extends AbstractGame
@@ -20,13 +21,13 @@ public abstract class Game extends AbstractGame
 		while (running)
 		{
 			/* Check if game should close */
-			if (window.askClose())
+			if (Sirius.window.askClose())
 			{
 				running = false;
 			}
 
 			/* Get delta time and update the accumulator */
-			delta = timer.getDelta();
+			delta = Sirius.timer.getDelta();
 			accumulator += delta;
 
 			/* Handle input */
@@ -36,7 +37,7 @@ public abstract class Game extends AbstractGame
 			while (accumulator >= interval)
 			{
 				update();
-				timer.updateUPS();
+				Sirius.timer.updateUPS();
 				accumulator -= interval;
 			}
 
@@ -45,24 +46,24 @@ public abstract class Game extends AbstractGame
 			//fbo.bind();
 			render(alpha);
 			
-			applyPostProcessing(postProcessor);
+			applyPostProcessing(Sirius.postProcessor);
 			//fbo.unbind();
 			
 			//drawFBO();
 			
-			timer.updateFPS();
+			Sirius.timer.updateFPS();
 
 			/* Update timer */
-			timer.update();
-			renderer.updateMatrix(DEFAULT_CAM);
-			renderer.begin();
-			renderer.drawText(String.valueOf(timer.getFPS()), 0, 0, Color.BLACK);
-			renderer.end();
+			Sirius.timer.update();
+			Sirius.renderer.updateMatrix(DEFAULT_CAM);
+			Sirius.renderer.begin();
+			Sirius.renderer.drawText(String.valueOf(Sirius.timer.getFPS()), 0, 0);
+			Sirius.renderer.end();
 			/* Update window to show the new screen */
-			window.update();
+			Sirius.window.update();
 
 			/* Synchronize if v-sync is disabled */
-			if (!window.isVSyncEnabled())
+			if (!Sirius.window.isVSyncEnabled())
 			{
 				sync(TARGET_FPS);
 			}

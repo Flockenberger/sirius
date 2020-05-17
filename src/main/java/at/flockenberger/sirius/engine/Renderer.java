@@ -53,36 +53,41 @@ import at.flockenberger.sirius.engine.gl.shader.FragmentShader;
 import at.flockenberger.sirius.engine.gl.shader.ShaderProgram;
 import at.flockenberger.sirius.engine.gl.shader.VertexShader;
 import at.flockenberger.sirius.engine.graphic.Color;
-import at.flockenberger.sirius.engine.graphic.Sprite;
 import at.flockenberger.sirius.engine.graphic.text.SiriusFont;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.graphic.texture.TextureRegion;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
+import at.flockenberger.sirius.utillity.SUtils;
+import at.flockenberger.sirius.utillity.Timer;
 
 public class Renderer extends Allocateable
 {
 
 	private VAO vao;
 	private VBO vbo;
-	private ShaderProgram program;
 
+	private ShaderProgram program;
 	private FloatBuffer vertices;
+
 	private int numVertices;
 	private boolean drawing;
+
 	private int width;
 	private int height;
-	private Texture curTex;
 
+	private Texture curTex;
 	private SiriusFont font;
+
 	/* Texture coordinates */
 	private float s1 = 0f;
 	private float t1 = 1f;
 
 	private float s2 = 1f;
 	private float t2 = 0f;
-	private Color WHITE = Color.WHITE;
-
 	private float r, g, b, a;
+
+	private Color WHITE = Color.WHITE;
+	private Matrix4f model = new Matrix4f();
 
 	/** Initializes the renderer. */
 	public void init()
@@ -110,6 +115,7 @@ public class Renderer extends Allocateable
 	{
 		cam.recalculateMatrices(width, height);
 		program.setUniformMatrix(program.getUniformLocation("projView"), cam.getViewProjectionMatrix());
+
 	}
 
 	/**
@@ -283,8 +289,8 @@ public class Renderer extends Allocateable
 		t1 = (regY + regHeight) / texture.getHeight();
 		s2 = (regX + regWidth) / texture.getWidth();
 		t2 = regY / texture.getHeight();
-		switchTexture(texture);
 
+		switchTexture(texture);
 		drawTextureRegion(x, y, x + regWidth, y + regWidth, s1, t1, s2, t2, c);
 	}
 
@@ -380,7 +386,6 @@ public class Renderer extends Allocateable
 		r = c.getRed();
 		g = c.getGreen();
 		b = c.getBlue();
-
 		a = c.getAlpha();
 
 		vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(s1).put(t1);
@@ -391,32 +396,6 @@ public class Renderer extends Allocateable
 		vertices.put(x2).put(y1).put(r).put(g).put(b).put(a).put(s2).put(t1);
 
 		numVertices += 6;
-	}
-
-	public void draw(Texture texture, float[] v, int offset, int count)
-	{
-		if (!drawing)
-			throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
-
-		if (vertices.remaining() < 7 * 6)
-		{
-			flush();
-		}
-
-		vertices.put(v[Sprite.X1]).put(v[Sprite.Y1]).put(v[Sprite.C1]).put(v[Sprite.C2]).put(v[Sprite.C3])
-				.put(v[Sprite.C4]).put(v[Sprite.U1]).put(v[Sprite.V1]);
-
-		vertices.put(v[Sprite.X2]).put(v[Sprite.Y2]).put(v[Sprite.C1]).put(v[Sprite.C2]).put(v[Sprite.C3])
-				.put(v[Sprite.C4]).put(v[Sprite.U2]).put(v[Sprite.V2]);
-
-		vertices.put(v[Sprite.X3]).put(v[Sprite.Y3]).put(v[Sprite.C1]).put(v[Sprite.C2]).put(v[Sprite.C3])
-				.put(v[Sprite.C4]).put(v[Sprite.U3]).put(v[Sprite.V3]);
-
-		vertices.put(v[Sprite.X4]).put(v[Sprite.Y4]).put(v[Sprite.C1]).put(v[Sprite.C2]).put(v[Sprite.C3])
-				.put(v[Sprite.C4]).put(v[Sprite.U4]).put(v[Sprite.V4]);
-
-		numVertices += 4;
-
 	}
 
 	/**
@@ -498,22 +477,9 @@ public class Renderer extends Allocateable
 		/* Set texture uniform */
 		int uniTex = program.getUniformLocation("texImage");
 		program.setUniform(uniTex, 0);
-
-		Matrix4f model = new Matrix4f();
-
 		model.identity();
 		int uniModel = program.getUniformLocation("model");
 		program.setUniformMatrix(uniModel, model);
-
-		/*
-		 * Matrix4f view = new Matrix4f(); view.identity(); int uniView =
-		 * program.getUniformLocation("view"); program.setUniformMatrix(uniView, view);
-		 * 
-		 * 
-		 * Matrix4f projection = SUtils.orthographic(0f, width, height, 0f, -1f, 1f);
-		 * int uniProjection = program.getUniformLocation("projection");
-		 * program.setUniformMatrix(uniProjection, projection);
-		 */
 
 	}
 

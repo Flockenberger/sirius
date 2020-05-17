@@ -27,7 +27,7 @@ public class TestGame extends Game
 
 		// this only works because loadGameResources is called in the
 		// games constructor!
-		icon = new Icon(ResourceManager.get().getImage("icon"));
+		icon = new Icon(ResourceManager.get().getImage("icon").resize(32, 32));
 		game.setGameIcon(icon);
 	//	game.setFullscreen();
 		game.start();
@@ -39,7 +39,7 @@ public class TestGame extends Game
 	{
 		TestLayer layer = new TestLayer("TestLayer");
 		gameLayers.addLayerActive(layer);
-		Mouse.setCursor(new Cursor(icon.resize(32, 32)));
+		Mouse.setCursor(new Cursor(icon));
 
 	}
 

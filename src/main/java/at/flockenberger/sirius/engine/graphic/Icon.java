@@ -1,32 +1,35 @@
 package at.flockenberger.sirius.engine.graphic;
 
+import java.io.Serializable;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.file.Path;
 
 import org.lwjgl.glfw.GLFWImage;
+
+import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.Window;
+import at.flockenberger.sirius.utillity.SUtils;
 
 /**
  * <h1>Icon</1h><br>
  * The {@link Icon} class represents an icon for any window.<br>
- * It is also the super class for the mouse {@link Cursor}. The {@link Icon}
- * extends the {@link Image} class and all its features.
+ * It is also the super class for the mouse {@link Cursor}.
  * 
- * <br>
- * Note:<br>
- * When modifying the image the icon will not be updated automatically! To force
- * an update you have to call the {@link #update()} method and reset the icon of
- * the window using the {@link Window#setIcon(Icon)} method-
  * 
  * @author Florian Wagner
  * @see Image
  * @see Window
  */
-public class Icon extends Image
+public class Icon implements Serializable, IFreeable
 {
 
-	private static final long serialVersionUID = -421500034550411938L;
+	private static final long serialVersionUID = 198567101908440954L;
 	protected GLFWImage.Buffer glfwImageBuffer;
 	protected GLFWImage glfwImage;
+	protected int width;
+	protected int height;
+	protected ByteBuffer buffer;
 
 	protected Icon()
 	{
@@ -41,8 +44,21 @@ public class Icon extends Image
 	 */
 	public Icon(Path imagePath)
 	{
-		super(imagePath);
+		Image img = Image.read(imagePath);
+		SUtils.checkNull(img, "Image");
+
+		this.width = img.getWidth();
+		this.height = img.getHeight();
+		this.buffer = img.getPixelData();
+
 		update();
+	}
+
+	public Icon(Icon cpy)
+	{
+		this.width = cpy.width;
+		this.height = cpy.height;
+		this.buffer = cpy.buffer;
 	}
 
 	/**
@@ -52,8 +68,41 @@ public class Icon extends Image
 	 */
 	public Icon(Image img)
 	{
-		super(img);
+		SUtils.checkNull(img, "Image");
+		this.width = img.getWidth();
+		this.height = img.getHeight();
+		this.buffer = img.getPixelData();
+
 		update();
+	}
+
+	public Icon set(Image img)
+	{
+		this.width = img.getWidth();
+		this.height = img.getHeight();
+		this.buffer = img.getPixelData();
+		update();
+		return this;
+	}
+
+	public int getWidth()
+	{
+		return width;
+	}
+
+	public void setWidth(int width)
+	{
+		this.width = width;
+	}
+
+	public int getHeight()
+	{
+		return height;
+	}
+
+	public void setHeight(int height)
+	{
+		this.height = height;
 	}
 
 	/**
@@ -62,10 +111,17 @@ public class Icon extends Image
 	 */
 	public void update()
 	{
-		glfwImage = GLFWImage.malloc();
-		glfwImage.set(getWidth(), getHeight(), getPixelData());
-		glfwImageBuffer = GLFWImage.malloc(1);
+		if (glfwImage == null)
+			glfwImage = GLFWImage.malloc();
+		
+		glfwImage.set(getWidth(), getHeight(), buffer);
+		
+		if (glfwImageBuffer == null)
+		{
+			glfwImageBuffer = GLFWImage.malloc(1);
+		}
 		glfwImageBuffer.put(0, glfwImage);
+		
 	}
 
 	/**
@@ -79,7 +135,6 @@ public class Icon extends Image
 	@Override
 	public void free()
 	{
-		super.free();
 		glfwImageBuffer.free();
 		glfwImage.free();
 	}

@@ -380,8 +380,7 @@ public class SiriusFont
 		{
 			drawY += textHeight + fontHeight;
 		}
-
-		texture.bind();
+		
 		for (int i = 0; i < text.length(); i++)
 		{
 			char ch = text.charAt(i);
@@ -398,7 +397,9 @@ public class SiriusFont
 				continue;
 			}
 			Glyph g = glyphs.get(ch);
+			
 			renderer.drawTextureRegion(texture, drawX, drawY, g.x, g.y, g.width, g.height, c);
+			
 			drawX += g.width;
 		}
 

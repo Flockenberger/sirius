@@ -66,54 +66,48 @@ public class Window implements IFreeable
 	private List<WindowFramebufferSizeListener> fbSizeListener;
 	private List<WindowContentScaleListener> contentScaleListener;
 	private List<WindowPositionListener> positionListener;
+	static int[] _width = new int[1];
+	static int[] _height = new int[1];
+	static int[] _size = new int[2];
 
 	public static int getActiveWidth()
 	{
 		long _id = GLFW.glfwGetCurrentContext();
-		int[] width = new int[1];
-		int[] height = new int[1];
-		GLFW.glfwGetWindowSize(_id, width, height);
-		return width[0];
+
+		GLFW.glfwGetWindowSize(_id, _width, _height);
+		return _width[0];
 	}
 
 	public static int getActiveHeight()
 	{
 		long _id = GLFW.glfwGetCurrentContext();
-		int[] width = new int[1];
-		int[] height = new int[1];
-		GLFW.glfwGetWindowSize(_id, width, height);
-		return height[0];
+		GLFW.glfwGetWindowSize(_id, _width, _height);
+		return _height[0];
 	}
 
 	public static int[] getActiveSize()
 	{
 		long _id = GLFW.glfwGetCurrentContext();
-		int[] width = new int[1];
-		int[] height = new int[1];
-		GLFW.glfwGetWindowSize(_id, width, height);
-		int[] size = new int[2];
-		size[0] = width[0];
-		size[1] = height[0];
-		return size;
+		GLFW.glfwGetWindowSize(_id, _width, _height);
+		_size[0] = _width[0];
+		_size[1] = _height[0];
+		return _size;
 	}
 
 	public static int[] getActiveFrameBufferSize()
 	{
 		long _id = GLFW.glfwGetCurrentContext();
-		int[] width = new int[1];
-		int[] height = new int[1];
-		GLFW.glfwGetFramebufferSize(_id, width, height);
-		int[] size = new int[2];
-		size[0] = width[0];
-		size[1] = height[0];
-		return size;
+		GLFW.glfwGetFramebufferSize(_id, _width, _height);
+		_size[0] = _width[0];
+		_size[1] = _height[0];
+		return _size;
 	}
-	
-	
-	public static void setActiveWindowIcon(Icon icon) {
-		long _id = GLFW.glfwGetCurrentContext();
-		GLFW.glfwSetWindowIcon(_id, icon.getIcon());
+
+	public static void setActiveWindowIcon(Icon icon)
+	{
+		GLFW.glfwSetWindowIcon(GLFW.glfwGetCurrentContext(), icon.getIcon());
 	}
+
 	public static double getTime()
 	{
 		return (GLFW.glfwGetTime() * 1000) / GLFW.glfwGetTimerFrequency();

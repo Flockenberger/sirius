@@ -46,7 +46,7 @@ public class Camera extends Entity implements ICamera
 
 	public void recalculateMatrices(int width, int height)
 	{
-		projection = SUtils.orthographic(0f, width, height, 0f, -1f, 1f);
+		projection = SUtils.orthographic(0f, width, height, 0f, -10f, 10f);
 	}
 
 	public void updateViewMatrix()

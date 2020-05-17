@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL;
 import at.flockenberger.sirius.engine.Camera;
 import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.Renderer;
+import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.Window;
 import at.flockenberger.sirius.engine.allocate.Allocator;
 import at.flockenberger.sirius.engine.graphic.Icon;
@@ -23,31 +24,8 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	protected boolean running;
 
-	/**
-	 * The GLFW window used by the game.
-	 */
-	protected Window window;
-	/**
-	 * Used for timing calculations.
-	 */
-	protected Timer timer;
-	/**
-	 * Used for rendering.
-	 */
-	protected Renderer renderer;
-
-	/**
-	 * The layers / game-states
-	 */
-	protected LayerStack layers;
-
-	protected Icon icon;
-
 	private SLogger logger = SLogger.getSystemLogger();
 
-	protected PostProcessor postProcessor;
-
-	protected Allocator allocator = Allocator.DefaultAllocator();
 
 	// protected FBO fbo;
 
@@ -56,14 +34,7 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public AbstractGame(int width, int height, String title)
 	{
-		timer = Timer.getTimer();
-
-		renderer = allocator.allocate(Renderer.class);
-		layers = allocator.allocate(LayerStack.class);
-		postProcessor = allocator.allocate(PostProcessor.class);
-
-		window = new Window(width, height, title);
-
+		new Sirius(width, height, title);
 		// load resources
 		loadGameResources();
 	}
@@ -73,7 +44,8 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public void start()
 	{
-		window.show();
+		
+		Sirius.window.show();
 		// fbo = new FBO();
 
 		logger.debug("Game has been started!");
@@ -89,10 +61,9 @@ public abstract class AbstractGame implements IFreeable
 	public void free()
 	{
 		// fbo.free();
-		window.free();
+		Sirius.free();
 		logger.debug("Freeing game resources.");
-		allocator.free();
-
+		
 	}
 
 	/**
@@ -103,10 +74,8 @@ public abstract class AbstractGame implements IFreeable
 	public void init()
 	{
 		logger.debug("Initializing game...");
-		timer.init();
-		allocator.init(renderer.getClass());
-		initGame(layers);
-		allocator.init(postProcessor.getClass());
+		Sirius.init();
+		initGame(Sirius.layerStack);
 		running = true;
 		logger.debug("Initialization done!");
 	}
@@ -116,7 +85,7 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public Window getWindow()
 	{
-		return this.window;
+		return Sirius.window;
 	}
 
 	/**
@@ -146,7 +115,7 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public void setFullscreen()
 	{
-		this.window.setFullscreen();
+		Sirius.window.setFullscreen();
 	}
 
 	/**
@@ -156,7 +125,8 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public void setGameIcon(Icon icon)
 	{
-		window.setIcon(icon);
+		Sirius.icon = icon;
+		Sirius.window.setIcon(icon);
 	}
 
 	/**
@@ -164,7 +134,7 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public void input()
 	{
-		layers.onInput();
+		Sirius.layerStack.onInput();
 	}
 
 	/**
@@ -172,12 +142,12 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public void update()
 	{
-		layers.onUpdate();
+		Sirius.layerStack.onUpdate();
 	}
 
 	public void applyPostProcessing(PostProcessor pp)
 	{
-		layers.onPostProcess(pp);
+		Sirius.layerStack.onPostProcess(pp);
 	}
 
 	/**
@@ -187,7 +157,7 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public void update(float delta)
 	{
-		layers.onUpdate(delta);
+		Sirius.layerStack.onUpdate(delta);
 	}
 
 	/**
@@ -195,7 +165,7 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public void render()
 	{
-		layers.onRender(renderer);
+		Sirius.layerStack.onRender(Sirius.renderer);
 	}
 
 	/**
@@ -205,7 +175,7 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public void render(float alpha)
 	{
-		layers.onRender(renderer, alpha);
+		Sirius.layerStack.onRender(Sirius.renderer, alpha);
 	}
 
 	/**
@@ -215,8 +185,8 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public void sync(int fps)
 	{
-		double lastLoopTime = timer.getLastLoopTime();
-		double now = timer.getTime();
+		double lastLoopTime = Sirius.timer.getLastLoopTime();
+		double now = Sirius.timer.getTime();
 		float targetTime = 1f / fps;
 
 		while (now - lastLoopTime < targetTime)
@@ -236,7 +206,7 @@ public abstract class AbstractGame implements IFreeable
 				SLogger.getSystemLogger().except(ex);
 			}
 
-			now = timer.getTime();
+			now = Sirius.timer.getTime();
 		}
 	}
 
