@@ -86,11 +86,6 @@ public class TextureRegion implements ITextureBase
 		uv.setV2(v2);
 	}
 
-	public UV getUv()
-	{
-		return uv;
-	}
-
 	public int getRegionWidth()
 	{
 		return regionWidth;

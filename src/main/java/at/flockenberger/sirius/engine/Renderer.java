@@ -67,7 +67,6 @@ public class Renderer extends Allocateable
 
 	private ShaderProgram program;
 	private FloatBuffer vertices;
-	private boolean quad;
 
 	private int numVertices;
 	private boolean drawing;
@@ -76,7 +75,6 @@ public class Renderer extends Allocateable
 	private int height;
 
 	private Texture curTex;
-	private SiriusFont font;
 
 	/* Texture coordinates */
 	private float s1 = 0f;
@@ -99,7 +97,7 @@ public class Renderer extends Allocateable
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL11.GL_TEXTURE_2D);
-		font = new SiriusFont(Font.getFont(Font.SANS_SERIF));
+
 	}
 
 	/**
@@ -143,27 +141,37 @@ public class Renderer extends Allocateable
 		numVertices = 0;
 	}
 
+	public boolean isDrawing()
+	{
+		return drawing;
+	}
+
 	/**
 	 * End rendering.
 	 */
 	public void end()
 	{
-		if (!drawing)
+		if (drawing)
 		{
-			throw new IllegalStateException("Renderer isn't drawing!");
+
+			drawing = false;
+			flush();
 		}
-		drawing = false;
-		flush();
 	}
 
 	private void switchTexture(Texture texture)
 	{
-		if (curTex != texture)
+		if (texture == null && curTex != null)
+		{
+			curTex.unbind();
+			curTex = null;
+		}
+
+		if (curTex != texture && texture != null)
 		{
 			flush();
 			curTex = texture;
-			if (curTex != null)
-				curTex.bind();
+			curTex.bind();
 		}
 	}
 
@@ -286,13 +294,13 @@ public class Renderer extends Allocateable
 	{
 
 		/* Texture coordinates */
-		s1 = regX / texture.getWidth();
-		t1 = (regY + regHeight) / texture.getHeight();
-		s2 = (regX + regWidth) / texture.getWidth();
-		t2 = regY / texture.getHeight();
+		s1 = regX / (float) texture.getWidth();
+		t1 = (regY + regHeight) / (float) texture.getHeight();
+		s2 = (regX + regWidth) / (float) texture.getWidth();
+		t2 = regY / (float) texture.getHeight();
 
 		switchTexture(texture);
-		drawTextureRegion(x, y, x + regWidth, y + regWidth, s1, t1, s2, t2, c);
+		drawTextureRegion(x, y, x + regWidth, y + regHeight, s1, t1, s2, t2, c);
 	}
 
 	/**
@@ -311,55 +319,6 @@ public class Renderer extends Allocateable
 	public void drawTextureRegion(float x1, float y1, float x2, float y2, float s1, float t1, float s2, float t2)
 	{
 		drawTextureRegion(x1, y1, x2, y2, s1, t1, s2, t2, WHITE);
-	}
-
-	/**
-	 * Calculates total width of a text.
-	 *
-	 * @param text The text
-	 *
-	 * @return Total width of the text
-	 */
-	public int getTextWidth(CharSequence text)
-	{
-		return font.getWidth(text);
-	}
-
-	/**
-	 * Calculates total height of a text.
-	 *
-	 * @param text The text
-	 *
-	 * @return Total width of the text
-	 */
-	public int getTextHeight(CharSequence text)
-	{
-		return font.getHeight(text);
-	}
-
-	/**
-	 * Draw text at the specified position.
-	 *
-	 * @param text Text to draw
-	 * @param x    X coordinate of the text position
-	 * @param y    Y coordinate of the text position
-	 */
-	public void drawText(CharSequence text, float x, float y)
-	{
-		font.drawText(this, text, x, y);
-	}
-
-	/**
-	 * Draw text at the specified position and color.
-	 *
-	 * @param text Text to draw
-	 * @param x    X coordinate of the text position
-	 * @param y    Y coordinate of the text position
-	 * @param c    Color to use
-	 */
-	public void drawText(CharSequence text, float x, float y, Color c)
-	{
-		font.drawText(this, text, x, y, c);
 	}
 
 	/**
@@ -420,8 +379,6 @@ public class Renderer extends Allocateable
 	public void draw(Texture region, float x, float y, float originX, float originY, float width, float height,
 			float scaleX, float scaleY, float rotation, Color c)
 	{
-		if (!drawing)
-			throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
 		switchTexture(region);
 		if (vertices.remaining() < 7 * 6)
@@ -509,49 +466,30 @@ public class Renderer extends Allocateable
 		y3 += worldOriginY;
 		x4 += worldOriginX;
 		y4 += worldOriginY;
+		float u = 0;
+		float v = 1;
+		float u2 = 1;
+		float v2 = 0;
 
-		final float u = region.getUV().getU1();
-		final float v = region.getUV().getV2();
-		final float u2 = region.getUV().getU2();
-		final float v2 = region.getUV().getV1();
+		if (region != null)
+		{
+			u = region.getUV().getU1();
+			v = region.getUV().getV1();
+			u2 = region.getUV().getU2();
+			v2 = region.getUV().getV2();
 
-		vertices.put(x1);
-		vertices.put(y1);
-		vertices.put(r).put(g).put(b).put(a);
-		vertices.put(u);
-		vertices.put(v);
+		}
 
-		vertices.put(x2);
-		vertices.put(y2);
-		vertices.put(r).put(g).put(b).put(a);
-		vertices.put(u);
-		vertices.put(v2);
+		vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(u).put(v);
+		vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(u).put(v2);
+		vertices.put(x4).put(y4).put(r).put(g).put(b).put(a).put(u2).put(v);
 
-		vertices.put(x4);
-		vertices.put(y4);
-		vertices.put(r).put(g).put(b).put(a);
-		vertices.put(u2);
-		vertices.put(v);
-
-		vertices.put(x2);
-		vertices.put(y2);
-		vertices.put(r).put(g).put(b).put(a);
-		vertices.put(u);
-		vertices.put(v2);
-
-		vertices.put(x3);
-		vertices.put(y3);
-		vertices.put(r).put(g).put(b).put(a);
-		vertices.put(u2);
-		vertices.put(v2);
-
-		vertices.put(x4);
-		vertices.put(y4);
-		vertices.put(r).put(g).put(b).put(a);
-		vertices.put(u2);
-		vertices.put(v);
+		vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(u).put(v2);
+		vertices.put(x3).put(y3).put(r).put(g).put(b).put(a).put(u2).put(v2);
+		vertices.put(x4).put(y4).put(r).put(g).put(b).put(a).put(u2).put(v);
 
 		numVertices += 6;
+
 	}
 
 	/**

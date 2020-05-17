@@ -82,7 +82,7 @@ public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 		texture.setWidth(width);
 		texture.setHeight(height);
 		texture.data = data;
-		
+
 		texture.bind();
 
 		texture.setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -230,6 +230,11 @@ public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 	public int getID()
 	{
 		return id;
+	}
+
+	public void setUV(UV uv2)
+	{
+		this.uv = uv2;
 	}
 
 }

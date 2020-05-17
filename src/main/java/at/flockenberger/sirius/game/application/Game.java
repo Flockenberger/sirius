@@ -1,13 +1,17 @@
 package at.flockenberger.sirius.game.application;
 
 import at.flockenberger.sirius.engine.Sirius;
-import at.flockenberger.sirius.engine.graphic.Color;
+import at.flockenberger.sirius.engine.graphic.text.Text;
 
 public abstract class Game extends AbstractGame
 {
+	private Text debugText;
+	private Runtime rt = Runtime.getRuntime();
+
 	public Game(int width, int height, String title)
 	{
 		super(width, height, title);
+		debugText = new Text();
 	}
 
 	@Override
@@ -43,21 +47,24 @@ public abstract class Game extends AbstractGame
 
 			/* Calculate alpha value for interpolation */
 			alpha = accumulator / interval;
-			//fbo.bind();
+			// fbo.bind();
 			render(alpha);
-			
+
 			applyPostProcessing(Sirius.postProcessor);
-			//fbo.unbind();
-			
-			//drawFBO();
-			
+			// fbo.unbind();
+
+			// drawFBO();
+
 			Sirius.timer.updateFPS();
 
 			/* Update timer */
 			Sirius.timer.update();
 			Sirius.renderer.updateMatrix(DEFAULT_CAM);
 			Sirius.renderer.begin();
-			Sirius.renderer.drawText(String.valueOf(Sirius.timer.getFPS()), 0, 0);
+			long total = rt.totalMemory();
+			long free = rt.freeMemory();
+			debugText.setText("FPS: " + String.valueOf(Sirius.timer.getFPS()) + "Free Memory: " + free + ", Total Memory: " + total);
+			debugText.draw();
 			Sirius.renderer.end();
 			/* Update window to show the new screen */
 			Sirius.window.update();

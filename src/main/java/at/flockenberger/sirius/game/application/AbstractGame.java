@@ -4,13 +4,10 @@ import org.lwjgl.opengl.GL;
 
 import at.flockenberger.sirius.engine.Camera;
 import at.flockenberger.sirius.engine.IFreeable;
-import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.Window;
-import at.flockenberger.sirius.engine.allocate.Allocator;
 import at.flockenberger.sirius.engine.graphic.Icon;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
-import at.flockenberger.sirius.utillity.Timer;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
 public abstract class AbstractGame implements IFreeable
@@ -102,7 +99,11 @@ public abstract class AbstractGame implements IFreeable
 	 * Called as the very first method to load all game-resouces.
 	 */
 	public abstract void loadGameResources();
-
+	
+	
+	public void setTargetFPS(int fps){
+		TARGET_FPS = fps;
+	}
 	public void drawFBO()
 	{
 

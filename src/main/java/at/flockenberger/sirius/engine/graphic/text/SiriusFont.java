@@ -370,7 +370,7 @@ public class SiriusFont
 	 * @param y        Y coordinate of the text position
 	 * @param c        Color to use
 	 */
-	public void drawText(Renderer renderer, CharSequence text, float x, float y, Color c)
+	protected void drawText(Renderer renderer, CharSequence text, float x, float y, Color c)
 	{
 		int textHeight = getHeight(text);
 
@@ -380,7 +380,7 @@ public class SiriusFont
 		{
 			drawY += textHeight + fontHeight;
 		}
-		
+
 		for (int i = 0; i < text.length(); i++)
 		{
 			char ch = text.charAt(i);
@@ -397,9 +397,12 @@ public class SiriusFont
 				continue;
 			}
 			Glyph g = glyphs.get(ch);
+
+			// renderer.draw(texture, drawX, drawY, (float)g.x,(float) g.y, (float)g.width,
+			// (float)g.height, 1f, 1f, 0f, s1, t1, s2, t2, Color.WHITE);
 			
 			renderer.drawTextureRegion(texture, drawX, drawY, g.x, g.y, g.width, g.height, c);
-			
+
 			drawX += g.width;
 		}
 
@@ -413,7 +416,7 @@ public class SiriusFont
 	 * @param x        X coordinate of the text position
 	 * @param y        Y coordinate of the text position
 	 */
-	public void drawText(Renderer renderer, CharSequence text, float x, float y)
+	protected void drawText(Renderer renderer, CharSequence text, float x, float y)
 	{
 		drawText(renderer, text, x, y, Color.WHITE);
 	}

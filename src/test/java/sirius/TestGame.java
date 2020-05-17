@@ -29,7 +29,8 @@ public class TestGame extends Game
 		// games constructor!
 		icon = new Icon(ResourceManager.get().getImage("icon").resize(32, 32));
 		game.setGameIcon(icon);
-	//	game.setFullscreen();
+		//game.setFullscreen();
+
 		game.start();
 
 	}
