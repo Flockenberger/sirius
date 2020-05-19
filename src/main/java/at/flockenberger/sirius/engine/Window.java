@@ -222,9 +222,9 @@ public class Window implements IFreeable
 			GLFW.glfwTerminate();
 
 		GLFW.glfwMakeContextCurrent(id);
-		
+
 		enableVSync(true);
-		
+
 		GL.createCapabilities();
 
 		if (windowedFullscreen)
@@ -256,7 +256,7 @@ public class Window implements IFreeable
 		}
 
 		GLFW.glfwSetWindowIcon(id, icon.getIcon());
-
+		
 	}
 
 	/**

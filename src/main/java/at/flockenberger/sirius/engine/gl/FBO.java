@@ -1,25 +1,25 @@
 package at.flockenberger.sirius.engine.gl;
 
-import static org.lwjgl.opengl.EXTFramebufferObject.GL_FRAMEBUFFER_EXT;
-import static org.lwjgl.opengl.EXTFramebufferObject.glBindFramebufferEXT;
-import static org.lwjgl.opengl.EXTFramebufferObject.glCheckFramebufferStatusEXT;
-import static org.lwjgl.opengl.EXTFramebufferObject.glDeleteFramebuffersEXT;
-import static org.lwjgl.opengl.EXTFramebufferObject.glFramebufferTexture2DEXT;
-import static org.lwjgl.opengl.EXTFramebufferObject.glGenFramebuffersEXT;
-import static org.lwjgl.opengl.GL11.glViewport;
+import static org.lwjgl.opengl.ARBFramebufferObject.GL_DEPTH_ATTACHMENT;
+import static org.lwjgl.opengl.ARBFramebufferObject.GL_RENDERBUFFER;
+import static org.lwjgl.opengl.ARBFramebufferObject.glBindFramebuffer;
+import static org.lwjgl.opengl.ARBFramebufferObject.glBindRenderbuffer;
+import static org.lwjgl.opengl.ARBFramebufferObject.glCheckFramebufferStatus;
+import static org.lwjgl.opengl.ARBFramebufferObject.glDeleteFramebuffers;
+import static org.lwjgl.opengl.ARBFramebufferObject.glDeleteRenderbuffers;
+import static org.lwjgl.opengl.ARBFramebufferObject.glFramebufferRenderbuffer;
+import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
+import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
 import static org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT0;
 import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_COMPLETE;
-import static org.lwjgl.opengl.GL30.glDeleteFramebuffers;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 
 import at.flockenberger.sirius.engine.Window;
-import at.flockenberger.sirius.engine.graphic.texture.ITextureBase;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
-import at.flockenberger.sirius.engine.graphic.texture.UV;
-import at.flockenberger.sirius.utillity.exceptions.SiriusException;
 
 /**
  * <h1>FBO</h1><br>
@@ -28,7 +28,7 @@ import at.flockenberger.sirius.utillity.exceptions.SiriusException;
  * @author Florian Wagner
  *
  */
-public class FBO extends GLObject implements ITextureBase
+public class FBO extends GLObject
 {
 
 	public static boolean isSupported()
@@ -36,111 +36,158 @@ public class FBO extends GLObject implements ITextureBase
 		return GL.getCapabilities().GL_EXT_framebuffer_object;
 	}
 
-	/** The ID of the FBO in use */
-	protected Texture texture;
-	protected boolean ownsTexture;
-	protected UV uv = new UV(0, 1, 1, 0);
+	int colorRenderBuffer;
+	int depthRenderBuffer;
+	int fbo;
+	boolean resetFramebuffer;
+	int width;
+	int height;
+	Texture colorTex;
 
-	public FBO(Texture texture, boolean ownsTexture)
+	public FBO(int width, int height)
 	{
-		this.texture = texture;
-		this.ownsTexture = ownsTexture;
-		if (!isSupported())
+		this.width = width;
+		this.height = height;
+
+	}
+
+	public void createFramebufferObject()
+	{
+		colorRenderBuffer = glGenRenderbuffers();
+		depthRenderBuffer = glGenRenderbuffers();
+		fbo = glGenFramebuffers();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+		glBindRenderbuffer(GL_RENDERBUFFER, colorRenderBuffer);
+		GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH24_STENCIL8, width, height);
+
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderBuffer);
+		genTexture();
+		//glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
+
+	//	GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH24_STENCIL8, width, height);
+	//	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer);
+		int fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
 		{
-			throw new SiriusException("FBO extension not supported in hardware");
+			throw new AssertionError("Could not create FBO: " + fboStatus);
 		}
-		texture.bind();
-		id = glGenFramebuffersEXT();
-		glBindFramebufferEXT(GL_FRAMEBUFFER, id);
-		glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, texture.getID(), 0);
-		int result = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER);
-		if (result != GL_FRAMEBUFFER_COMPLETE)
-		{
-			glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
-			glDeleteFramebuffers(id);
-			throw new SiriusException("exception " + result + " when checking FBO status");
-		}
-		glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	}
 
-	/**
-	 * Advanced constructor which creates a frame buffer from a texture; the
-	 * framebuffer does not "own" the texture and thus calling dispose() on this
-	 * framebuffer will not destroy the texture.
-	 * 
-	 * @param texture the texture to use
-	 */
-	public FBO(Texture texture)
+	private void genTexture()
 	{
-		this(texture, false);
+
+		colorTex = Texture.createEmptyTexture(width, height);
+		colorTex.bind();
+		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D,
+				colorTex.getID(), 0);
+		colorTex.unbind();
+		
 	}
 
-	public FBO()
-	{
-		this(Texture.createTexture(Window.getActiveFrameBufferSize()[0], Window.getActiveFrameBufferSize()[1]), true);
-	}
-
-	@Override
-	public void bind()
-	{
-		if (id == 0)
-			throw new IllegalStateException("can't use FBO as it has been destroyed..");
-		glViewport(0, 0, getWidth(), getHeight());
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, id);
-	}
-
-	@Override
-	public void unbind()
-	{
-		if (id == 0)
-			return;
-		int[] size = Window.getActiveSize();
-
-		glViewport(0, 0, size[0], size[1]);
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-	}
-
-	@Override
-	public int getWidth()
-	{
-		return texture.getWidth();
-	}
-
-	@Override
-	public int getHeight()
-	{
-		return texture.getHeight();
-
-	}
-
-	@Override
-	public UV getUV()
-	{
-		return uv;
-	}
-
-	@Override
 	public Texture getTexture()
 	{
-		return texture;
+		return colorTex;
 	}
 
-	@Override
-	public int getID()
+	public void resizeFramebufferTexture()
 	{
-		return id;
+		glDeleteRenderbuffers(depthRenderBuffer);
+		glDeleteRenderbuffers(colorRenderBuffer);
+		glDeleteFramebuffers(fbo);
+		createFramebufferObject();
+	}
+
+	public void update()
+	{
+		if (resetFramebuffer)
+		{
+			resizeFramebufferTexture();
+			resetFramebuffer = false;
+		}
 	}
 
 	@Override
 	public void free()
 	{
-		if (id == 0)
-			return;
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-		glDeleteFramebuffersEXT(id);
-		if (ownsTexture)
-			texture.free();
-		id = 0;
+
+	}
+
+	@Override
+	public void bind()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	}
+
+	@Override
+	public void unbind()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+		// glBlitFramebuffer(0, 0, width, height, 0, 0, width, height,
+		// GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+	}
+
+	@Override
+	public int getID()
+	{
+		return fbo;
+	}
+
+	public int getColorRenderBuffer()
+	{
+		return colorRenderBuffer;
+	}
+
+	public void setColorRenderBuffer(int colorRenderBuffer)
+	{
+		this.colorRenderBuffer = colorRenderBuffer;
+	}
+
+	public int getDepthRenderBuffer()
+	{
+		return depthRenderBuffer;
+	}
+
+	public void setDepthRenderBuffer(int depthRenderBuffer)
+	{
+		this.depthRenderBuffer = depthRenderBuffer;
+	}
+
+	public boolean isResetFramebuffer()
+	{
+		return resetFramebuffer;
+	}
+
+	public void setResetFramebuffer(boolean resetFramebuffer)
+	{
+		this.resetFramebuffer = resetFramebuffer;
+	}
+
+	public void setWidth(int width)
+	{
+		this.width = width;
+	}
+
+	public void setHeight(int height)
+	{
+		this.height = height;
+	}
+
+	public int getWidth()
+	{
+		return width;
+	}
+
+	public int getHeight()
+	{
+		return height;
 	}
 
 }

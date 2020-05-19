@@ -27,6 +27,7 @@ import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
 
 import at.flockenberger.sirius.engine.IBindable;
 import at.flockenberger.sirius.engine.IFreeable;
@@ -34,7 +35,7 @@ import at.flockenberger.sirius.engine.graphic.Image;
 
 public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 {
-
+	private static final long serialVersionUID = 5243835700492896351L;
 	private int id;
 	private UV uv = new UV();
 
@@ -91,6 +92,7 @@ public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 		texture.setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		texture.uploadData(GL_RGBA8, width, height, GL_RGBA, data);
+		texture.unbind();
 
 		return texture;
 	}
@@ -99,6 +101,25 @@ public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 	{
 		ByteBuffer buffer = BufferUtils.createByteBuffer(i * j);
 		return createTexture(i, j, buffer);
+	}
+
+	public static Texture createEmptyTexture(int width, int height)
+	{
+		Texture texture = new Texture();
+		texture.setWidth(width);
+		texture.setHeight(height);
+
+		texture.bind();
+
+		texture.setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		texture.setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		texture.setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		texture.setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, width, height, 0, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, 0);
+		texture.unbind();
+
+		return texture;
+
 	}
 
 	/**

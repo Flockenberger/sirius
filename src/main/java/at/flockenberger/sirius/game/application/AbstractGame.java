@@ -1,11 +1,16 @@
 package at.flockenberger.sirius.game.application;
 
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryStack;
 
 import at.flockenberger.sirius.engine.Camera;
+import at.flockenberger.sirius.engine.GUICam;
 import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.Window;
+import at.flockenberger.sirius.engine.gl.FBO;
 import at.flockenberger.sirius.engine.graphic.Icon;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
 import at.flockenberger.sirius.utillity.logging.SLogger;
@@ -15,7 +20,7 @@ public abstract class AbstractGame implements IFreeable
 
 	public static int TARGET_FPS = 75;
 	public static int TARGET_UPS = 30;
-	protected final Camera DEFAULT_CAM = new Camera();
+	protected final Camera DEFAULT_CAM = new GUICam();
 	/**
 	 * Shows if the game is running.
 	 */
@@ -23,17 +28,17 @@ public abstract class AbstractGame implements IFreeable
 
 	private SLogger logger = SLogger.getSystemLogger();
 
-
-	// protected FBO fbo;
+	public FBO fbo;
 
 	/**
 	 * Default constructor for the game.
 	 */
 	public AbstractGame(int width, int height, String title)
 	{
-		new Sirius(width, height, title);
+		new Sirius(width, height, title, this);
 		// load resources
 		loadGameResources();
+
 	}
 
 	/**
@@ -41,7 +46,7 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public void start()
 	{
-		
+
 		Sirius.window.show();
 		// fbo = new FBO();
 
@@ -60,7 +65,7 @@ public abstract class AbstractGame implements IFreeable
 		// fbo.free();
 		Sirius.free();
 		logger.debug("Freeing game resources.");
-		
+
 	}
 
 	/**
@@ -75,6 +80,30 @@ public abstract class AbstractGame implements IFreeable
 		initGame(Sirius.layerStack);
 		running = true;
 		logger.debug("Initialization done!");
+
+		try (MemoryStack frame = MemoryStack.stackPush())
+		{
+			int[] w = new int[1];
+			int[] h = new int[1];
+			GLFW.glfwGetFramebufferSize(getWindow().getID(), w, h);
+			fbo = new FBO(w[0], h[0]);
+
+		}
+
+		GLFW.glfwSetFramebufferSizeCallback(Sirius.window.getID(), new GLFWFramebufferSizeCallback()
+		{
+			@Override
+			public void invoke(long window, int width, int height)
+			{
+				if (width > 0 && height > 0 && (fbo.getWidth() != width || fbo.getHeight() != height))
+				{
+					fbo.setWidth(width);
+					fbo.setHeight(height);
+					fbo.setResetFramebuffer(true);
+				}
+			}
+		});
+		fbo.createFramebufferObject();
 	}
 
 	/**
@@ -99,14 +128,10 @@ public abstract class AbstractGame implements IFreeable
 	 * Called as the very first method to load all game-resouces.
 	 */
 	public abstract void loadGameResources();
-	
-	
-	public void setTargetFPS(int fps){
-		TARGET_FPS = fps;
-	}
-	public void drawFBO()
-	{
 
+	public void setTargetFPS(int fps)
+	{
+		TARGET_FPS = fps;
 	}
 
 	/**
@@ -143,6 +168,7 @@ public abstract class AbstractGame implements IFreeable
 	 */
 	public void update()
 	{
+		fbo.update();
 		Sirius.layerStack.onUpdate();
 	}
 

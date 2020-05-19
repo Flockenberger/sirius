@@ -23,6 +23,7 @@ import org.lwjgl.system.MemoryUtil;
 import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
+import at.flockenberger.sirius.engine.graphic.texture.UV;
 
 public class SiriusFont
 {
@@ -380,7 +381,8 @@ public class SiriusFont
 		{
 			drawY += textHeight + fontHeight;
 		}
-
+		UV uv = texture.getUV();
+		Glyph g;
 		for (int i = 0; i < text.length(); i++)
 		{
 			char ch = text.charAt(i);
@@ -396,12 +398,14 @@ public class SiriusFont
 				/* Carriage return, just skip it */
 				continue;
 			}
-			Glyph g = glyphs.get(ch);
+			g = glyphs.get(ch);
 
-			// renderer.draw(texture, drawX, drawY, (float)g.x,(float) g.y, (float)g.width,
-			// (float)g.height, 1f, 1f, 0f, s1, t1, s2, t2, Color.WHITE);
-			
-			renderer.drawTextureRegion(texture, drawX, drawY, g.x, g.y, g.width, g.height, c);
+			uv.u1 = g.x / (float) texture.getWidth();
+			uv.v1 = (g.y + g.height) / (float) texture.getHeight();
+			uv.u2 = (g.x + g.width) / (float) texture.getWidth();
+			uv.v2 = g.y / (float) texture.getHeight();
+
+			renderer.draw(texture, drawX, drawY, 0, 0, g.width, g.height, 1, 1, 0);
 
 			drawX += g.width;
 		}

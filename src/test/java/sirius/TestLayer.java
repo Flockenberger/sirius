@@ -2,19 +2,20 @@ package sirius;
 
 import at.flockenberger.sirius.engine.BaseDraw;
 import at.flockenberger.sirius.engine.Camera;
+import at.flockenberger.sirius.engine.RenderSettings;
 import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.Window;
 import at.flockenberger.sirius.engine.animation.Animation;
-import at.flockenberger.sirius.engine.animation.AnimationMode;
-import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.graphic.text.Text;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.graphic.texture.TextureRegion;
 import at.flockenberger.sirius.engine.particle.SimpleParticleEmitter;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
+import at.flockenberger.sirius.engine.postprocess.TestFilter;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
 import at.flockenberger.sirius.game.application.LayerBase;
+import at.flockenberger.sirius.map.GameLevel;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
 public class TestLayer extends LayerBase
@@ -29,6 +30,10 @@ public class TestLayer extends LayerBase
 	// Constant rows and columns of the sprite sheet
 	private static final int FRAME_COLS = 6, FRAME_ROWS = 5;
 	SimpleParticleEmitter emitter;
+	TestFilter filter;
+	
+	GameLevel level;
+	
 	private Text text;
 
 	private float stateTime;
@@ -68,14 +73,18 @@ public class TestLayer extends LayerBase
 		{
 			for (int j = 0; j < FRAME_COLS; j++)
 			{
-				walkFrames[index++] = tmp[i][j];
+				walkFrames[index++] = tmp[j][i];
 			}
 		}
 
 		// Initialize the Animation with the frame interval and array of frames
-		walkAnimation = new Animation<TextureRegion>(0.01f, walkFrames, AnimationMode.REVERSED);
+		walkAnimation = new Animation<TextureRegion>(0.001f, walkFrames);
 		stateTime = 0f;
 		text = new Text("Hello Woorld");
+		filter = new TestFilter();
+		
+		ResourceManager.get().loadMapResource("mapTest", "/gameart2d-desert.json");
+		level = new GameLevel(ResourceManager.get().getMap("mapTest"));
 	}
 
 	@Override
@@ -93,7 +102,6 @@ public class TestLayer extends LayerBase
 	@Override
 	public void onUpdate()
 	{
-		// system.update();
 		cam.update();
 	}
 
@@ -113,22 +121,27 @@ public class TestLayer extends LayerBase
 	@Override
 	public void onRender(Renderer render, float alpha)
 	{
-		render.clear(Color.PINK);
+		render.clear(Sirius.renderSettings.getColor(RenderSettings.BACKGROUND));
 
 		render.updateMatrix(cam);
 		int kk = 0;
-
-		render.begin();
-		for (int i = 0; i < Window.getActiveWidth(); i += 4)
-			for (int j = 0; j < Window.getActiveHeight(); j += 4)
-			{
-				render.draw(tex, i, j, 2, 2, 4, 4, 1, 1, (float) Math.sin(Sirius.timer.getTime()) * 90);
-				kk++;
-			}
-		render.end();
-		text.setPosition(0, -15);
-		text.setText("Drawing: " + kk + "Quads");
-		text.draw();
+	
+//		render.begin();
+//		int size = 32;
+//		int hSize = size / 2;
+//		for (int i = 0; i < Window.getActiveWidth(); i += size)
+//			for (int j = 0; j < Window.getActiveHeight(); j += size)
+//			{
+//				render.draw(tex, i, j, hSize, hSize, size, size, 1, 1, (float) i + j);
+//				kk++;
+//			}
+//
+//		render.end();
+//		text.setPosition(0, -text.getTextHeight());
+//		text.setText("Drawing: " + kk + "Quads");
+//		text.draw();
+		level.drawLevel();
+		
 		// render.begin();
 		// render.draw(tiles, 0, 0, 182, 128, 256, 256, 1, 1,
 		// (float)Math.sin(Sirius.timer.getTime())*90);
@@ -139,23 +152,18 @@ public class TestLayer extends LayerBase
 		// render.drawText("Hello World", 10, 10, Color.RED);
 		// render.end();
 
-		// stateTime += Timer.getTimer().getDelta();
-		// TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
-		//
-		// Image tmp = currentFrame.getRegionImage();
-		// Window.setActiveWindowIcon(Sirius.icon.set(tmp));
-		// tmp.free();
-		// tmp = null;
+		stateTime += Sirius.timer.getDelta();
+		TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
 
-		// render.begin();
-		// render.drawTextureRegion(currentFrame, 50, 50); // Draw
-		// render.end();
+		render.begin();
+		render.drawTextureRegion(currentFrame, 50, 50); // Draw
+		render.end();
 	}
 
 	@Override
 	public void onPostProcess(PostProcessor pp)
 	{
-
+		// pp.applyFilter(filter);
 	}
 
 }

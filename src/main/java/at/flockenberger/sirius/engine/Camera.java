@@ -10,9 +10,11 @@ import at.flockenberger.sirius.utillity.SUtils;
 
 public class Camera extends Entity implements ICamera
 {
-	private Matrix4f projection;
+	protected Matrix4f projection;
 	private Matrix4f view;
 	private Matrix4f viewProj;
+	private float m_AspectRatio;
+	private float m_ZoomLevel;
 
 	public Camera()
 	{
@@ -46,7 +48,11 @@ public class Camera extends Entity implements ICamera
 
 	public void recalculateMatrices(int width, int height)
 	{
-		projection = SUtils.orthographic(0f, width, height, 0f, -10f, 10f);
+		m_AspectRatio = width / (float) height;
+		m_ZoomLevel = 1000f;
+		projection = SUtils.orthographic(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, m_ZoomLevel,
+				-m_ZoomLevel, -1, 1);
+
 	}
 
 	public void updateViewMatrix()
@@ -54,8 +60,8 @@ public class Camera extends Entity implements ICamera
 		view = new Matrix4f();
 		view.identity();
 		view.translate(position.x, position.y, 0);
-		view.scale(scale);
-		view.rotateXYZ(rotation);
+		view.scale(scale.x, scale.y, 0);
+		view.rotateXYZ(0, rotation.y, rotation.x);
 		view.transpose();
 	}
 
@@ -69,27 +75,35 @@ public class Camera extends Entity implements ICamera
 	public void input()
 	{
 		float mul = 1;
+		float val = 10;
+
 		if (Keyboard.isShiftDown())
 			mul = 10;
 		if (Keyboard.isKeyPressed(KeyCode.W))
 		{
-			position.y += mul * 1;
+			position.y += mul * val;
 		}
 		if (Keyboard.isKeyPressed(KeyCode.A))
 		{
-			position.x += mul * 1;
+			position.x += mul * val;
 
 		}
 		if (Keyboard.isKeyPressed(KeyCode.S))
 		{
-			position.y -= mul * 1;
+			position.y -= mul * val;
 
 		}
 		if (Keyboard.isKeyPressed(KeyCode.D))
 		{
-			position.x -= mul * 1;
+			position.x -= mul * val;
 
 		}
+		if (Keyboard.isKeyPressed(KeyCode.F))
+		{
+			rotation.x += SUtils.degToRad(mul * val);
+		}
+		
+		m_ZoomLevel -= Mouse.getDeltaScrollY();
 
 	}
 

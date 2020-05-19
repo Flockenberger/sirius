@@ -36,7 +36,6 @@ import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 
-import java.awt.Font;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -53,7 +52,6 @@ import at.flockenberger.sirius.engine.gl.shader.FragmentShader;
 import at.flockenberger.sirius.engine.gl.shader.ShaderProgram;
 import at.flockenberger.sirius.engine.gl.shader.VertexShader;
 import at.flockenberger.sirius.engine.graphic.Color;
-import at.flockenberger.sirius.engine.graphic.text.SiriusFont;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.graphic.texture.TextureRegion;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
@@ -65,8 +63,11 @@ public class Renderer extends Allocateable
 	private VAO vao;
 	private VBO vbo;
 
-	private ShaderProgram program;
+	private ShaderProgram defaultProgram;
+	private ShaderProgram customProgram;
+
 	private FloatBuffer vertices;
+	private boolean useCustomProgram = false;
 
 	private int numVertices;
 	private boolean drawing;
@@ -100,6 +101,27 @@ public class Renderer extends Allocateable
 
 	}
 
+	public void useCustomProgram(boolean use)
+	{
+
+		this.useCustomProgram = use;
+		if (customProgram == null)
+			this.useCustomProgram = false;
+	}
+
+	public void switchProgram(ShaderProgram pr, boolean custom)
+	{
+		this.customProgram = pr;
+		if (this.customProgram != null)
+		{
+			if (!this.customProgram.isCreated())
+			{
+				this.customProgram.createProgram();
+			}
+		}
+		useCustomProgram(custom);
+	}
+
 	/**
 	 * Clears the drawing area.
 	 */
@@ -112,7 +134,7 @@ public class Renderer extends Allocateable
 	public void updateMatrix(Camera cam)
 	{
 		cam.recalculateMatrices(width, height);
-		program.setUniformMatrix(program.getUniformLocation("projView"), cam.getViewProjectionMatrix());
+		defaultProgram.setUniformMatrix(defaultProgram.getUniformLocation("projView"), cam.getViewProjectionMatrix());
 
 	}
 
@@ -135,7 +157,7 @@ public class Renderer extends Allocateable
 
 		if (drawing)
 		{
-			throw new IllegalStateException("Renderer is already drawing!");
+			end();
 		}
 		drawing = true;
 		numVertices = 0;
@@ -192,7 +214,11 @@ public class Renderer extends Allocateable
 				vbo.bind(GL_ARRAY_BUFFER);
 				specifyVertexAttributes();
 			}
-			program.useProgram();
+			if (!useCustomProgram)
+
+				defaultProgram.useProgram();
+			else
+				customProgram.useProgram();
 
 			/* Upload the new vertex data */
 			vbo.bind(GL_ARRAY_BUFFER);
@@ -271,8 +297,9 @@ public class Renderer extends Allocateable
 
 	public void drawTextureRegion(TextureRegion region, float x, float y)
 	{
-		drawTextureRegion(region.getTexture(), x, y, region.getRegionX(), region.getRegionY(), region.getWidth(),
-				region.getHeight());
+
+			drawTextureRegion(region.getTexture(), x, y, region.getRegionX(), region.getRegionY(), region.getWidth(),
+					region.getHeight());
 
 	}
 
@@ -504,8 +531,9 @@ public class Renderer extends Allocateable
 			vao.free();
 		}
 		vbo.free();
-		program.free();
-
+		defaultProgram.free();
+		if (customProgram != null)
+			customProgram.free();
 		// font.free();
 		// debugFont.free();
 	}
@@ -542,12 +570,10 @@ public class Renderer extends Allocateable
 				.getAsFragmentShader();
 
 		/* Create shader program */
-		program = new ShaderProgram(vertexShader, fragmentShader);
-
-		program.bindFragmentDataLocation(0, "fragColor");
-
-		program.createProgram();
-		program.useProgram();
+		defaultProgram = new ShaderProgram(vertexShader, fragmentShader);
+		defaultProgram.bindFragmentDataLocation(0, "fragColor");
+		defaultProgram.createProgram();
+		defaultProgram.useProgram();
 
 		/* Delete linked shaders */
 		vertexShader.free();
@@ -569,11 +595,11 @@ public class Renderer extends Allocateable
 		specifyVertexAttributes();
 
 		/* Set texture uniform */
-		int uniTex = program.getUniformLocation("texImage");
-		program.setUniform(uniTex, 0);
+		int uniTex = defaultProgram.getUniformLocation("texImage");
+		defaultProgram.setUniform(uniTex, 0);
 		model.identity();
-		int uniModel = program.getUniformLocation("model");
-		program.setUniformMatrix(uniModel, model);
+		int uniModel = defaultProgram.getUniformLocation("model");
+		defaultProgram.setUniformMatrix(uniModel, model);
 
 	}
 
@@ -583,19 +609,19 @@ public class Renderer extends Allocateable
 	private void specifyVertexAttributes()
 	{
 		/* Specify Vertex Pointer */
-		int posAttrib = program.getAttributeLocation("position");
-		program.enableVertexAttribute(posAttrib);
-		program.pointVertexAttribute(posAttrib, 2, 8 * Float.BYTES, 0);
+		int posAttrib = defaultProgram.getAttributeLocation("position");
+		defaultProgram.enableVertexAttribute(posAttrib);
+		defaultProgram.pointVertexAttribute(posAttrib, 2, 8 * Float.BYTES, 0);
 
 		/* Specify Color Pointer */
-		int colAttrib = program.getAttributeLocation("color");
-		program.enableVertexAttribute(colAttrib);
-		program.pointVertexAttribute(colAttrib, 4, 8 * Float.BYTES, 2 * Float.BYTES);
+		int colAttrib = defaultProgram.getAttributeLocation("color");
+		defaultProgram.enableVertexAttribute(colAttrib);
+		defaultProgram.pointVertexAttribute(colAttrib, 4, 8 * Float.BYTES, 2 * Float.BYTES);
 
 		/* Specify Texture Pointer */
-		int texAttrib = program.getAttributeLocation("texcoord");
-		program.enableVertexAttribute(texAttrib);
-		program.pointVertexAttribute(texAttrib, 2, 8 * Float.BYTES, 6 * Float.BYTES);
+		int texAttrib = defaultProgram.getAttributeLocation("texcoord");
+		defaultProgram.enableVertexAttribute(texAttrib);
+		defaultProgram.pointVertexAttribute(texAttrib, 2, 8 * Float.BYTES, 6 * Float.BYTES);
 	}
 
 }

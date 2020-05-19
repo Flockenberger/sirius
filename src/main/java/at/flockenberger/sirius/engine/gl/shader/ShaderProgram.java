@@ -63,6 +63,7 @@ public class ShaderProgram
 	private List<VertexAttribute> attributes;
 
 	protected HashMap<String, Integer> uniforms = new HashMap<String, Integer>();
+	private boolean created;
 
 	public ShaderProgram()
 	{
@@ -73,6 +74,10 @@ public class ShaderProgram
 	public ShaderProgram(Shader... shaders)
 	{
 		this();
+		shader = Arrays.asList(shaders);
+	}
+
+	public void setShader(Shader...shaders) {
 		shader = Arrays.asList(shaders);
 	}
 
@@ -113,6 +118,11 @@ public class ShaderProgram
 	public void closeProgram()
 	{
 		GL20.glUseProgram(0);
+	}
+
+	public boolean isCreated()
+	{
+		return created;
 	}
 
 	/**
@@ -161,7 +171,7 @@ public class ShaderProgram
 
 		for (Shader s : shader)
 			s.free();
-
+		created = true;
 	}
 
 	/**

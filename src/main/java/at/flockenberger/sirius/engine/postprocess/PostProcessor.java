@@ -1,14 +1,16 @@
 package at.flockenberger.sirius.engine.postprocess;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import at.flockenberger.sirius.engine.Sirius;
+import at.flockenberger.sirius.engine.Window;
 import at.flockenberger.sirius.engine.allocate.Allocateable;
 
 public class PostProcessor extends Allocateable implements PostProcessingPipeline
 {
 
-	public List<PostProcessingFilter> filterList;
+	public Set<PostProcessingFilter> filterList;
 
 	@Override
 	public void free()
@@ -19,7 +21,7 @@ public class PostProcessor extends Allocateable implements PostProcessingPipelin
 
 	public void init()
 	{
-		filterList = new ArrayList<>();
+		filterList = new HashSet<>();
 	}
 
 	public void applyFilter(PostProcessingFilter filter)
@@ -36,6 +38,17 @@ public class PostProcessor extends Allocateable implements PostProcessingPipelin
 
 	public void postProcess()
 	{
-		
+		Sirius.renderer.begin();
+
+		for (PostProcessingFilter filter : filterList)
+		{
+			filter.update();
+			Sirius.renderer.switchProgram(filter, true);
+			Sirius.renderer.draw(Sirius.game.fbo.getTexture(), 0, 0, 0, 0, Window.getActiveWidth(),
+					Window.getActiveHeight(), 1, 1, 0);
+		}
+		Sirius.renderer.end();
+
 	}
+
 }

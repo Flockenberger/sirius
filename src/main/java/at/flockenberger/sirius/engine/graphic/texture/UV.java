@@ -9,10 +9,10 @@ package at.flockenberger.sirius.engine.graphic.texture;
  */
 public class UV
 {
-	private float u1;
-	private float v1;
-	private float u2;
-	private float v2;
+	public float u1;
+	public float v1;
+	public float u2;
+	public float v2;
 
 	/**
 	 * Default Constructor<br>
@@ -39,6 +39,17 @@ public class UV
 		this.v1 = v1;
 		this.u2 = u2;
 		this.v2 = v2;
+	}
+
+	public void flip()
+	{
+		float tmp = u1;
+		u1 = u2;
+		u2 = tmp;
+
+		tmp = v1;
+		v1 = v2;
+		v2 = tmp;
 	}
 
 	/**

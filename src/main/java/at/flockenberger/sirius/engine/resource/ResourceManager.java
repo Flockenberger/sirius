@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import at.flockenberger.sirius.engine.graphic.Image;
+import at.flockenberger.sirius.map.tilted.TiledMap;
 import at.flockenberger.sirius.utillity.SUtils;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
@@ -47,6 +48,23 @@ public class ResourceManager
 		try
 		{
 			resouce = new URLResource(Paths.get(ResourceManager.class.getResource(p).toURI()));
+		} catch (URISyntaxException e)
+		{
+			SLogger.getSystemLogger().except(e);
+		}
+		res.put(name, resouce);
+		return resouce;
+	}
+
+	public MapResource loadMapResource(String name, String p)
+	{
+		if (getResource(name) != null)
+			return (MapResource) getResource(name);
+
+		MapResource resouce = null;
+		try
+		{
+			resouce = new MapResource(Paths.get(ResourceManager.class.getResource(p).toURI()));
 		} catch (URISyntaxException e)
 		{
 			SLogger.getSystemLogger().except(e);
@@ -122,7 +140,24 @@ public class ResourceManager
 
 		return ((ImageResource) res).getImage();
 	}
+	
+	
+	public TiledMap getMap(String cache)
+	{
+		ResourceBase res = getResource(cache);
+		if (res == null)
+		{
+			SLogger.getSystemLogger().warn("Image " + cache + " was not found!");
+			return null;
+		}
 
+		if (!(res instanceof MapResource))
+		{
+			SLogger.getSystemLogger().warn("Found Resource is not an MapResource!");
+		}
+
+		return ((MapResource) res).getMap();
+	}
 	/**
 	 * Returns an {@link URL} which has been previously loaded and cached using
 	 * {@link #loadURLResource(String, String)}.

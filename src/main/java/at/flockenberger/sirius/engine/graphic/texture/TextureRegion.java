@@ -158,11 +158,56 @@ public class TextureRegion implements ITextureBase
 		return this.uv;
 	}
 
+	public void updateUV()
+	{
+		uv.u1 = getRegionX() / (float) getTexture().getWidth();
+		uv.v1 = (getRegionY() + getRegionHeight()) / (float) getTexture().getHeight();
+		uv.u2 = (getRegionX() + getRegionWidth()) / (float) getTexture().getWidth();
+		uv.v2 = getRegionY() / (float) getTexture().getHeight();
+
+	}
+
 	@Override
 	public int getID()
 	{
 		// TODO Auto-generated method stub
 		return -1;
+	}
+
+	/**
+	 * Helper function to create tiles out of this TextureRegion starting from the
+	 * top left corner going to the right and ending at the bottom right corner.
+	 * Only complete tiles will be returned so if the region's width or height are
+	 * not a multiple of the tile width and height not all of the region will be
+	 * used. This will not work on texture regions returned form a TextureAtlas that
+	 * either have whitespace removed or where flipped before the region is split.
+	 * 
+	 * @param tileWidth  a tile's width in pixels
+	 * @param tileHeight a tile's height in pixels
+	 * @return a 2D array of TextureRegions indexed by [row][column].
+	 */
+	public TextureRegion[][] splitTileSet(int tileWidth, int tileHeight)
+	{
+		int x = getRegionX();
+		int y = getRegionY();
+		int width = regionWidth;
+		int height = regionHeight;
+
+		int rows = height / tileHeight;
+		int cols = width / tileWidth;
+
+		int startX = x;
+		TextureRegion[][] tiles = new TextureRegion[cols][rows];
+		for (int row = rows; row > 0; row--, y += tileHeight)
+		{
+			x = startX;
+			for (int col = 0; col < cols; col++, x += tileWidth)
+			{
+				tiles[col][row - 1] = new TextureRegion(texture, x, y, tileWidth, tileHeight);
+			}
+		}
+
+		return tiles;
 	}
 
 	/**
@@ -188,13 +233,13 @@ public class TextureRegion implements ITextureBase
 		int cols = width / tileWidth;
 
 		int startX = x;
-		TextureRegion[][] tiles = new TextureRegion[rows][cols];
+		TextureRegion[][] tiles = new TextureRegion[cols][rows];
 		for (int row = 0; row < rows; row++, y += tileHeight)
 		{
 			x = startX;
 			for (int col = 0; col < cols; col++, x += tileWidth)
 			{
-				tiles[row][col] = new TextureRegion(texture, x, y, tileWidth, tileHeight);
+				tiles[col][row] = new TextureRegion(texture, x, y, tileWidth, tileHeight);
 			}
 		}
 
@@ -217,6 +262,24 @@ public class TextureRegion implements ITextureBase
 	{
 		TextureRegion region = new TextureRegion(texture);
 		return region.split(tileWidth, tileHeight);
+	}
+
+	/**
+	 * Helper function to create tiles out of the given {@link Texture} starting
+	 * from the top left corner going to the right and ending at the bottom right
+	 * corner. Only complete tiles will be returned so if the texture's width or
+	 * height are not a multiple of the tile width and height not all of the texture
+	 * will be used.
+	 * 
+	 * @param texture    the Texture
+	 * @param tileWidth  a tile's width in pixels
+	 * @param tileHeight a tile's height in pixels
+	 * @return a 2D array of TextureRegions indexed by [row][column].
+	 */
+	public static TextureRegion[][] splitTileSet(Texture texture, int tileWidth, int tileHeight)
+	{
+		TextureRegion region = new TextureRegion(texture);
+		return region.splitTileSet(tileWidth, tileHeight);
 	}
 
 }

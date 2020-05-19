@@ -8,7 +8,6 @@ import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.allocate.Allocateable;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
 import at.flockenberger.sirius.utillity.SUtils;
-import at.flockenberger.sirius.utillity.Timer;
 
 /**
  * <h1>LayerStack</h1><br>
@@ -41,7 +40,7 @@ public class LayerStack extends Allocateable
 	public LayerStack()
 	{
 		layers = new HashMap<>();
-		
+
 	}
 
 	public void init()
@@ -173,7 +172,7 @@ public class LayerStack extends Allocateable
 
 	public void onPostProcess(PostProcessor pp)
 	{
-
+		currentLayer.onPostProcess(pp);
 	}
 
 }
