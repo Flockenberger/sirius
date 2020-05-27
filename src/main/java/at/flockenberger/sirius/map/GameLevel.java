@@ -68,7 +68,7 @@ public class GameLevel
 
 						Sirius.renderer.draw(tex, xx, yy, tiles.getTileWidth() / 2f, tiles.getTileHeight() / 2f,
 								tiles.getTileWidth(), tiles.getTileHeight(), scale, scale, 0);
-						// Sirius.renderer.drawTextureRegion(tex, xx, yy);
+
 					}
 
 				}

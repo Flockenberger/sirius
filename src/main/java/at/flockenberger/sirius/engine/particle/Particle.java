@@ -34,7 +34,7 @@ public class Particle implements IParticle
 	private Color endColor;
 	private Color color;
 	private Texture texture;
-	
+
 	public Particle(LifeTime lifeTime, long id, double agingSpeed, Vector3f velocity, Vector3f acceleration,
 			Vector3f position, boolean doesAge, Color startColor, Color endColor)
 	{
@@ -62,7 +62,7 @@ public class Particle implements IParticle
 		this.doesAge = true;
 		this.startColor = start;
 		this.endColor = end;
-		this.size = (float) Math.random() *16;
+		this.size = (float) Math.random() * 8;
 		this.rotation = new Vector3f(1);
 		this.iniSize = size;
 	}
@@ -166,7 +166,7 @@ public class Particle implements IParticle
 	{
 		this.position = position;
 	}
-	
+
 	public void isOutOfBounds()
 	{
 		if (getPosition().x <= 0)
@@ -217,12 +217,12 @@ public class Particle implements IParticle
 	{
 		color = this.startColor.interpolate(this.endColor, lifeTime.getAgePercent());
 
-		//isOutOfBounds();
+		// isOutOfBounds();
 		getPosition().add(getVelocity());
 
 		setSize((float) (iniSize * (1 - lifeTime.getAgePercent())));
-		//if (getSize() < 0.006f)
-		//	lifeTime.setDead();
+		// if (getSize() < 0.006f)
+		// lifeTime.setDead();
 
 		getLifeTime().incrementAge(getAgingSpeed());
 

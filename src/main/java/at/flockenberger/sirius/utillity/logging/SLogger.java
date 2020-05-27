@@ -17,10 +17,10 @@ public class SLogger implements IFreeable
 {
 
 	private static SLogger SYSTEM_LOGGER;
-	
+
 	private List<LogHandler> handlers;
 	private LogConsoleHandler logch;
-	
+
 	private boolean debug = false;
 	private boolean suppressWarning = false;
 
@@ -119,6 +119,16 @@ public class SLogger implements IFreeable
 	public void except(Exception e)
 	{
 		error(e);
+	}
+
+	/**
+	 * Logs an {@link Throwable}.
+	 * 
+	 * @param t the {@link Throwable} to log
+	 */
+	public void except(Throwable t)
+	{
+		error(t);
 	}
 
 	/**

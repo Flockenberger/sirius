@@ -1,14 +1,15 @@
 package sirius;
 
+import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.graphic.Cursor;
 import at.flockenberger.sirius.engine.graphic.Icon;
 import at.flockenberger.sirius.engine.input.Mouse;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
-import at.flockenberger.sirius.game.application.Game;
+import at.flockenberger.sirius.game.application.SiriusGame;
 import at.flockenberger.sirius.game.application.LayerStack;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
-public class TestGame extends Game
+public class TestGame extends SiriusGame
 {
 
 	public TestGame(int width, int height, String title)
@@ -23,14 +24,13 @@ public class TestGame extends Game
 		SLogger.getSystemLogger().enableDebugOutput();
 		SLogger.getSystemLogger().suppressWarnings();
 
-		Game game = new TestGame(800, 600, "Sirius Game");
+		SiriusGame game = new TestGame(800, 600, "Sirius Game");
 
 		// this only works because loadGameResources is called in the
 		// games constructor!
 		icon = new Icon(ResourceManager.get().getImage("icon").resize(32, 32));
 		game.setGameIcon(icon);
-		//game.setFullscreen();
-
+		// game.setFullscreen();
 		game.start();
 
 	}
@@ -47,9 +47,9 @@ public class TestGame extends Game
 	@Override
 	public void loadGameResources()
 	{
-		ResourceManager.get().loadImageResource("icon", "/cursor.png");
-		ResourceManager.get().loadImageResource("font", "/ptsans_00.png");
-		ResourceManager.get().loadURLResource("font_url", "/ptsans.fnt");
+		Sirius.resMan.loadImageResource("icon", "/cursor.png");
+		Sirius.resMan.loadImageResource("font", "/ptsans_00.png");
+		Sirius.resMan.loadURLResource("font_url", "/ptsans.fnt");
 	}
 
 }

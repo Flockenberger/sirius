@@ -171,7 +171,8 @@ public class ParticleSystem implements IFreeable
 		tex.bind();
 		for (Particle p : particles)
 		{
-			render.drawTexture(tex, p.getPosition().x, p.getPosition().y);
+
+			render.drawColor(p.getPosition().x, p.getPosition().y, p.getSize(), p.getSize(), Color.BRIGHT_ORANGE);
 		}
 
 	}

@@ -29,4 +29,14 @@ public interface ICamera
 	 */
 	public Matrix4f getViewProjectionMatrix();
 
+	/**
+	 * Called by the render engine {@link Renderer} to update the view and
+	 * projection matrices. <br>
+	 * This method important to update the new dimensions when the framebuffer is
+	 * resized.
+	 * 
+	 * @param width  the width of the view
+	 * @param height the height of the view
+	 */
+	public void recalculateMatrices(int width, int height);
 }

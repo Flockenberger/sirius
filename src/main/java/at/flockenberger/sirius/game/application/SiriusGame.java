@@ -6,12 +6,12 @@ import at.flockenberger.sirius.engine.graphic.text.Text;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.graphic.texture.UV;
 
-public abstract class Game extends AbstractGame
+public abstract class SiriusGame extends AbstractGame
 {
 	private Text debugText;
 	private Runtime rt = Runtime.getRuntime();
 
-	public Game(int width, int height, String title)
+	public SiriusGame(int width, int height, String title)
 	{
 		super(width, height, title);
 		debugText = new Text();
@@ -46,11 +46,12 @@ public abstract class Game extends AbstractGame
 				Sirius.timer.updateUPS();
 				accumulator -= interval;
 				update();
+				update(Sirius.timer.getDelta());
 			}
 
 			/* Calculate alpha value for interpolation */
 			alpha = accumulator / interval;
-			
+
 			fbo.bind();
 			render(alpha);
 
@@ -84,9 +85,10 @@ public abstract class Game extends AbstractGame
 			long free = (long) (rt.freeMemory() / 1e6);
 			long used = total - free;
 
-			debugText.setText("FPS: " + String.valueOf(Sirius.timer.getFPS()) + ", Used Memory: " + used
-					+ "MB, Free Memory: " + free + "MB, Total Memory: " + total + "MB");
+			debugText.setText("FPS: " + String.valueOf(Sirius.timer.getFPS()) + ", UPS: " + Sirius.timer.getUPS()
+					+ ", Used Memory: " + used + "MB, Free Memory: " + free + "MB, Total Memory: " + total + "MB");
 			debugText.draw();
+			
 			Sirius.renderer.end();
 			Sirius.window.update();
 

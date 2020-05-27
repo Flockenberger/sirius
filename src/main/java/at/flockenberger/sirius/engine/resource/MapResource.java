@@ -1,11 +1,8 @@
 package at.flockenberger.sirius.engine.resource;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import com.google.gson.stream.JsonReader;
 
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.map.tilted.TiledMap;
@@ -31,7 +28,6 @@ public class MapResource extends ResourceBase
 	@Override
 	public void load()
 	{
-		JsonReader reader = null;
 		byte[] b = null;
 		try
 		{

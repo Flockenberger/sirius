@@ -66,6 +66,7 @@ public class Window implements IFreeable
 	private List<WindowFramebufferSizeListener> fbSizeListener;
 	private List<WindowContentScaleListener> contentScaleListener;
 	private List<WindowPositionListener> positionListener;
+	
 	static int[] _width = new int[1];
 	static int[] _height = new int[1];
 	static int[] _size = new int[2];

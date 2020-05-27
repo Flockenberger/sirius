@@ -1,5 +1,6 @@
 package at.flockenberger.sirius.engine.particle;
 
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public abstract class ParticleEmitterBase
@@ -29,6 +30,12 @@ public abstract class ParticleEmitterBase
 		this.x = position.x;
 		this.y = position.y;
 		this.z = position.z;
+	}
+
+	public void setPosition(Vector2f position)
+	{
+		this.x = position.x;
+		this.y = position.y;
 	}
 
 	public long getAmount()

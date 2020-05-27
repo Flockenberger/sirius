@@ -6,7 +6,9 @@ import com.google.gson.GsonBuilder;
 import at.flockenberger.sirius.engine.allocate.Allocator;
 import at.flockenberger.sirius.engine.graphic.Icon;
 import at.flockenberger.sirius.engine.graphic.text.SiriusFont;
+import at.flockenberger.sirius.engine.particle.ParticleSystem;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
+import at.flockenberger.sirius.engine.resource.ResourceManager;
 import at.flockenberger.sirius.game.application.AbstractGame;
 import at.flockenberger.sirius.game.application.LayerStack;
 import at.flockenberger.sirius.utillity.Timer;
@@ -22,6 +24,8 @@ public class Sirius
 	public static SiriusFont fontDefault;
 	public static AbstractGame game;
 	public static RenderSettings renderSettings;
+	public static ResourceManager resMan = ResourceManager.get();
+	public static ParticleSystem particleSystem;
 	private final static GsonBuilder gsonB = new GsonBuilder();
 	public static Gson gson;
 
@@ -50,6 +54,7 @@ public class Sirius
 	{
 		allocator.init();
 		fontDefault = new SiriusFont();
-
+		particleSystem = new ParticleSystem();
+		
 	}
 }

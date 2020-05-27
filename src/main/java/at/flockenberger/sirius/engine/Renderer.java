@@ -40,6 +40,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
@@ -131,7 +132,7 @@ public class Renderer extends Allocateable
 		GL11.glClearColor(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
 	}
 
-	public void updateMatrix(Camera cam)
+	public void updateMatrix(ICamera cam)
 	{
 		cam.recalculateMatrices(width, height);
 		defaultProgram.setUniformMatrix(defaultProgram.getUniformLocation("projView"), cam.getViewProjectionMatrix());
@@ -219,7 +220,8 @@ public class Renderer extends Allocateable
 				defaultProgram.useProgram();
 			else
 				customProgram.useProgram();
-
+			
+			
 			/* Upload the new vertex data */
 			vbo.bind(GL_ARRAY_BUFFER);
 			vbo.uploadSubData(GL_ARRAY_BUFFER, 0, vertices);
@@ -247,6 +249,11 @@ public class Renderer extends Allocateable
 		drawTexture(texture, x, y, WHITE);
 	}
 
+	public void drawTexture(Texture texture, Vector2f position)
+	{
+		drawTexture(texture, position.x, position.y);
+	}
+
 	/**
 	 * Draws the currently bound texture on specified coordinates and with specified
 	 * color.
@@ -271,9 +278,7 @@ public class Renderer extends Allocateable
 	public void drawColor(float x, float y, float sizeX, float sizeY, Color c)
 	{
 
-		if (curTex != null)
-			curTex.unbind();
-
+		switchTexture(null);
 		drawTextureRegion(x, y, x + sizeX, y + sizeY, s1, t1, s2, t2, c);
 	}
 
@@ -295,11 +300,16 @@ public class Renderer extends Allocateable
 		drawTextureRegion(texture, x, y, regX, regY, regWidth, regHeight, WHITE);
 	}
 
+	public void drawTextureRegion(TextureRegion region, Vector2f vec)
+	{
+		drawTextureRegion(region, vec.x, vec.y);
+	}
+
 	public void drawTextureRegion(TextureRegion region, float x, float y)
 	{
 
-			drawTextureRegion(region.getTexture(), x, y, region.getRegionX(), region.getRegionY(), region.getWidth(),
-					region.getHeight());
+		drawTextureRegion(region.getTexture(), x, y, region.getRegionX(), region.getRegionY(), region.getWidth(),
+				region.getHeight());
 
 	}
 
