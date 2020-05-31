@@ -405,8 +405,8 @@ public class SiriusFont
 			uv.u2 = (g.x + g.width) / (float) texture.getWidth();
 			uv.v2 = g.y / (float) texture.getHeight();
 
-			renderer.draw(texture, drawX, drawY, 0, 0, g.width, g.height, 1, 1, 0);
-
+			renderer.draw(texture, drawX, drawY, 0, 0, g.width, g.height, 1, 1, 0, c);
+			
 			drawX += g.width;
 		}
 

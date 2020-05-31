@@ -1,21 +1,22 @@
 package at.flockenberger.sirius.engine.animation;
 
 import java.util.List;
-import java.util.Random;
 
 import at.flockenberger.sirius.engine.IFreeable;
+import at.flockenberger.sirius.engine.Sirius;
+import at.flockenberger.sirius.utillity.SUtils;
 
 public class Animation<T> implements IFreeable
 {
 
 	protected T[] keyFrames;
-
 	private float frameDuration;
 	private float animationDuration;
+	private float timer;
+
 	private int lastFrameNumber;
 	private float lastStateTime;
-	private Random random = new Random();
-	
+
 	private AnimationMode aniMode = AnimationMode.NORMAL;
 
 	public Animation(float frameDuration, List<? extends T> keyFrames)
@@ -23,6 +24,7 @@ public class Animation<T> implements IFreeable
 		this(frameDuration, keyFrames, AnimationMode.NORMAL);
 	}
 
+	@SafeVarargs
 	public Animation(float frameDuration, T... keyFrames)
 	{
 		this.frameDuration = frameDuration;
@@ -43,6 +45,16 @@ public class Animation<T> implements IFreeable
 		T[] frames = (T[]) keyFrames.toArray();
 		setKeyFrames(frames);
 		setAnimationMode(playMode);
+	}
+
+	/**
+	 * @return the next keyframe to play. <br>
+	 *         This method uses the internal timer.
+	 */
+	public T getNextFrame()
+	{
+		timer += Sirius.timer.getDelta();
+		return getKeyFrame(timer);
 	}
 
 	public T getKeyFrame(float stateTime, boolean looping)
@@ -107,8 +119,18 @@ public class Animation<T> implements IFreeable
 		return keyFrames;
 	}
 
-	protected void setKeyFrames(T... keyFrames)
+	public void setKeyFrame(T key, int index)
 	{
+		SUtils.checkNull(key, "Animation: KeyFrame");
+		SUtils.checkIndex(index, 0, keyFrames.length - 1);
+		SUtils.checkNull(keyFrames, "Animation: KeyFrames");
+
+		keyFrames[index] = key;
+	}
+
+	public void setKeyFrames(T... keyFrames)
+	{
+		SUtils.checkNull(keyFrames, "Animation: KeyFrames");
 		this.keyFrames = keyFrames;
 		this.animationDuration = keyFrames.length * frameDuration;
 	}
@@ -145,10 +167,20 @@ public class Animation<T> implements IFreeable
 		return animationDuration;
 	}
 
+	public int getLastFrameNumber()
+	{
+		return lastFrameNumber;
+	}
+
+	public float getLastStateTime()
+	{
+		return lastStateTime;
+	}
+
 	@Override
 	public void free()
 	{
 		this.keyFrames = null;
-		random = null;
 	}
+
 }

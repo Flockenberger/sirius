@@ -25,7 +25,7 @@ public class TestGame extends SiriusGame
 		SLogger.getSystemLogger().suppressWarnings();
 
 		SiriusGame game = new TestGame(800, 600, "Sirius Game");
-
+		
 		// this only works because loadGameResources is called in the
 		// games constructor!
 		icon = new Icon(ResourceManager.get().getImage("icon").resize(32, 32));

@@ -1,26 +1,3 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright © 2014-2018, Heiko Brumme
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 package at.flockenberger.sirius.engine;
 
 import static org.lwjgl.opengl.GL11.GL_BLEND;
@@ -43,6 +20,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
@@ -88,6 +66,7 @@ public class Renderer extends Allocateable
 
 	private Color WHITE = Color.WHITE;
 	private Matrix4f model = new Matrix4f();
+	private boolean drawGradientQuad = false;
 
 	/** Initializes the renderer. */
 	public void init()
@@ -198,6 +177,42 @@ public class Renderer extends Allocateable
 		}
 	}
 
+	private void updateBuffers()
+	{
+		if (vao != null)
+		{
+			vao.bind();
+		} else
+		{
+			vbo.bind(GL_ARRAY_BUFFER);
+			specifyVertexAttributes();
+		}
+	}
+
+	private void bindAndUploadData()
+	{
+		/* Upload the new vertex data */
+		vbo.bind(GL_ARRAY_BUFFER);
+		vbo.uploadSubData(GL_ARRAY_BUFFER, 0, vertices);
+	}
+
+	private void useProgram()
+	{
+		if (!useCustomProgram)
+			defaultProgram.useProgram();
+		else
+			customProgram.useProgram();
+	}
+
+	private void reset()
+	{
+		/* Clear vertex data for next batch */
+		vertices.clear();
+		// SLogger.getSystemLogger().debug("Drawing: " + numVertices / 6 + " quads!");
+		numVertices = 0;
+		drawGradientQuad = false;
+	}
+
 	/**
 	 * Flushes the data to the GPU to let it get rendered.
 	 */
@@ -207,33 +222,18 @@ public class Renderer extends Allocateable
 		{
 			vertices.flip();
 
-			if (vao != null)
-			{
-				vao.bind();
-			} else
-			{
-				vbo.bind(GL_ARRAY_BUFFER);
-				specifyVertexAttributes();
-			}
-			if (!useCustomProgram)
+			updateBuffers();
+			useProgram();
 
-				defaultProgram.useProgram();
-			else
-				customProgram.useProgram();
-			
-			
-			/* Upload the new vertex data */
-			vbo.bind(GL_ARRAY_BUFFER);
-			vbo.uploadSubData(GL_ARRAY_BUFFER, 0, vertices);
+			bindAndUploadData();
 
 			/* Draw batch */
+			if (!drawGradientQuad)
+				glDrawArrays(GL_TRIANGLES, 0, numVertices);
+			else
+				glDrawArrays(GL11.GL_QUADS, 0, numVertices);
 
-			glDrawArrays(GL_TRIANGLES, 0, numVertices);
-
-			/* Clear vertex data for next batch */
-			vertices.clear();
-			// SLogger.getSystemLogger().debug("Drawing: " + numVertices / 6 + " quads!");
-			numVertices = 0;
+			reset();
 		}
 	}
 
@@ -388,11 +388,35 @@ public class Renderer extends Allocateable
 		vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(s1).put(t1);
 		vertices.put(x1).put(y2).put(r).put(g).put(b).put(a).put(s1).put(t2);
 		vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(s2).put(t2);
+
 		vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(s1).put(t1);
 		vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(s2).put(t2);
 		vertices.put(x2).put(y1).put(r).put(g).put(b).put(a).put(s2).put(t1);
 
 		numVertices += 6;
+	}
+
+	public void drawGradient(float x1, float y1, float x2, float y2, Color top, Color bottom)
+	{
+
+		/*
+		 * flush();
+		 * 
+		 * switchTexture(null);
+		 * 
+		 * r = top.getRed(); g = top.getGreen(); b = top.getBlue(); a = top.getAlpha();
+		 * 
+		 * vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(0).put(0);
+		 * vertices.put(x2).put(y1).put(r).put(g).put(b).put(a).put(0).put(1);
+		 * 
+		 * r = bottom.getRed(); g = bottom.getGreen(); b = bottom.getBlue(); a =
+		 * bottom.getAlpha();
+		 * 
+		 * vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(1).put(0);
+		 * vertices.put(x1).put(y2).put(r).put(g).put(b).put(a).put(1).put(1);
+		 * 
+		 * drawGradientQuad = true; numVertices += 4; flush();
+		 */
 	}
 
 	public void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height,

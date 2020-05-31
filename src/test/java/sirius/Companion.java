@@ -1,8 +1,10 @@
-package at.flockenberger.sirius.game;
+package sirius;
 
 import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
+import at.flockenberger.sirius.game.Entity;
+import at.flockenberger.sirius.game.Player;
 
 public class Companion extends Entity
 {
@@ -36,8 +38,8 @@ public class Companion extends Entity
 	public void update()
 	{
 		position.set(player.getPosition());
-		position.x = (float) ((position.x - 24) * Math.sin(Sirius.timer.getTime()) * (Math.random() * 1));
-		position.y = (float) ((position.y - 24) * Math.cos(Sirius.timer.getTime()) * (Math.random() * 1));
+		position.x = (float) ((position.x - 24) + Math.sin(Math.random() * 2 * Math.PI) * 10);
+		position.y = (float) ((position.y - 24) + Math.cos(Math.random() * 2 * Math.PI) * 10);
 
 	}
 

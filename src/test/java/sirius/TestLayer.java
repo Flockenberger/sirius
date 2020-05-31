@@ -10,13 +10,13 @@ import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.Window;
 import at.flockenberger.sirius.engine.animation.Animation;
 import at.flockenberger.sirius.engine.animation.AnimationMode;
+import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.graphic.text.Text;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.particle.SimpleParticleEmitter;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
 import at.flockenberger.sirius.engine.postprocess.TestFilter;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
-import at.flockenberger.sirius.game.Companion;
 import at.flockenberger.sirius.game.Player;
 import at.flockenberger.sirius.game.application.LayerBase;
 import at.flockenberger.sirius.map.GameLevel;
@@ -31,10 +31,9 @@ public class TestLayer extends LayerBase
 	Player p;
 	SimpleParticleEmitter emitter;
 	TestFilter filter;
-	GameLevel level;
 	Companion comp;
 	Text text;
-	private float stateTime = 0;
+	Color c;
 
 	Animation<String> posAni;
 
@@ -67,8 +66,7 @@ public class TestLayer extends LayerBase
 
 		filter = new TestFilter();
 
-		ResourceManager.get().loadMapResource("mapTest", "/gameart2d-desert.json");
-		level = new GameLevel(ResourceManager.get().getMap("mapTest"));
+		ResourceManager.get().loadMapResource("mapTest", "/gameart2d-desert.tmx");
 		List<String> keyframes = new ArrayList<>();
 		keyframes.add("Flo");
 		keyframes.add("Ana");
@@ -77,6 +75,8 @@ public class TestLayer extends LayerBase
 		posAni = new Animation<String>(0.002f, keyframes);
 		posAni.setAnimationMode(AnimationMode.LOOP);
 		text = new Text("msg");
+		c = Color.ORANGE;
+
 	}
 
 	@Override
@@ -121,23 +121,20 @@ public class TestLayer extends LayerBase
 		render.clear(Sirius.renderSettings.getColor(RenderSettings.BACKGROUND));
 
 		render.updateMatrix(cam);
-		stateTime += Sirius.timer.getDelta();
 
 		render.begin();
-		int size = 32;
-		int hSize = size / 2;
-		for (int i = 0; i < Window.getActiveWidth(); i += size)
-			for (int j = 0; j < Window.getActiveHeight(); j += size)
-			{
-				render.draw(tex, i, j, hSize, hSize, size, size, 1, 1, (float) i + j);
-				// kk++;
-			}
+
+		/*
+		 * int size = 32; int hSize = size / 2; for (int i = 0; i <
+		 * Window.getActiveWidth(); i += size) for (int j = 0; j <
+		 * Window.getActiveHeight(); j += size) { render.draw(tex, i, j, hSize, hSize,
+		 * size, size, 1, 1, (float) i + j); // kk++; }
+		 */
 		//
 		// render.end();
 		// text.setPosition(0, -text.getTextHeight());
 		// text.setText("Drawing: " + kk + "Quads");
 		// text.draw();
-		level.drawLevel();
 
 		// render.begin();
 		// render.draw(tiles, 0, 0, 182, 128, 256, 256, 1, 1,
@@ -148,13 +145,11 @@ public class TestLayer extends LayerBase
 		// render.begin();
 		// render.drawText("Hello World", 10, 10, Color.RED);
 		// render.end();
-		render.begin();
-		Sirius.particleSystem.render(render);
-		render.end();
 		p.render(render);
 		comp.render(render);
 
-		text.setText(posAni.getKeyFrame(stateTime));
+		text.setText(posAni.getNextFrame());
+		text.setColor(c);
 		text.draw();
 	}
 

@@ -1,8 +1,8 @@
 package at.flockenberger.sirius.engine.resource;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
+
+import org.mapeditor.core.Map;
 
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.map.tilted.TiledMap;
@@ -18,7 +18,7 @@ import at.flockenberger.sirius.utillity.logging.SLogger;
  */
 public class MapResource extends ResourceBase
 {
-	private TiledMap map;
+	private Map map;
 
 	public MapResource(Path location)
 	{
@@ -28,23 +28,20 @@ public class MapResource extends ResourceBase
 	@Override
 	public void load()
 	{
-		byte[] b = null;
+
 		try
 		{
-			b = Files.readAllBytes(resourceLocation);
-		} catch (IOException e)
+			map = Sirius.mapReader.readMap(resourceLocation.toString());
+		} catch (Exception e)
 		{
 			SLogger.getSystemLogger().except(e);
 		}
-		String json = new String(b);
-
-		map = Sirius.gson.fromJson(json, TiledMap.class);
 	}
 
 	/**
 	 * @return the loaded {@link TiledMap}
 	 */
-	public TiledMap getMap()
+	public Map getMap()
 	{
 		return map;
 	}

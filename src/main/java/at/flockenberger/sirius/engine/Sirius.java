@@ -1,5 +1,7 @@
 package at.flockenberger.sirius.engine;
 
+import org.mapeditor.io.TMXMapReader;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -26,6 +28,8 @@ public class Sirius
 	public static RenderSettings renderSettings;
 	public static ResourceManager resMan = ResourceManager.get();
 	public static ParticleSystem particleSystem;
+	public static TMXMapReader mapReader;
+	
 	private final static GsonBuilder gsonB = new GsonBuilder();
 	public static Gson gson;
 
@@ -40,6 +44,7 @@ public class Sirius
 		window = new Window(width, height, title);
 		renderSettings = new RenderSettings();
 		gsonB.setPrettyPrinting();
+		mapReader = new TMXMapReader();
 		gson = gsonB.create();
 		game = g;
 	}

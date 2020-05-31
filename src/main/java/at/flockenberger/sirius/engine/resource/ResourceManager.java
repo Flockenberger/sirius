@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import at.flockenberger.sirius.engine.graphic.Image;
-import at.flockenberger.sirius.map.tilted.TiledMap;
 import at.flockenberger.sirius.utillity.SUtils;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
@@ -140,14 +139,22 @@ public class ResourceManager
 
 		return ((ImageResource) res).getImage();
 	}
-	
-	
-	public TiledMap getMap(String cache)
+
+	/**
+	 * Returns an {@link org.mapeditor.core.Map} which has already been loaded and
+	 * cached.<br>
+	 * If the {@link org.mapeditor.core.Map} was not previously loaded it will throw
+	 * an error.
+	 * 
+	 * @param cache the cached resource name
+	 * @return the found map or null
+	 */
+	public org.mapeditor.core.Map getMap(String cache)
 	{
 		ResourceBase res = getResource(cache);
 		if (res == null)
 		{
-			SLogger.getSystemLogger().warn("Image " + cache + " was not found!");
+			SLogger.getSystemLogger().warn("Map " + cache + " was not found!");
 			return null;
 		}
 
@@ -158,6 +165,7 @@ public class ResourceManager
 
 		return ((MapResource) res).getMap();
 	}
+
 	/**
 	 * Returns an {@link URL} which has been previously loaded and cached using
 	 * {@link #loadURLResource(String, String)}.

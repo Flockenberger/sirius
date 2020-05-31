@@ -1,19 +1,28 @@
 package at.flockenberger.sirius.game;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.Sirius;
+import at.flockenberger.sirius.engine.animation.Animation;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
+import at.flockenberger.sirius.engine.graphic.texture.TextureRegion;
 import at.flockenberger.sirius.engine.input.KeyCode;
 import at.flockenberger.sirius.engine.input.Keyboard;
 
 public class Player extends Entity
 {
-	private Texture walkSheet;
+	private Texture idleTexture;
+	private Map<String, Animation<TextureRegion>> animationCache;
 
 	public Player()
 	{
+		animationCache = new HashMap<>();
 		Sirius.resMan.loadImageResource("mc", "/MC_0.2.png");
-		walkSheet = Texture.createTexture(Sirius.resMan.getImage("mc"));
+		idleTexture = Texture.createTexture(Sirius.resMan.getImage("mc"));
+		Animation<TextureRegion> idleAni = new Animation<TextureRegion>(1, new TextureRegion(idleTexture));
+		animationCache.put("idle", idleAni);
 
 	}
 
@@ -22,7 +31,9 @@ public class Player extends Entity
 	{
 
 		render.begin();
-		render.drawTexture(walkSheet, position); // Draw
+		TextureRegion reg = animationCache.get("idle").getNextFrame();
+		render.draw(reg, position.x, position.y, reg.getWidth() / 2, reg.getHeight() / 2, reg.getWidth(),
+				reg.getHeight(), 1, -1, 0); // Draw
 		render.end();
 	}
 
@@ -71,7 +82,7 @@ public class Player extends Entity
 	@Override
 	public void free()
 	{
-		walkSheet.free();
+		idleTexture.free();
 	}
 
 	@Override

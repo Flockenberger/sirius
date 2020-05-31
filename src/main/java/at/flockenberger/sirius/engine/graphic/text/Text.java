@@ -5,6 +5,12 @@ import org.joml.Vector2f;
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.graphic.Color;
 
+/**
+ * <h1>Text</h1><br>
+ * 
+ * @author Florian Wagner
+ *
+ */
 public class Text
 {
 
@@ -46,12 +52,11 @@ public class Text
 	public void draw()
 	{
 		if (Sirius.renderer.isDrawing())
-		{
 			Sirius.renderer.end();
-		}
-		if(this.font == null) {
+
+		if (this.font == null)
 			this.font = Sirius.fontDefault;
-		}
+
 		Sirius.renderer.begin();
 		this.font.drawText(Sirius.renderer, message, position.x, position.y, color);
 		Sirius.renderer.end();
@@ -76,7 +81,7 @@ public class Text
 	{
 		this.position.set(x, y);
 	}
-
+		
 	public void setScale(float x, float y)
 	{
 		this.scale.set(x, y);

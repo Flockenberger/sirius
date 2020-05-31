@@ -1,5 +1,11 @@
 package at.flockenberger.sirius.utillity;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
+import java.awt.image.DataBufferShort;
+import java.awt.image.DataBufferUShort;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,6 +13,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.nio.file.Path;
 
 import org.joml.Matrix3f;
@@ -43,6 +51,54 @@ public class SUtils
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Checks if the given <code>index</code> is within the given bounds.
+	 * 
+	 * @param index the index to check
+	 * @param min   the minimum non inclusive
+	 * @param max   the maximum non inclusive
+	 * @return true if within bounds otherwise false
+	 */
+	public static boolean checkIndex(int index, int min, int max)
+	{
+		if (index < min)
+			return false;
+		if (index > max)
+			return false;
+		return true;
+	}
+
+	public static ByteBuffer image2Buffer(BufferedImage bi)
+	{
+		ByteBuffer byteBuffer;
+		DataBuffer dataBuffer = bi.getRaster().getDataBuffer();
+
+		if (dataBuffer instanceof DataBufferByte)
+		{
+			byte[] pixelData = ((DataBufferByte) dataBuffer).getData();
+			byteBuffer = ByteBuffer.wrap(pixelData);
+		} else if (dataBuffer instanceof DataBufferUShort)
+		{
+			short[] pixelData = ((DataBufferUShort) dataBuffer).getData();
+			byteBuffer = ByteBuffer.allocate(pixelData.length * 2);
+			byteBuffer.asShortBuffer().put(ShortBuffer.wrap(pixelData));
+		} else if (dataBuffer instanceof DataBufferShort)
+		{
+			short[] pixelData = ((DataBufferShort) dataBuffer).getData();
+			byteBuffer = ByteBuffer.allocate(pixelData.length * 2);
+			byteBuffer.asShortBuffer().put(ShortBuffer.wrap(pixelData));
+		} else if (dataBuffer instanceof DataBufferInt)
+		{
+			int[] pixelData = ((DataBufferInt) dataBuffer).getData();
+			byteBuffer = ByteBuffer.allocate(pixelData.length * 4);
+			byteBuffer.asIntBuffer().put(IntBuffer.wrap(pixelData));
+		} else
+		{
+			throw new IllegalArgumentException("Not implemented for data buffer type: " + dataBuffer.getClass());
+		}
+		return byteBuffer;
 	}
 
 	/**
