@@ -81,7 +81,12 @@ public class Text
 	{
 		this.position.set(x, y);
 	}
-		
+
+	public void setPosition(Vector2f vector)
+	{
+		this.position.set(vector);
+	}
+
 	public void setScale(float x, float y)
 	{
 		this.scale.set(x, y);
@@ -96,5 +101,10 @@ public class Text
 	public void setFont(SiriusFont font)
 	{
 		this.font = font;
+	}
+
+	public Vector2f getPosition()
+	{
+		return this.position;
 	}
 }

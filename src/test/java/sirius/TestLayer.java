@@ -3,11 +3,14 @@ package sirius;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joml.Vector2f;
+
 import at.flockenberger.sirius.engine.PlayerFixedCamera;
 import at.flockenberger.sirius.engine.RenderSettings;
 import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.Sirius;
-import at.flockenberger.sirius.engine.Window;
+import at.flockenberger.sirius.engine.animation.AnimateableValue;
+import at.flockenberger.sirius.engine.animation.AnimateableVector2f;
 import at.flockenberger.sirius.engine.animation.Animation;
 import at.flockenberger.sirius.engine.animation.AnimationMode;
 import at.flockenberger.sirius.engine.graphic.Color;
@@ -19,7 +22,6 @@ import at.flockenberger.sirius.engine.postprocess.TestFilter;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
 import at.flockenberger.sirius.game.Player;
 import at.flockenberger.sirius.game.application.LayerBase;
-import at.flockenberger.sirius.map.GameLevel;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
 public class TestLayer extends LayerBase
@@ -34,7 +36,8 @@ public class TestLayer extends LayerBase
 	Companion comp;
 	Text text;
 	Color c;
-
+	AnimateableValue<Vector2f> vec;
+	
 	Animation<String> posAni;
 
 	public TestLayer(String layerName)
@@ -76,7 +79,7 @@ public class TestLayer extends LayerBase
 		posAni.setAnimationMode(AnimationMode.LOOP);
 		text = new Text("msg");
 		c = Color.ORANGE;
-
+		vec = new AnimateableVector2f(new Vector2f(0, 0), new Vector2f(10, 10), 250f);
 	}
 
 	@Override
@@ -90,6 +93,7 @@ public class TestLayer extends LayerBase
 	{
 		p.update(ft);
 		comp.update(ft);
+		vec.update(ft);
 	}
 
 	@Override
@@ -98,6 +102,8 @@ public class TestLayer extends LayerBase
 		cam.update();
 		p.update();
 		comp.update();
+		if(Sirius.timer.getFPS() >= 55)
+		vec.update(Sirius.timer.getDelta());
 	}
 
 	@Override
@@ -147,7 +153,10 @@ public class TestLayer extends LayerBase
 		// render.end();
 		p.render(render);
 		comp.render(render);
-
+		
+		
+		text.setPosition(vec.get());
+		System.out.println(text.getPosition());	
 		text.setText(posAni.getNextFrame());
 		text.setColor(c);
 		text.draw();
