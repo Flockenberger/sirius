@@ -98,6 +98,11 @@ public class Text
 		this.message = text;
 	}
 
+	public void setText(Object obj)
+	{
+		this.message = obj.toString();
+	}
+
 	public void setFont(SiriusFont font)
 	{
 		this.font = font;

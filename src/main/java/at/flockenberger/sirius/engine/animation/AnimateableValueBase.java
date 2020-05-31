@@ -5,6 +5,7 @@ public abstract class AnimateableValueBase<T> implements AnimateableValue<T>
 	protected float agility;
 	protected T target;
 	protected T actual;
+	protected T initial;
 
 	public AnimateableValueBase()
 	{
@@ -18,7 +19,7 @@ public abstract class AnimateableValueBase<T> implements AnimateableValue<T>
 
 	public AnimateableValueBase(T init, T target, float speed)
 	{
-		this.actual = init;
+		this.actual = this.initial = init;
 		this.target = target;
 		this.agility = speed;
 	}
@@ -39,5 +40,11 @@ public abstract class AnimateableValueBase<T> implements AnimateableValue<T>
 	public void set(T value)
 	{
 		this.target = this.actual = value;
+	}
+
+	@Override
+	public void value(T value)
+	{
+		this.actual = value;
 	}
 }

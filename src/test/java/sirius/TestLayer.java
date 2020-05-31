@@ -37,7 +37,7 @@ public class TestLayer extends LayerBase
 	Text text;
 	Color c;
 	AnimateableValue<Vector2f> vec;
-	
+
 	Animation<String> posAni;
 
 	public TestLayer(String layerName)
@@ -79,7 +79,7 @@ public class TestLayer extends LayerBase
 		posAni.setAnimationMode(AnimationMode.LOOP);
 		text = new Text("msg");
 		c = Color.ORANGE;
-		vec = new AnimateableVector2f(new Vector2f(0, 0), new Vector2f(10, 10), 250f);
+		vec = new AnimateableVector2f(new Vector2f(0, 0), new Vector2f(10, 10), 500f);
 	}
 
 	@Override
@@ -102,8 +102,8 @@ public class TestLayer extends LayerBase
 		cam.update();
 		p.update();
 		comp.update();
-		if(Sirius.timer.getFPS() >= 55)
-		vec.update(Sirius.timer.getDelta());
+		if (Sirius.timer.getFPS() >= 55)
+			vec.update(Sirius.timer.getDelta());
 	}
 
 	@Override
@@ -154,10 +154,8 @@ public class TestLayer extends LayerBase
 		p.render(render);
 		comp.render(render);
 		
-		
-		text.setPosition(vec.get());
-		System.out.println(text.getPosition());	
-		text.setText(posAni.getNextFrame());
+		// text.setPosition(vec.get());
+		text.setText(p.getPosition());
 		text.setColor(c);
 		text.draw();
 	}

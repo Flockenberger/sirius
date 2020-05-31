@@ -31,6 +31,13 @@ public interface AnimateableValue<T>
 	public void set(T value);
 
 	/**
+	 * Sets the actual value of this value.
+	 * 
+	 * @param value the value to set
+	 */
+	public void value(T value);
+
+	/**
 	 * Update this value. <br>
 	 * 
 	 * @param dt the delta value to update. Usually this is the delta time of one

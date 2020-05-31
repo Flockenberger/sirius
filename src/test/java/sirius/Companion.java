@@ -24,22 +24,22 @@ public class Companion extends Entity
 	{
 
 		render.begin();
-		render.drawTexture(compantionTex, position); // Draw
+		render.drawTexture(compantionTex, position.x - compantionTex.getWidth() / 2, position.y - compantionTex.getHeight()); // Draw
 		render.end();
 	}
 
 	@Override
 	public void input()
 	{
-
+		
 	}
 
 	@Override
 	public void update()
 	{
 		position.set(player.getPosition());
-		position.x = (float) ((position.x - 24) + Math.sin(Math.random() * 2 * Math.PI) * 10);
-		position.y = (float) ((position.y - 24) + Math.cos(Math.random() * 2 * Math.PI) * 10);
+		position.x = (float) ((position.x - 24) + Math.sin((float) Sirius.timer.getTime() * 2 * Math.PI) * 10);
+		position.y = (float) ((position.y - 24) + Math.cos((float) Sirius.timer.getTime() * 2 * Math.PI) * 10);
 
 	}
 

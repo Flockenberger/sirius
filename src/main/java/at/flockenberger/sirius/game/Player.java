@@ -15,6 +15,9 @@ public class Player extends Entity
 {
 	private Texture idleTexture;
 	private Map<String, Animation<TextureRegion>> animationCache;
+	private String currentAni = "idle";
+	private final float G = 9.81f;
+	private boolean jumping;
 
 	public Player()
 	{
@@ -31,9 +34,9 @@ public class Player extends Entity
 	{
 
 		render.begin();
-		TextureRegion reg = animationCache.get("idle").getNextFrame();
-		render.draw(reg, position.x, position.y, reg.getWidth() / 2, reg.getHeight() / 2, reg.getWidth(),
-				reg.getHeight(), 1, -1, 0); // Draw
+		TextureRegion reg = animationCache.get(currentAni).getNextFrame();
+		render.draw(reg, position.x - reg.getWidth() / 2, position.y - reg.getHeight(), reg.getWidth() / 2,
+				reg.getHeight() / 2, reg.getWidth(), reg.getHeight(), 1, -1, 0); // Draw
 		render.end();
 	}
 
@@ -61,19 +64,34 @@ public class Player extends Entity
 			direction.x = val;
 
 		}
+		if (Keyboard.isKeyTyped(KeyCode.SPACE) && !jumping)
+		{
+			jumping = true;
+			direction.y = +1;
+		}
 
 	}
 
 	@Override
 	public void update()
 	{
-		previousPosition.set(position.x, position.y);
-
-		velocity = direction.mul(600f);
 		float t = Sirius.timer.getFPS();
+		velocity = direction.mul(600f);
+		
+		previousPosition.set(position.x, position.y);
+		velocity.y += G;
+		
+		
 		if (t <= 0)
 			t = 1;
+
 		position.add(velocity.mul(1 / t));
+		if (position.y <= 0)
+		{
+			jumping = false;
+			direction.y = 0;
+			position.y = 0;
+		}
 		direction.x = direction.x * (1 / t);
 		direction.y = direction.y * (1 / t);
 
