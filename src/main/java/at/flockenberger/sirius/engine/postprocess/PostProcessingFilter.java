@@ -1,7 +1,7 @@
 package at.flockenberger.sirius.engine.postprocess;
 
-import at.flockenberger.sirius.engine.gl.shader.Shader;
-import at.flockenberger.sirius.engine.gl.shader.ShaderProgram;
+import at.flockenberger.sirius.engine.render.gl.shader.Shader;
+import at.flockenberger.sirius.engine.render.gl.shader.ShaderProgram;
 
 public abstract class PostProcessingFilter extends ShaderProgram
 {

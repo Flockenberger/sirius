@@ -7,10 +7,10 @@ import java.util.List;
 import org.magicwerk.brownies.collections.BigList;
 
 import at.flockenberger.sirius.engine.IFreeable;
-import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.graphic.Image;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
+import at.flockenberger.sirius.engine.render.Renderer;
 
 /**
  * <h1>ParticleSystem</h1><br>

@@ -1,22 +1,24 @@
-package at.flockenberger.sirius.engine;
+package at.flockenberger.sirius.engine.camera;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
-import at.flockenberger.sirius.game.Entity;
-import at.flockenberger.sirius.game.Player;
+import at.flockenberger.sirius.engine.Sirius;
+import at.flockenberger.sirius.engine.render.RenderSettings;
+import at.flockenberger.sirius.engine.render.Renderer;
+import at.flockenberger.sirius.game.entity.Entity;
 import at.flockenberger.sirius.utillity.SUtils;
 
-public class PlayerFixedCamera extends Entity implements ICamera
+public class EntityFixedCamera extends Entity implements ICamera
 {
 	protected Matrix4f projection;
 	private Matrix4f view;
 	private Matrix4f viewProj;
 	private float m_AspectRatio;
 	private float m_ZoomLevel;
-	private Player player;
+	private Entity player;
 
-	public PlayerFixedCamera(Player p)
+	public EntityFixedCamera(Entity p)
 	{
 		super();
 		projection = new Matrix4f();
@@ -25,7 +27,7 @@ public class PlayerFixedCamera extends Entity implements ICamera
 		this.player = p;
 	}
 
-	public void setPlayer(Player p)
+	public void setEntity(Entity p)
 	{
 		this.player = p;
 	}

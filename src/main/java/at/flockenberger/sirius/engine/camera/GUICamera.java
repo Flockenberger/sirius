@@ -1,8 +1,8 @@
-package at.flockenberger.sirius.engine;
+package at.flockenberger.sirius.engine.camera;
 
 import at.flockenberger.sirius.utillity.SUtils;
 
-public class GUICam extends Camera
+public class GUICamera extends Camera
 {
 
 	@Override

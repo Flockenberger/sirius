@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.allocate.Allocateable;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
+import at.flockenberger.sirius.engine.render.Renderer;
 import at.flockenberger.sirius.utillity.SUtils;
 
 /**

@@ -5,14 +5,14 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
-import at.flockenberger.sirius.engine.Camera;
-import at.flockenberger.sirius.engine.GUICam;
 import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.Window;
-import at.flockenberger.sirius.engine.gl.FBO;
+import at.flockenberger.sirius.engine.camera.Camera;
+import at.flockenberger.sirius.engine.camera.GUICamera;
 import at.flockenberger.sirius.engine.graphic.Icon;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
+import at.flockenberger.sirius.engine.render.gl.FBO;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
 public abstract class AbstractGame implements IFreeable
@@ -20,7 +20,8 @@ public abstract class AbstractGame implements IFreeable
 
 	public static int TARGET_FPS = 75;
 	public static int TARGET_UPS = 30;
-	protected final Camera DEFAULT_CAM = new GUICam();
+	protected final Camera DEFAULT_CAM = new GUICamera();
+
 	/**
 	 * Shows if the game is running.
 	 */
@@ -153,6 +154,14 @@ public abstract class AbstractGame implements IFreeable
 	{
 		Sirius.icon = icon;
 		Sirius.window.setIcon(icon);
+	}
+	
+	/**
+	 * @return the default camera used for gui rendering
+	 */
+	public Camera getGUICamera()
+	{
+		return DEFAULT_CAM;
 	}
 
 	/**

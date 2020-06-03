@@ -1,11 +1,12 @@
-package at.flockenberger.sirius.engine;
+package at.flockenberger.sirius.engine.camera;
 
 import org.joml.Matrix4f;
 
 import at.flockenberger.sirius.engine.input.KeyCode;
 import at.flockenberger.sirius.engine.input.Keyboard;
 import at.flockenberger.sirius.engine.input.Mouse;
-import at.flockenberger.sirius.game.Entity;
+import at.flockenberger.sirius.engine.render.Renderer;
+import at.flockenberger.sirius.game.entity.Entity;
 import at.flockenberger.sirius.utillity.SUtils;
 
 public class Camera extends Entity implements ICamera
@@ -13,6 +14,7 @@ public class Camera extends Entity implements ICamera
 	protected Matrix4f projection;
 	private Matrix4f view;
 	private Matrix4f viewProj;
+	
 	private float m_AspectRatio;
 	private float m_ZoomLevel;
 

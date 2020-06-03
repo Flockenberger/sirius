@@ -1,43 +1,37 @@
-package at.flockenberger.sirius.game;
+package sirius;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.animation.Animation;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.graphic.texture.TextureRegion;
 import at.flockenberger.sirius.engine.input.KeyCode;
 import at.flockenberger.sirius.engine.input.Keyboard;
+import at.flockenberger.sirius.engine.render.Renderer;
+import at.flockenberger.sirius.game.entity.AnimateableEntity;
 
-public class Player extends Entity
+public class Player extends AnimateableEntity
 {
-	private Texture idleTexture;
-	private Map<String, Animation<TextureRegion>> animationCache;
-	private String currentAni = "idle";
 	private final float G = 9.81f;
 	private boolean jumping;
 
 	public Player()
 	{
-		animationCache = new HashMap<>();
+		super();
 		Sirius.resMan.loadImageResource("mc", "/MC_0.2.png");
-		idleTexture = Texture.createTexture(Sirius.resMan.getImage("mc"));
-		Animation<TextureRegion> idleAni = new Animation<TextureRegion>(1, new TextureRegion(idleTexture));
-		animationCache.put("idle", idleAni);
-
+		setTexture(Texture.createTexture(Sirius.resMan.getImage("mc")));
+		Animation<TextureRegion> idleAni = new Animation<TextureRegion>(1, new TextureRegion(getTexture()));
+		addAnimation("idle", idleAni);
+		setActiveAnimation("idle");
 	}
 
 	@Override
 	public void render(Renderer render)
 	{
 
-		render.begin();
-		TextureRegion reg = animationCache.get(currentAni).getNextFrame();
+		TextureRegion reg = (TextureRegion) activeAnimation().getNextFrame();
 		render.draw(reg, position.x - reg.getWidth() / 2, position.y - reg.getHeight(), reg.getWidth() / 2,
-				reg.getHeight() / 2, reg.getWidth(), reg.getHeight(), 1, -1, 0); // Draw
-		render.end();
+				reg.getHeight() / 2, reg.getWidth(), reg.getHeight(), 1, -1, 0);
+
 	}
 
 	@Override
@@ -67,7 +61,7 @@ public class Player extends Entity
 		if (Keyboard.isKeyTyped(KeyCode.SPACE) && !jumping)
 		{
 			jumping = true;
-			direction.y = +1;
+			direction.y -= 1;
 		}
 
 	}
@@ -77,30 +71,31 @@ public class Player extends Entity
 	{
 		float t = Sirius.timer.getFPS();
 		velocity = direction.mul(600f);
-		
+
 		previousPosition.set(position.x, position.y);
-		velocity.y += G;
-		
-		
+		direction.y -= G;
+
 		if (t <= 0)
 			t = 1;
 
 		position.add(velocity.mul(1 / t));
+
+		direction.x = direction.x * (1 / t);
+		direction.y = direction.y * (1 / t);
 		if (position.y <= 0)
 		{
 			jumping = false;
 			direction.y = 0;
 			position.y = 0;
 		}
-		direction.x = direction.x * (1 / t);
-		direction.y = direction.y * (1 / t);
 
 	}
 
 	@Override
 	public void free()
 	{
-		idleTexture.free();
+		super.free();
+
 	}
 
 	@Override

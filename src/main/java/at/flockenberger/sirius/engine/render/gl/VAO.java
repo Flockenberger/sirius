@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.engine.gl;
+package at.flockenberger.sirius.engine.render.gl;
 
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;

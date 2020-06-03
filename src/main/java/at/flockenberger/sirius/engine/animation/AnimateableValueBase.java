@@ -1,12 +1,13 @@
 package at.flockenberger.sirius.engine.animation;
 
-public abstract class AnimateableValueBase<T> implements AnimateableValue<T>
+abstract class AnimateableValueBase<T> 
+implements AnimateableValue<T>
 {
 	protected float agility;
 	protected T target;
 	protected T actual;
 	protected T initial;
-
+	
 	public AnimateableValueBase()
 	{
 		this.agility = 1f;

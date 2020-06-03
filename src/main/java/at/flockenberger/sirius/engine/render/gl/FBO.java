@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.engine.gl;
+package at.flockenberger.sirius.engine.render.gl;
 
 import static org.lwjgl.opengl.ARBFramebufferObject.GL_DEPTH_ATTACHMENT;
 import static org.lwjgl.opengl.ARBFramebufferObject.GL_RENDERBUFFER;

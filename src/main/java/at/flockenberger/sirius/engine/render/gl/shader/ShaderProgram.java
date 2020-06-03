@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.engine.gl.shader;
+package at.flockenberger.sirius.engine.render.gl.shader;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL20.GL_ACTIVE_UNIFORMS;
@@ -42,7 +42,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 
-import at.flockenberger.sirius.engine.gl.VertexAttribute;
+import at.flockenberger.sirius.engine.render.gl.VertexAttribute;
 import at.flockenberger.sirius.utillity.SUtils;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
@@ -55,6 +55,15 @@ import at.flockenberger.sirius.utillity.logging.SLogger;
  */
 public class ShaderProgram
 {
+	/** default name for position attributes **/
+	public static final String POSITION_ATTRIBUTE = "a_position";
+	/** default name for normal attributes **/
+	public static final String NORMAL_ATTRIBUTE = "a_normal";
+	/** default name for color attributes **/
+	public static final String COLOR_ATTRIBUTE = "a_color";
+	/** default name for texcoords attributes, append texture unit number **/
+	public static final String TEXCOORD_ATTRIBUTE = "a_texCoord";
+
 	private int id = -1;
 	private List<Shader> shader;
 
@@ -77,7 +86,8 @@ public class ShaderProgram
 		shader = Arrays.asList(shaders);
 	}
 
-	public void setShader(Shader...shaders) {
+	public void setShader(Shader... shaders)
+	{
 		shader = Arrays.asList(shaders);
 	}
 

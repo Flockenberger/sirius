@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.engine.gl;
+package at.flockenberger.sirius.engine.render.gl;
 
 import at.flockenberger.sirius.engine.IBindable;
 import at.flockenberger.sirius.engine.IFreeable;

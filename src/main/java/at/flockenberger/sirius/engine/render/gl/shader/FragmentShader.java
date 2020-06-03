@@ -1,31 +1,31 @@
-package at.flockenberger.sirius.engine.gl.shader;
+package at.flockenberger.sirius.engine.render.gl.shader;
 
 import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 import static org.lwjgl.opengl.GL20.glCompileShader;
 import static org.lwjgl.opengl.GL20.glCreateShader;
 import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 import static org.lwjgl.opengl.GL20.glGetShaderi;
 import static org.lwjgl.opengl.GL20.glShaderSource;
 
+import org.lwjgl.opengl.GL20;
+
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
 /**
- * <h1>VertexShader</h1><br>
- * Represents a vertex shader.
+ * <h1>FragmentShader</h1><br>
+ * Represents a fragment shader.
  * 
  * @author Florian Wagner
  *
  */
-public class VertexShader extends Shader
+public class FragmentShader extends Shader
 {
-
-	public VertexShader(String shader)
+	public FragmentShader(String shader)
 	{
 		super(shader);
 	}
 
-	public VertexShader()
+	public FragmentShader()
 	{
 		super();
 	}
@@ -33,10 +33,10 @@ public class VertexShader extends Shader
 	@Override
 	public long compileShader()
 	{
-		SLogger.getSystemLogger().info("Compiling Vertex Shader");
+		SLogger.getSystemLogger().info("Compiling Fragment Shader");
 
 		int sID = -1;
-		sID = glCreateShader(GL_VERTEX_SHADER);
+		sID = glCreateShader(GL20.GL_FRAGMENT_SHADER);
 		glShaderSource(sID, getShaderCode().getCode());
 		glCompileShader(sID);
 
@@ -45,6 +45,7 @@ public class VertexShader extends Shader
 		{
 			String infoLog = glGetShaderInfoLog(sID);
 			SLogger.getSystemLogger().error("COMPILATION_FAILED\n" + infoLog);
+
 		}
 		this.id = sID;
 

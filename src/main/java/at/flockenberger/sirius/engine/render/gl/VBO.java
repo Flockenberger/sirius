@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.engine.gl;
+package at.flockenberger.sirius.engine.render.gl;
 
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;

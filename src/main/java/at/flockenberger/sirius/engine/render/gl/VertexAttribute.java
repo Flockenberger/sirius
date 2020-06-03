@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.engine.gl;
+package at.flockenberger.sirius.engine.render.gl;
 
 /**
  * <h1>VertexAttribute</h1><br>
@@ -13,6 +13,16 @@ public class VertexAttribute
 	protected final String name;
 	protected final int numComponents;
 	protected final int location;
+	
+	public static final int Position = 1;
+	public static final int ColorUnpacked = 2;
+	public static final int ColorPacked = 4;
+	public static final int Normal = 8;
+	public static final int TextureCoordinates = 16;
+	public static final int Generic = 32;
+	public static final int BoneWeight = 64;
+	public static final int Tangent = 128;
+	public static final int BiNormal = 256;
 
 	/**
 	 * Creates a new vertex attribute. <br>
@@ -26,6 +36,14 @@ public class VertexAttribute
 		this.location = location;
 		this.name = name;
 		this.numComponents = numComponents;
+	}
+
+	public VertexAttribute(int location, int numComponents, String name)
+	{
+		this.location = location;
+		this.name = name;
+		this.numComponents = numComponents;
+
 	}
 
 	/**

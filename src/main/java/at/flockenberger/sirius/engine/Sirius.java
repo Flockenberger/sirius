@@ -10,6 +10,8 @@ import at.flockenberger.sirius.engine.graphic.Icon;
 import at.flockenberger.sirius.engine.graphic.text.SiriusFont;
 import at.flockenberger.sirius.engine.particle.ParticleSystem;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
+import at.flockenberger.sirius.engine.render.RenderSettings;
+import at.flockenberger.sirius.engine.render.Renderer;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
 import at.flockenberger.sirius.game.application.AbstractGame;
 import at.flockenberger.sirius.game.application.LayerStack;

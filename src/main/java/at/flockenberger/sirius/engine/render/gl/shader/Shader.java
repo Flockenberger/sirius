@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.engine.gl.shader;
+package at.flockenberger.sirius.engine.render.gl.shader;
 
 import org.lwjgl.opengl.GL20;
 

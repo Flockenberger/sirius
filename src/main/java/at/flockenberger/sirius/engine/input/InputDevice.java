@@ -11,5 +11,5 @@ package at.flockenberger.sirius.engine.input;
  */
 public interface InputDevice
 {
-
+	
 }

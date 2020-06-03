@@ -19,10 +19,10 @@ public class Color implements Serializable
 	private static final long serialVersionUID = -9079657496497537564L;
 
 	// i am not sure if I might want to change these to double later on
-	private float red;
-	private float green;
-	private float blue;
-	private float alpha;
+	private float r;
+	private float g;
+	private float b;
+	private float a;
 
 	// darken, brighten as well as saturate, de-saturate factor
 	private final float FACTOR = 0.6F;
@@ -164,6 +164,108 @@ public class Color implements Serializable
 	}
 
 	/**
+	 * Creates a new gray color.
+	 * 
+	 * @param gray between 0-1
+	 */
+	public Color(int gray)
+	{
+		this(gray, gray, gray);
+	}
+
+	/**
+	 * Creates a new RGB Color. The values for <code> r, g, b </code> need to be in
+	 * space of 0-1
+	 * 
+	 * @param r the red component
+	 * @param g the green component
+	 * @param b the blue component
+	 */
+	private Color(float r, float g, float b)
+	{
+		this(r, g, b, 1.0f);
+
+	}
+
+	/**
+	 * Creates a new RGB Color. The values for <code> r, g, b, opacity </code> need
+	 * to be in space of 0-1
+	 * 
+	 * @param r       the red component
+	 * @param g       the green component
+	 * @param b       the blue component
+	 * @param opacity the opacity component
+	 */
+	public Color(float r, float g, float b, float opacity)
+	{
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = 1.0f;
+
+	}
+
+	/**
+	 * Creates a new RGB Color. The values for <code> r, g, b, a </code> need to be
+	 * in space of 0-255
+	 * 
+	 * @param r the red component
+	 * @param g the green component
+	 * @param b the blue component
+	 * @param a the opacity component
+	 */
+	public Color(int r, int g, int b, int a)
+	{
+		checkRGB(r, g, b);
+		setRed(r / (float) 255.0);
+		setGreen(g / (float) 255.0);
+		setBlue(b / (float) 255.0);
+		setAlpha(a / (float) 255.0);
+	}
+
+	/**
+	 * Creates a new RGB Color. The values for <code> r, g, b </code> need to be in
+	 * space of 0-1
+	 * 
+	 * @param r the red component
+	 * @param g the green component
+	 * @param b the blue component
+	 */
+	public Color(double r, double g, double b)
+	{
+		this.r = (float) r;
+		this.g = (float) g;
+		this.b = (float) b;
+		this.a = 1.0f;
+
+	}
+
+	/**
+	 * Creates a new White Color.
+	 */
+	public Color()
+	{
+		this(1, 1, 1);
+	}
+
+	/**
+	 * Creates a new RGB Color. The values for <code> r, g, b, opacity </code> need
+	 * to be in space of 0-1
+	 * 
+	 * @param r the red component
+	 * @param g the green component
+	 * @param b the blue component
+	 * @param a the opacity component
+	 */
+	public Color(double d, double e, double f, double g)
+	{
+		this.r = (float) d;
+		this.g = (float) e;
+		this.b = (float) f;
+		this.a = (float) g;
+	}
+
+	/**
 	 * Sets the color values.
 	 * 
 	 * @param r red channel
@@ -209,105 +311,13 @@ public class Color implements Serializable
 	}
 
 	/**
-	 * Creates a new gray color.
+	 * Sets the color value to the given color.
 	 * 
-	 * @param gray between 0-1
+	 * @param other the color to set this color to
 	 */
-	public Color(int gray)
+	public void set(Color other)
 	{
-		this(gray, gray, gray);
-	}
-
-	/**
-	 * Creates a new RGB Color. The values for <code> r, g, b </code> need to be in
-	 * space of 0-1
-	 * 
-	 * @param r the red component
-	 * @param g the green component
-	 * @param b the blue component
-	 */
-	private Color(float r, float g, float b)
-	{
-		this(r, g, b, 1.0f);
-
-	}
-
-	/**
-	 * Creates a new RGB Color. The values for <code> r, g, b, opacity </code> need
-	 * to be in space of 0-1
-	 * 
-	 * @param r       the red component
-	 * @param g       the green component
-	 * @param b       the blue component
-	 * @param opacity the opacity component
-	 */
-	public Color(float r, float g, float b, float opacity)
-	{
-		this.red = r;
-		this.green = g;
-		this.blue = b;
-		this.alpha = 1.0f;
-
-	}
-
-	/**
-	 * Creates a new RGB Color. The values for <code> r, g, b, a </code> need to be
-	 * in space of 0-255
-	 * 
-	 * @param r the red component
-	 * @param g the green component
-	 * @param b the blue component
-	 * @param a the opacity component
-	 */
-	public Color(int r, int g, int b, int a)
-	{
-		checkRGB(r, g, b);
-		setRed(r / (float) 255.0);
-		setGreen(g / (float) 255.0);
-		setBlue(b / (float) 255.0);
-		setAlpha(a / (float) 255.0);
-	}
-
-	/**
-	 * Creates a new RGB Color. The values for <code> r, g, b </code> need to be in
-	 * space of 0-1
-	 * 
-	 * @param r the red component
-	 * @param g the green component
-	 * @param b the blue component
-	 */
-	public Color(double r, double g, double b)
-	{
-		this.red = (float) r;
-		this.green = (float) g;
-		this.blue = (float) b;
-		this.alpha = 1.0f;
-
-	}
-
-	/**
-	 * Creates a new White Color.
-	 */
-	public Color()
-	{
-		this(1, 1, 1);
-	}
-
-	/**
-	 * Creates a new RGB Color. The values for <code> r, g, b, opacity </code> need
-	 * to be in space of 0-1
-	 * 
-	 * @param r     the red component
-	 * @param g     the green component
-	 * @param b     the blue component
-	 * @param alpha the opacity component
-	 */
-	public Color(double d, double e, double f, double g)
-	{
-		this.red = (float) d;
-		this.green = (float) e;
-		this.blue = (float) f;
-		this.alpha = (float) g;
+		set(other.r, other.g, other.b, other.a);
 	}
 
 	/**
@@ -315,7 +325,7 @@ public class Color implements Serializable
 	 */
 	public double getHue()
 	{
-		return RGBtoHSB_(red, green, blue)[0];
+		return RGBtoHSB_(r, g, b)[0];
 	}
 
 	/**
@@ -323,7 +333,7 @@ public class Color implements Serializable
 	 */
 	public double getSaturation()
 	{
-		return RGBtoHSB_(red, green, blue)[1];
+		return RGBtoHSB_(r, g, b)[1];
 	}
 
 	/**
@@ -331,7 +341,7 @@ public class Color implements Serializable
 	 */
 	public double getBrightness()
 	{
-		return RGBtoHSB_(red, green, blue)[2];
+		return RGBtoHSB_(r, g, b)[2];
 	}
 
 	/**
@@ -339,7 +349,7 @@ public class Color implements Serializable
 	 */
 	public float getRed()
 	{
-		return red;
+		return r;
 	}
 
 	/**
@@ -347,7 +357,7 @@ public class Color implements Serializable
 	 */
 	public float getGreen()
 	{
-		return green;
+		return g;
 	}
 
 	/**
@@ -355,7 +365,7 @@ public class Color implements Serializable
 	 */
 	public float getBlue()
 	{
-		return blue;
+		return b;
 	}
 
 	/**
@@ -363,7 +373,7 @@ public class Color implements Serializable
 	 */
 	public float getAlpha()
 	{
-		return alpha;
+		return a;
 	}
 
 	/**
@@ -404,7 +414,7 @@ public class Color implements Serializable
 	public void setRed(float red)
 	{
 		red = SUtils.putInBounds(red, 0, 1);
-		this.red = red;
+		this.r = red;
 	}
 
 	/**
@@ -415,7 +425,7 @@ public class Color implements Serializable
 	public void setGreen(float green)
 	{
 		green = SUtils.putInBounds(green, 0, 1);
-		this.green = green;
+		this.g = green;
 	}
 
 	/**
@@ -426,7 +436,7 @@ public class Color implements Serializable
 	public void setBlue(float blue)
 	{
 		blue = SUtils.putInBounds(blue, 0, 1);
-		this.blue = blue;
+		this.b = blue;
 	}
 
 	/**
@@ -437,7 +447,7 @@ public class Color implements Serializable
 	public void setAlpha(float opacity)
 	{
 		opacity = SUtils.putInBounds(opacity, 0, 1);
-		this.alpha = opacity;
+		this.a = opacity;
 	}
 
 	/**
@@ -534,8 +544,7 @@ public class Color implements Serializable
 		if (t >= 1.0)
 			return endValue;
 		float ft = (float) t;
-		return new Color(red + (endValue.red - red) * ft, green + (endValue.green - green) * ft,
-				blue + (endValue.blue - blue) * ft);
+		return new Color(r + (endValue.r - r) * ft, g + (endValue.g - g) * ft, b + (endValue.b - b) * ft);
 	}
 
 	/**
@@ -701,7 +710,7 @@ public class Color implements Serializable
 	private Color deriveColor(double hueShift, double saturationFactor, double brightnessFactor, double opacityFactor)
 	{
 
-		double[] hsb = RGBtoHSB_(red, green, blue);
+		double[] hsb = RGBtoHSB_(r, g, b);
 
 		/* Allow brightness increase of black color */
 		double b = hsb[2];
@@ -714,8 +723,8 @@ public class Color implements Serializable
 		double h = (((hsb[0] + hueShift) % 360) + 360) % 360;
 		double s = Math.max(Math.min(hsb[1] * saturationFactor, 1.0), 0.0);
 		b = Math.max(Math.min(b * brightnessFactor, 1.0), 0.0);
-		double a = Math.max(Math.min(alpha * opacityFactor, 1.0), 0.0);
-		return hsb(h, s, b, a);
+		double _a = Math.max(Math.min(a * opacityFactor, 1.0), 0.0);
+		return hsb(h, s, b, _a);
 	}
 
 	private static void checkSB(double saturation, double brightness)
@@ -754,7 +763,7 @@ public class Color implements Serializable
 	@Override
 	public String toString()
 	{
-		return "Color [red=" + red + ", green=" + green + ", blue=" + blue + ", opacity=" + alpha + "]";
+		return "Color [red=" + r + ", green=" + g + ", blue=" + b + ", opacity=" + a + "]";
 	}
 
 }

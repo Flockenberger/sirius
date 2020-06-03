@@ -1,10 +1,9 @@
 package sirius;
 
-import at.flockenberger.sirius.engine.Renderer;
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
-import at.flockenberger.sirius.game.Entity;
-import at.flockenberger.sirius.game.Player;
+import at.flockenberger.sirius.engine.render.Renderer;
+import at.flockenberger.sirius.game.entity.Entity;
 
 public class Companion extends Entity
 {

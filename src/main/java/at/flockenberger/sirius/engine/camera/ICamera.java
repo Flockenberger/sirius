@@ -1,6 +1,8 @@
-package at.flockenberger.sirius.engine;
+package at.flockenberger.sirius.engine.camera;
 
 import org.joml.Matrix4f;
+
+import at.flockenberger.sirius.engine.render.Renderer;
 
 /**
  * <h1>ICamera</h1><br>

@@ -1,8 +1,8 @@
 package at.flockenberger.sirius.engine.postprocess;
 
 import at.flockenberger.sirius.engine.Sirius;
-import at.flockenberger.sirius.engine.gl.shader.FragmentShader;
-import at.flockenberger.sirius.engine.gl.shader.VertexShader;
+import at.flockenberger.sirius.engine.render.gl.shader.FragmentShader;
+import at.flockenberger.sirius.engine.render.gl.shader.VertexShader;
 
 public class TestFilter extends PostProcessingFilter
 {

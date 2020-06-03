@@ -2,8 +2,8 @@ package at.flockenberger.sirius.engine.resource;
 
 import java.nio.file.Path;
 
-import at.flockenberger.sirius.engine.gl.shader.FragmentShader;
-import at.flockenberger.sirius.engine.gl.shader.VertexShader;
+import at.flockenberger.sirius.engine.render.gl.shader.FragmentShader;
+import at.flockenberger.sirius.engine.render.gl.shader.VertexShader;
 import at.flockenberger.sirius.utillity.SUtils;
 
 public class ShaderResource extends ResourceBase

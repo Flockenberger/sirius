@@ -20,12 +20,13 @@ import java.util.Map;
 
 import org.lwjgl.system.MemoryUtil;
 
-import at.flockenberger.sirius.engine.Renderer;
+import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.graphic.texture.UV;
+import at.flockenberger.sirius.engine.render.Renderer;
 
-public class SiriusFont
+public class SiriusFont implements IFreeable
 {
 
 	/**
@@ -362,16 +363,8 @@ public class SiriusFont
 		return height;
 	}
 
-	/**
-	 * Draw text at the specified position and color.
-	 *
-	 * @param renderer The renderer to use
-	 * @param text     Text to draw
-	 * @param x        X coordinate of the text position
-	 * @param y        Y coordinate of the text position
-	 * @param c        Color to use
-	 */
-	protected void drawText(Renderer renderer, CharSequence text, float x, float y, Color c)
+	protected void drawText(Renderer renderer, CharSequence text, float x, float y, Color c, float scaleX, float scaleY,
+			float rot)
 	{
 		int textHeight = getHeight(text);
 
@@ -405,11 +398,24 @@ public class SiriusFont
 			uv.u2 = (g.x + g.width) / (float) texture.getWidth();
 			uv.v2 = g.y / (float) texture.getHeight();
 
-			renderer.draw(texture, drawX, drawY, 0, 0, g.width, g.height, 1, 1, 0, c);
-			
+			renderer.draw(texture, drawX, drawY, 0, 0, g.width, g.height, scaleX, scaleY, rot, c);
+
 			drawX += g.width;
 		}
+	}
 
+	/**
+	 * Draw text at the specified position and color.
+	 *
+	 * @param renderer The renderer to use
+	 * @param text     Text to draw
+	 * @param x        X coordinate of the text position
+	 * @param y        Y coordinate of the text position
+	 * @param c        Color to use
+	 */
+	protected void drawText(Renderer renderer, CharSequence text, float x, float y, Color c)
+	{
+		drawText(renderer, text, x, y, c, 1, 1, 0);
 	}
 
 	/**
@@ -428,7 +434,8 @@ public class SiriusFont
 	/**
 	 * Disposes the font.
 	 */
-	public void dispose()
+	@Override
+	public void free()
 	{
 		texture.free();
 	}

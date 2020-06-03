@@ -1,11 +1,10 @@
-package at.flockenberger.sirius.engine;
+package at.flockenberger.sirius.engine.render;
 
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glBlendFunc;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
@@ -20,24 +19,76 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.allocate.Allocateable;
-import at.flockenberger.sirius.engine.gl.VAO;
-import at.flockenberger.sirius.engine.gl.VBO;
-import at.flockenberger.sirius.engine.gl.shader.FragmentShader;
-import at.flockenberger.sirius.engine.gl.shader.ShaderProgram;
-import at.flockenberger.sirius.engine.gl.shader.VertexShader;
+import at.flockenberger.sirius.engine.camera.ICamera;
 import at.flockenberger.sirius.engine.graphic.Color;
+import at.flockenberger.sirius.engine.graphic.Image;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.graphic.texture.TextureRegion;
-import at.flockenberger.sirius.engine.resource.ResourceManager;
+import at.flockenberger.sirius.engine.render.gl.VAO;
+import at.flockenberger.sirius.engine.render.gl.VBO;
+import at.flockenberger.sirius.engine.render.gl.shader.FragmentShader;
+import at.flockenberger.sirius.engine.render.gl.shader.ShaderProgram;
+import at.flockenberger.sirius.engine.render.gl.shader.VertexShader;
 import at.flockenberger.sirius.utillity.SUtils;
 
 public class Renderer extends Allocateable
 {
+
+	/**
+	 * <h1>ShapeType</h1><br>
+	 * The ShapeType defines the immediate drawing style of shapes.<br>
+	 * 
+	 * 
+	 * @author Florian Wagner
+	 *
+	 */
+	public enum ShapeType
+	{
+		/**
+		 * Draws the shape as points
+		 */
+		POINT(GL20.GL_POINTS),
+
+		/**
+		 * Draws the shape as lines
+		 */
+		LINE(GL20.GL_LINES),
+
+		/**
+		 * Draws the shape as triangles<br>
+		 * Also referred to as "filled" drawing
+		 */
+		TRIANGLE(GL20.GL_TRIANGLES),
+
+		/**
+		 * Draws the shape as quads.
+		 */
+		QUAD(GL20.GL_QUADS);
+
+		/**
+		 * the opengl int type
+		 */
+		private final int _type;
+
+		ShapeType(int type)
+		{
+			this._type = type;
+		}
+
+		/**
+		 * @return the opengl type for this drawing style
+		 */
+		public int getType()
+		{
+			return _type;
+		}
+	}
 
 	private VAO vao;
 	private VBO vbo;
@@ -53,6 +104,7 @@ public class Renderer extends Allocateable
 
 	private int width;
 	private int height;
+	private Texture whiteTexture;
 
 	private Texture curTex;
 
@@ -62,14 +114,15 @@ public class Renderer extends Allocateable
 
 	private float s2 = 1f;
 	private float t2 = 0f;
-	private float r, g, b, a;
 
 	private Color WHITE = Color.WHITE;
 	private Matrix4f model = new Matrix4f();
-	private boolean drawGradientQuad = false;
 
-	/** Initializes the renderer. */
-	public void init()
+	private ShapeType shapeType = ShapeType.TRIANGLE;
+	private Color shapeColor = Color.WHITE;
+
+	/** Initializes the renderer */
+	protected void init()
 	{
 		/* Setup shader programs */
 		setupShaderProgram();
@@ -79,6 +132,9 @@ public class Renderer extends Allocateable
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL11.GL_TEXTURE_2D);
 
+		Image image = new Image(1, 1);
+		image.setPixel(0, 0, Color.WHITE);
+		whiteTexture = Texture.createTexture(image);
 	}
 
 	public void useCustomProgram(boolean use)
@@ -141,6 +197,8 @@ public class Renderer extends Allocateable
 		}
 		drawing = true;
 		numVertices = 0;
+		shapeType = ShapeType.TRIANGLE;
+
 	}
 
 	public boolean isDrawing()
@@ -148,14 +206,10 @@ public class Renderer extends Allocateable
 		return drawing;
 	}
 
-	/**
-	 * End rendering.
-	 */
 	public void end()
 	{
 		if (drawing)
 		{
-
 			drawing = false;
 			flush();
 		}
@@ -166,7 +220,7 @@ public class Renderer extends Allocateable
 		if (texture == null && curTex != null)
 		{
 			curTex.unbind();
-			curTex = null;
+			curTex = whiteTexture;
 		}
 
 		if (curTex != texture && texture != null)
@@ -174,6 +228,7 @@ public class Renderer extends Allocateable
 			flush();
 			curTex = texture;
 			curTex.bind();
+
 		}
 	}
 
@@ -210,7 +265,6 @@ public class Renderer extends Allocateable
 		vertices.clear();
 		// SLogger.getSystemLogger().debug("Drawing: " + numVertices / 6 + " quads!");
 		numVertices = 0;
-		drawGradientQuad = false;
 	}
 
 	/**
@@ -227,11 +281,7 @@ public class Renderer extends Allocateable
 
 			bindAndUploadData();
 
-			/* Draw batch */
-			if (!drawGradientQuad)
-				glDrawArrays(GL_TRIANGLES, 0, numVertices);
-			else
-				glDrawArrays(GL11.GL_QUADS, 0, numVertices);
+			glDrawArrays(shapeType.getType(), 0, numVertices);
 
 			reset();
 		}
@@ -380,10 +430,10 @@ public class Renderer extends Allocateable
 			flush();
 		}
 
-		r = c.getRed();
-		g = c.getGreen();
-		b = c.getBlue();
-		a = c.getAlpha();
+		float r = c.getRed();
+		float g = c.getGreen();
+		float b = c.getBlue();
+		float a = c.getAlpha();
 
 		vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(s1).put(t1);
 		vertices.put(x1).put(y2).put(r).put(g).put(b).put(a).put(s1).put(t2);
@@ -447,10 +497,10 @@ public class Renderer extends Allocateable
 			flush();
 		}
 
-		r = c.getRed();
-		g = c.getGreen();
-		b = c.getBlue();
-		a = c.getAlpha();
+		float r = c.getRed();
+		float g = c.getGreen();
+		float b = c.getBlue();
+		float a = c.getAlpha();
 		// bottom left and top right corner points relative to origin
 		final float worldOriginX = x + originX;
 		final float worldOriginY = y + originY;
@@ -553,6 +603,235 @@ public class Renderer extends Allocateable
 
 	}
 
+	// =========================
+	// Shape rendering
+	// =========================
+
+	public void beginShape(ShapeType type)
+	{
+		if (drawing)
+		{
+			end();
+		}
+		drawing = true;
+		numVertices = 0;
+		shapeType = type;
+		switchTexture(null);
+
+	}
+
+	public void color(Color c)
+	{
+		this.shapeColor = c;
+
+	}
+
+	private void color(float red, float green, float blue, float alpha)
+	{
+		this.shapeColor.set(red, green, blue, alpha);
+	}
+
+	public void vertex(float x, float y, float z)
+	{
+		vertex(x, y);
+	}
+
+	public void vertex(float x, float y)
+	{
+		vertices.put(x).put(y).put(shapeColor.getRed()).put(shapeColor.getGreen()).put(shapeColor.getBlue())
+				.put(shapeColor.getAlpha()).put(0).put(0);
+
+		numVertices++;
+	}
+
+	public final void line(float x, float y, float z, float x2, float y2, float z2)
+	{
+		line(x, y, z, x2, y2, z2, shapeColor, shapeColor);
+	}
+
+	public final void line(float x, float y, float x2, float y2)
+	{
+		line(x, y, 0.0f, x2, y2, 0.0f, shapeColor, shapeColor);
+	}
+
+	public final void line(Vector2f v0, Vector2f v1)
+	{
+		line(v0.x, v0.y, 0.0f, v1.x, v1.y, 0.0f, shapeColor, shapeColor);
+	}
+
+	public final void line(float x, float y, float x2, float y2, Color c1, Color c2)
+	{
+		line(x, y, 0.0f, x2, y2, 0.0f, c1, c2);
+	}
+
+	public void line(float x, float y, float z, float x2, float y2, float z2, Color c1, Color c2)
+	{
+		color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
+		vertex(x, y);
+		color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
+		vertex(x2, y2);
+	}
+
+	public void rect(float x, float y, float width, float height)
+	{
+		if (shapeType == ShapeType.LINE)
+		{
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x, y, 0);
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x + width, y, 0);
+
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x + width, y, 0);
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x + width, y + height, 0);
+
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x + width, y + height, 0);
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x, y + height, 0);
+
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x, y + height, 0);
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x, y, 0);
+		} else
+		{
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x, y, 0);
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x + width, y, 0);
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x + width, y + height, 0);
+
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x + width, y + height, 0);
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x, y + height, 0);
+			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+			vertex(x, y, 0);
+		}
+	}
+
+	public void circle(float x, float y, float radius, Color c)
+	{
+		color(c);
+		circle(x, y, radius, Math.max(1, (int) (6 * (float) Math.cbrt(radius))));
+
+	}
+
+	public void circle(float x, float y, float radius)
+	{
+		circle(x, y, radius, Math.max(1, (int) (6 * (float) Math.cbrt(radius))), shapeColor);
+
+	}
+
+	public void circle(float x, float y, float radius, int segments, Color c)
+	{
+		color(c);
+		if (segments <= 0)
+			throw new IllegalArgumentException("segments must be > 0.");
+
+		float angle = (float) (2 * Math.PI / segments);
+		float cos = (float) Math.cos(angle);
+		float sin = (float) Math.sin(angle);
+		float cx = radius, cy = 0;
+		if (shapeType == ShapeType.LINE)
+		{
+			for (int i = 0; i < segments; i++)
+			{
+				vertex(x + cx, y + cy, 0);
+				float temp = cx;
+				cx = cos * cx - sin * cy;
+				cy = sin * temp + cos * cy;
+				vertex(x + cx, y + cy, 0);
+			}
+			// Ensure the last segment is identical to the first.
+			vertex(x + cx, y + cy, 0);
+		} else
+		{
+			segments--;
+			for (int i = 0; i < segments; i++)
+			{
+				vertex(x, y, 0);
+				vertex(x + cx, y + cy, 0);
+				float temp = cx;
+				cx = cos * cx - sin * cy;
+				cy = sin * temp + cos * cy;
+				vertex(x + cx, y + cy, 0);
+			}
+			// Ensure the last segment is identical to the first.
+			vertex(x, y, 0);
+			vertex(x + cx, y + cy, 0);
+		}
+
+		cx = radius;
+		cy = 0;
+		vertex(x + cx, y + cy, 0);
+	}
+
+	public void circle(float x, float y, float radius, int segments)
+	{
+		circle(x, y, radius, segments, shapeColor);
+	}
+
+	public void arc(float x, float y, float radius, float start, float degrees)
+	{
+		arc(x, y, radius, start, degrees, Math.max(1, (int) (6 * (float) Math.cbrt(radius) * (degrees / 360.0f))));
+	}
+
+	public void arc(float x, float y, float radius, float start, float degrees, int segments)
+	{
+		if (segments <= 0)
+			throw new IllegalArgumentException("segments must be > 0.");
+		float theta = (float) ((2 * Math.PI * (degrees / 360.0f)) / segments);
+		float cos = (float) Math.cos(theta);
+		float sin = (float) Math.sin(theta);
+		float cx = (float) (radius * Math.cos(Math.toRadians(degrees)));
+		float cy = (float) (radius * Math.sin(Math.toRadians(degrees)));
+
+		if (shapeType == ShapeType.LINE)
+		{
+
+			vertex(x, y, 0);
+			vertex(x + cx, y + cy, 0);
+			for (int i = 0; i < segments; i++)
+			{
+				vertex(x + cx, y + cy, 0);
+				float temp = cx;
+				cx = cos * cx - sin * cy;
+				cy = sin * temp + cos * cy;
+				vertex(x + cx, y + cy, 0);
+			}
+			vertex(x + cx, y + cy, 0);
+		} else
+		{
+
+			for (int i = 0; i < segments; i++)
+			{
+				vertex(x, y, 0);
+				vertex(x + cx, y + cy, 0);
+				float temp = cx;
+				cx = cos * cx - sin * cy;
+				cy = sin * temp + cos * cy;
+				vertex(x + cx, y + cy, 0);
+			}
+			vertex(x, y, 0);
+			vertex(x + cx, y + cy, 0);
+		}
+
+		cx = 0;
+		cy = 0;
+
+		vertex(x + cx, y + cy, 0);
+	}
+
+	public void endShape()
+	{
+		end();
+		shapeType = ShapeType.TRIANGLE;
+	}
+
 	/**
 	 * Dispose renderer and clean up its used data.
 	 */
@@ -568,8 +847,7 @@ public class Renderer extends Allocateable
 		defaultProgram.free();
 		if (customProgram != null)
 			customProgram.free();
-		// font.free();
-		// debugFont.free();
+
 	}
 
 	/** Setups the default shader program. */
@@ -599,19 +877,14 @@ public class Renderer extends Allocateable
 		VertexShader vertexShader;
 		FragmentShader fragmentShader;
 
-		vertexShader = ResourceManager.get().loadShaderResource("vertexShader", "/shader2D.vert").getAsVertexShader();
-		fragmentShader = ResourceManager.get().loadShaderResource("fragmentShader", "/shader2D.frag")
-				.getAsFragmentShader();
+		vertexShader = Sirius.resMan.loadShaderResource("vertexShader", "/shader2D.vert").getAsVertexShader();
+		fragmentShader = Sirius.resMan.loadShaderResource("fragmentShader", "/shader2D.frag").getAsFragmentShader();
 
 		/* Create shader program */
 		defaultProgram = new ShaderProgram(vertexShader, fragmentShader);
-		defaultProgram.bindFragmentDataLocation(0, "fragColor");
+		defaultProgram.bindFragmentDataLocation(1, "fragColor");
 		defaultProgram.createProgram();
 		defaultProgram.useProgram();
-
-		/* Delete linked shaders */
-		vertexShader.free();
-		fragmentShader.free();
 
 		/* Get width and height of framebuffer */
 		long window = GLFW.glfwGetCurrentContext();
@@ -631,6 +904,7 @@ public class Renderer extends Allocateable
 		/* Set texture uniform */
 		int uniTex = defaultProgram.getUniformLocation("texImage");
 		defaultProgram.setUniform(uniTex, 0);
+
 		model.identity();
 		int uniModel = defaultProgram.getUniformLocation("model");
 		defaultProgram.setUniformMatrix(uniModel, model);
