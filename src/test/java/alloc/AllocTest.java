@@ -8,9 +8,8 @@ public class AllocTest
 	public static void main(String[] args)
 	{
 		Allocator alloc = Allocator.DefaultAllocator();
-		
-		
 		AllocClass alloclass = (AllocClass) alloc.allocate(AllocClass.class);
+		
 		alloc.init();
 		alloc.alloc(AllocClass.class);
 		

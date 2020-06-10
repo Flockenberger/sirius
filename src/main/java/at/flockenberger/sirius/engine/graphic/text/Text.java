@@ -129,67 +129,121 @@ public class Text implements IFreeable
 		Sirius.renderer.end();
 	}
 
+	/**
+	 * Sets the rotation of this text
+	 * 
+	 * @param rot the text's rotation
+	 */
 	public void rotate(float rot)
 	{
 		this.rotation = rot;
 	}
 
+	/**
+	 * Sets this text's color
+	 * 
+	 * @param c the color of this text to draw
+	 */
 	public void color(Color c)
 	{
 		SUtils.checkNull(c, "Color");
 		this.color = (c);
 	}
 
+	/**
+	 * Sets the position of this text
+	 * 
+	 * @param x the x position
+	 * @param y the y position
+	 */
 	public void position(float x, float y)
 	{
 		this.position.set(x, y);
 	}
 
+	/**
+	 * Sets the position of this text
+	 * 
+	 * @param vector the position vector
+	 */
 	public void position(Vector2f vector)
 	{
 		SUtils.checkNull(vector, "Vector2f");
 		this.position.set(vector);
 	}
 
+	/**
+	 * @return the position of this text
+	 */
 	public Vector2f getPosition()
 	{
 		return this.position;
 	}
 
+	/**
+	 * @return the text's width
+	 */
 	public int getTextWidth()
 	{
 		return font.getWidth(message);
 	}
 
+	/**
+	 * @return the text's height
+	 */
 	public int getTextHeight()
 	{
 		return font.getHeight(message);
 	}
 
+	/**
+	 * Sets the scale of this text
+	 * 
+	 * @param x the x scale
+	 * @param y the y scale
+	 */
 	public void scale(float x, float y)
 	{
 		this.scale.set(x, y);
 
 	}
 
+	/**
+	 * Sets the String this text should display
+	 * 
+	 * @param text the String to display
+	 */
 	public void setText(String text)
 	{
 		SUtils.checkNull(text, "String");
 		this.message = text;
 	}
 
+	/**
+	 * Sets this text to the {@link #toString()} method of the given object
+	 * 
+	 * @param obj the object to set as text to draw
+	 */
 	public void setText(Object obj)
 	{
 		SUtils.checkNull(obj, "Object");
 		this.message = obj.toString();
 	}
 
+	/**
+	 * Sets the font of this text
+	 * 
+	 * @param font the {@link SiriusFont} to set
+	 */
 	public void setFont(SiriusFont font)
 	{
 		SUtils.checkNull(font, "SiriusFont");
 		this.font = font;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void free()
 	{

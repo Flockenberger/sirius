@@ -149,18 +149,46 @@ public class Color implements Serializable
 		return new Color(red / (float) 255.0, green / (float) 255.0, blue / (float) 255.0);
 	}
 
-	/**
-	 * Creates a new rgb color.<br>
-	 * r, g, b a have to be between 0-255
-	 * 
-	 * @param r red channel
-	 * @param g green channel
-	 * @param b blue channel
-	 * @param a the opacity component
-	 */
-	public Color(byte r, byte g, byte b, byte a)
+	public static Color rgb(float red, float green, float blue)
 	{
-		this(r / (float) 255.0, g / (float) 255.0, b / (float) 255.0, a / (float) 255.0);
+		Color.checkRGBAf(red, green, blue, 1f);
+		return new Color(red, green, blue, 1f);
+	}
+
+	public static Color rgba(float red, float green, float blue, float alpha)
+	{
+		Color.checkRGBAf(red, green, blue, alpha);
+		return new Color(red, green, blue, alpha);
+	}
+
+	/**
+	 * Creates a new HSB Color.
+	 * 
+	 * @param hue        the hue of the color
+	 * @param saturation the saturation between 0-1
+	 * @param brightness the brightness between 0-1
+	 * @return a new Color with these values
+	 */
+	public static Color hsb(double hue, double saturation, double brightness)
+	{
+		checkSB(saturation, brightness);
+		return HSBtoRGB(hue, saturation, brightness);
+	}
+
+	/**
+	 * Creates a new HSB Color.
+	 * 
+	 * @param hue        the hue of the color
+	 * @param saturation the saturation between 0-1
+	 * @param brightness the brightness between 0-1
+	 * @return a new Color with these values
+	 */
+	public static Color hsb(double hue, double saturation, double brightness, double opacity)
+	{
+		checkSB(saturation, brightness);
+		Color c = HSBtoRGB(hue, saturation, brightness);
+		c.setAlpha((float) opacity);
+		return c;
 	}
 
 	/**
@@ -198,11 +226,8 @@ public class Color implements Serializable
 	 */
 	public Color(float r, float g, float b, float opacity)
 	{
-		this.r = r;
-		this.g = g;
-		this.b = b;
-		this.a = 1.0f;
-
+		checkRGBAf(r, g, b, opacity);
+		set(r, g, b, opacity);
 	}
 
 	/**
@@ -216,11 +241,16 @@ public class Color implements Serializable
 	 */
 	public Color(int r, int g, int b, int a)
 	{
-		checkRGB(r, g, b);
-		setRed(r / (float) 255.0);
-		setGreen(g / (float) 255.0);
-		setBlue(b / (float) 255.0);
-		setAlpha(a / (float) 255.0);
+		checkRGBA(r, g, b, a);
+		set(r, g, b, a);
+	}
+
+	/**
+	 * Creates a new White Color.
+	 */
+	public Color()
+	{
+		this(1, 1, 1);
 	}
 
 	/**
@@ -233,19 +263,7 @@ public class Color implements Serializable
 	 */
 	public Color(double r, double g, double b)
 	{
-		this.r = (float) r;
-		this.g = (float) g;
-		this.b = (float) b;
-		this.a = 1.0f;
-
-	}
-
-	/**
-	 * Creates a new White Color.
-	 */
-	public Color()
-	{
-		this(1, 1, 1);
+		this(r, g, b, 1);
 	}
 
 	/**
@@ -275,6 +293,7 @@ public class Color implements Serializable
 	 */
 	public void set(float r, float g, float b, float a)
 	{
+		checkRGBAf(r, g, b, a);
 		setRed(r);
 		setGreen(g);
 		setBlue(b);
@@ -292,7 +311,10 @@ public class Color implements Serializable
 	public void set(int r, int g, int b, int a)
 	{
 		checkRGB(r, g, b);
-		set(r / (float) 255.0, g / (float) 255.0, b / (float) 255.0, a / (float) 255.0);
+		setRed(r / (float) 255.0);
+		setGreen(g / (float) 255.0);
+		setBlue(b / (float) 255.0);
+		setAlpha(a / (float) 255.0);
 	}
 
 	/**
@@ -305,9 +327,7 @@ public class Color implements Serializable
 	public void set(int r, int g, int b)
 	{
 		checkRGB(r, g, b);
-		setRed(r / (float) 255.0);
-		setGreen(g / (float) 255.0);
-		setBlue(b / (float) 255.0);
+		set(r, g, b, 255);
 	}
 
 	/**
@@ -374,36 +394,6 @@ public class Color implements Serializable
 	public float getAlpha()
 	{
 		return a;
-	}
-
-	/**
-	 * Creates a new HSB Color.
-	 * 
-	 * @param hue        the hue of the color
-	 * @param saturation the saturation between 0-1
-	 * @param brightness the brightness between 0-1
-	 * @return a new Color with these values
-	 */
-	public static Color hsb(double hue, double saturation, double brightness)
-	{
-		checkSB(saturation, brightness);
-		return HSBtoRGB(hue, saturation, brightness);
-	}
-
-	/**
-	 * Creates a new HSB Color.
-	 * 
-	 * @param hue        the hue of the color
-	 * @param saturation the saturation between 0-1
-	 * @param brightness the brightness between 0-1
-	 * @return a new Color with these values
-	 */
-	public static Color hsb(double hue, double saturation, double brightness, double opacity)
-	{
-		checkSB(saturation, brightness);
-		Color c = HSBtoRGB(hue, saturation, brightness);
-		c.setAlpha((float) opacity);
-		return c;
 	}
 
 	/**
@@ -757,6 +747,54 @@ public class Color implements Serializable
 		{
 			SLogger.getSystemLogger().except(new IllegalArgumentException(
 					"Color.rgb's blue parameter (" + blue + ") expects color values 0-255"));
+		}
+	}
+
+	private static void checkRGBA(int red, int green, int blue, int alpha)
+	{
+		if (red < 0 || red > 255)
+		{
+			SLogger.getSystemLogger().except(new IllegalArgumentException(
+					"Color.rgba's red parameter (" + red + ") expects color values 0-255"));
+		}
+		if (green < 0 || green > 255)
+		{
+			SLogger.getSystemLogger().except(new IllegalArgumentException(
+					"Color.rgba's green parameter (" + green + ") expects color values 0-255"));
+		}
+		if (blue < 0 || blue > 255)
+		{
+			SLogger.getSystemLogger().except(new IllegalArgumentException(
+					"Color.rgba's blue parameter (" + blue + ") expects color values 0-255"));
+		}
+		if (blue < 0 || blue > 255)
+		{
+			SLogger.getSystemLogger().except(new IllegalArgumentException(
+					"Color.rgba's alpha parameter (" + alpha + ") expects color values 0-255"));
+		}
+	}
+
+	private static void checkRGBAf(float red, float green, float blue, float alpha)
+	{
+		if (red < 0 || red > 1)
+		{
+			SLogger.getSystemLogger().except(
+					new IllegalArgumentException("Color.rgba's red parameter (" + red + ") expects color values 0-1"));
+		}
+		if (green < 0 || green > 1)
+		{
+			SLogger.getSystemLogger().except(new IllegalArgumentException(
+					"Color.rgba's green parameter (" + green + ") expects color values 0-1"));
+		}
+		if (blue < 0 || blue > 1)
+		{
+			SLogger.getSystemLogger().except(new IllegalArgumentException(
+					"Color.rgba's blue parameter (" + blue + ") expects color values 0-1"));
+		}
+		if (blue < 0 || blue > 1)
+		{
+			SLogger.getSystemLogger().except(new IllegalArgumentException(
+					"Color.rgba's alpha parameter (" + alpha + ") expects color values 0-1"));
 		}
 	}
 

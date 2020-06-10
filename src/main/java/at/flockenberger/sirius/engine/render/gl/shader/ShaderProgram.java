@@ -42,6 +42,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 
+import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.render.gl.VertexAttribute;
 import at.flockenberger.sirius.utillity.SUtils;
 import at.flockenberger.sirius.utillity.logging.SLogger;
@@ -53,7 +54,7 @@ import at.flockenberger.sirius.utillity.logging.SLogger;
  * @author Florian Wagner
  *
  */
-public class ShaderProgram
+public class ShaderProgram implements IFreeable
 {
 	/** default name for position attributes **/
 	public static final String POSITION_ATTRIBUTE = "a_position";
@@ -166,6 +167,7 @@ public class ShaderProgram
 		{
 			s.compileShader();
 			s.attachShader(getID());
+			SLogger.getSystemLogger().debug("Compiled Shader: \n" + s.getShaderCode());
 		}
 
 		glLinkProgram(getID());

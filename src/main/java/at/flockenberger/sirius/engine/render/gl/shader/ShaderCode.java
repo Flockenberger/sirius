@@ -52,9 +52,7 @@ public class ShaderCode
 	 * @return all lines of this shader code
 	 */
 	public List<String> getLines()
-	{
-		return lines;
-	}
+	{ return lines; }
 
 	/**
 	 * Adds a line to the shader code.
@@ -173,9 +171,7 @@ public class ShaderCode
 	 * @param code the code to set
 	 */
 	public void setCode(String code)
-	{
-		lines = new LinkedList<String>(Arrays.asList(code.split(System.lineSeparator())));
-	}
+	{ lines = new LinkedList<String>(Arrays.asList(code.split(System.lineSeparator()))); }
 
 	/**
 	 * @return the whole shader code

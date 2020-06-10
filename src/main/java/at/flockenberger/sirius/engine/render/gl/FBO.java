@@ -1,6 +1,5 @@
 package at.flockenberger.sirius.engine.render.gl;
 
-import static org.lwjgl.opengl.ARBFramebufferObject.GL_DEPTH_ATTACHMENT;
 import static org.lwjgl.opengl.ARBFramebufferObject.GL_RENDERBUFFER;
 import static org.lwjgl.opengl.ARBFramebufferObject.glBindFramebuffer;
 import static org.lwjgl.opengl.ARBFramebufferObject.glBindRenderbuffer;
@@ -18,7 +17,6 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
-import at.flockenberger.sirius.engine.Window;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 
 /**

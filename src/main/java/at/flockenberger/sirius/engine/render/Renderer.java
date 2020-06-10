@@ -37,6 +37,12 @@ import at.flockenberger.sirius.engine.render.gl.shader.ShaderProgram;
 import at.flockenberger.sirius.engine.render.gl.shader.VertexShader;
 import at.flockenberger.sirius.utillity.SUtils;
 
+/**
+ * <h1>Renderer</h1><br>
+ * 
+ * @author Florian Wagner
+ *
+ */
 public class Renderer extends Allocateable
 {
 
@@ -235,9 +241,8 @@ public class Renderer extends Allocateable
 	private void updateBuffers()
 	{
 		if (vao != null)
-		{
 			vao.bind();
-		} else
+		else
 		{
 			vbo.bind(GL_ARRAY_BUFFER);
 			specifyVertexAttributes();
@@ -263,7 +268,6 @@ public class Renderer extends Allocateable
 	{
 		/* Clear vertex data for next batch */
 		vertices.clear();
-		// SLogger.getSystemLogger().debug("Drawing: " + numVertices / 6 + " quads!");
 		numVertices = 0;
 	}
 
@@ -299,6 +303,12 @@ public class Renderer extends Allocateable
 		drawTexture(texture, x, y, WHITE);
 	}
 
+	/**
+	 * Draws the currently bound texture on specified coordinates.
+	 *
+	 * @param texture  Used for getting width and height of the texture
+	 * @param position the position of the texture to draw
+	 */
 	public void drawTexture(Texture texture, Vector2f position)
 	{
 		drawTexture(texture, position.x, position.y);
@@ -444,29 +454,6 @@ public class Renderer extends Allocateable
 		vertices.put(x2).put(y1).put(r).put(g).put(b).put(a).put(s2).put(t1);
 
 		numVertices += 6;
-	}
-
-	public void drawGradient(float x1, float y1, float x2, float y2, Color top, Color bottom)
-	{
-
-		/*
-		 * flush();
-		 * 
-		 * switchTexture(null);
-		 * 
-		 * r = top.getRed(); g = top.getGreen(); b = top.getBlue(); a = top.getAlpha();
-		 * 
-		 * vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(0).put(0);
-		 * vertices.put(x2).put(y1).put(r).put(g).put(b).put(a).put(0).put(1);
-		 * 
-		 * r = bottom.getRed(); g = bottom.getGreen(); b = bottom.getBlue(); a =
-		 * bottom.getAlpha();
-		 * 
-		 * vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(1).put(0);
-		 * vertices.put(x1).put(y2).put(r).put(g).put(b).put(a).put(1).put(1);
-		 * 
-		 * drawGradientQuad = true; numVertices += 4; flush();
-		 */
 	}
 
 	public void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
@@ -882,7 +869,7 @@ public class Renderer extends Allocateable
 
 		/* Create shader program */
 		defaultProgram = new ShaderProgram(vertexShader, fragmentShader);
-		defaultProgram.bindFragmentDataLocation(1, "fragColor");
+		defaultProgram.bindFragmentDataLocation(0, "fragColor");
 		defaultProgram.createProgram();
 		defaultProgram.useProgram();
 

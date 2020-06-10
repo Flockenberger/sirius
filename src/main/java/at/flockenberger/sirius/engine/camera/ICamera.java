@@ -41,4 +41,6 @@ public interface ICamera
 	 * @param height the height of the view
 	 */
 	public void recalculateMatrices(int width, int height);
+	
+	
 }

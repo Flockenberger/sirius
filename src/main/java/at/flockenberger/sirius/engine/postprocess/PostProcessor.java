@@ -15,7 +15,8 @@ public class PostProcessor extends Allocateable implements PostProcessingPipelin
 	@Override
 	public void free()
 	{
-		filterList.clear();
+		if (filterList != null)
+			filterList.clear();
 		filterList = null;
 	}
 
@@ -44,7 +45,7 @@ public class PostProcessor extends Allocateable implements PostProcessingPipelin
 		{
 			filter.update();
 			Sirius.renderer.switchProgram(filter, true);
-			Sirius.renderer.draw(Sirius.game.fbo.getTexture(), 0, 0, 0, 0, Window.getActiveWidth(),
+			Sirius.renderer.draw(Sirius.game.getFBO().getTexture(), 0, 0, 0, 0, Window.getActiveWidth(),
 					Window.getActiveHeight(), 1, 1, 0);
 		}
 		Sirius.renderer.end();

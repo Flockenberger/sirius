@@ -2,21 +2,20 @@ package at.flockenberger.sirius.engine.camera;
 
 import org.joml.Matrix4f;
 
-import at.flockenberger.sirius.engine.input.KeyCode;
-import at.flockenberger.sirius.engine.input.Keyboard;
+import at.flockenberger.sirius.engine.collision.BoundingBox;
 import at.flockenberger.sirius.engine.input.Mouse;
 import at.flockenberger.sirius.engine.render.Renderer;
-import at.flockenberger.sirius.game.entity.Entity;
+import at.flockenberger.sirius.game.GameObject;
 import at.flockenberger.sirius.utillity.SUtils;
 
-public class Camera extends Entity implements ICamera
+public class Camera extends GameObject implements ICamera
 {
 	protected Matrix4f projection;
-	private Matrix4f view;
-	private Matrix4f viewProj;
-	
-	private float m_AspectRatio;
-	private float m_ZoomLevel;
+	protected Matrix4f view;
+	protected Matrix4f viewProj;
+
+	protected float m_AspectRatio;
+	protected float m_ZoomLevel;
 
 	public Camera()
 	{
@@ -24,13 +23,16 @@ public class Camera extends Entity implements ICamera
 		projection = new Matrix4f();
 		view = new Matrix4f();
 		viewProj = new Matrix4f();
+		m_ZoomLevel = 1000f;
+
 	}
+
+	public void setZoom(float zoom)
+	{ this.m_ZoomLevel = zoom; }
 
 	@Override
 	public Matrix4f getProjectionMatrix()
-	{
-		return projection;
-	}
+	{ return projection; }
 
 	@Override
 	public Matrix4f getViewMatrix()
@@ -51,7 +53,6 @@ public class Camera extends Entity implements ICamera
 	public void recalculateMatrices(int width, int height)
 	{
 		m_AspectRatio = width / (float) height;
-		m_ZoomLevel = 1000f;
 		projection = SUtils.orthographic(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, m_ZoomLevel,
 				-m_ZoomLevel, -1, 1);
 
@@ -76,34 +77,6 @@ public class Camera extends Entity implements ICamera
 	@Override
 	public void input()
 	{
-		float mul = 1;
-		float val = 10;
-
-		if (Keyboard.isShiftDown())
-			mul = 10;
-		if (Keyboard.isKeyPressed(KeyCode.W))
-		{
-			position.y += mul * val;
-		}
-		if (Keyboard.isKeyPressed(KeyCode.A))
-		{
-			position.x += mul * val;
-
-		}
-		if (Keyboard.isKeyPressed(KeyCode.S))
-		{
-			position.y -= mul * val;
-
-		}
-		if (Keyboard.isKeyPressed(KeyCode.D))
-		{
-			position.x -= mul * val;
-
-		}
-		if (Keyboard.isKeyPressed(KeyCode.F))
-		{
-			rotation.x += SUtils.degToRad(mul * val);
-		}
 
 		m_ZoomLevel -= Mouse.getDeltaScrollY();
 
@@ -112,7 +85,7 @@ public class Camera extends Entity implements ICamera
 	@Override
 	public void update()
 	{
-
+		
 	}
 
 	@Override
@@ -125,6 +98,13 @@ public class Camera extends Entity implements ICamera
 	public void update(float delta)
 	{
 
+	}
+
+	@Override
+	public BoundingBox getBoundingBox()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

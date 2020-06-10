@@ -3,12 +3,18 @@ package at.flockenberger.sirius.engine.resource;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import at.flockenberger.sirius.audio.Audio;
+import at.flockenberger.sirius.audio.AudioManager;
+import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.graphic.Image;
 import at.flockenberger.sirius.utillity.SUtils;
+import at.flockenberger.sirius.utillity.exceptions.AudioNotSupportedException;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
 /**
@@ -53,6 +59,65 @@ public class ResourceManager
 		}
 		res.put(name, resouce);
 		return resouce;
+	}
+
+	public DataResource loadDataResource(String name, String p)
+	{
+		if (getResource(name) != null)
+			return (DataResource) getResource(name);
+
+		DataResource resouce = null;
+		try
+		{
+			resouce = new DataResource(Paths.get(ResourceManager.class.getResource(p).toURI()));
+		} catch (URISyntaxException e)
+		{
+			SLogger.getSystemLogger().except(e);
+		}
+		res.put(name, resouce);
+		return resouce;
+	}
+
+	/**
+	 * Loads an {@link AudioResource} from the disk.<br>
+	 * This method automatically adds the loaded audio to the {@link AudioManager}.
+	 * 
+	 * @param name the cache name for this resource
+	 * @param p    the path for this resource
+	 * @return an already cached {@link AudioResource} (if the name was already
+	 *         cached) or a newly allocated one
+	 */
+	public AudioResource loadAudioResource(String name, String p)
+	{
+		if (getResource(name) != null)
+			return (AudioResource) getResource(name);
+
+		Optional<String> ext = SUtils.getExtensionByStringHandling(p);
+		if (ext.get() != null)
+		{
+			if (ext.get().equalsIgnoreCase(Audio.SUPPORTED_FORMAT))
+			{
+				AudioResource resouce = null;
+				try
+				{
+					resouce = new AudioResource(Paths.get(ResourceManager.class.getResource(p).toURI()));
+				} catch (URISyntaxException e)
+				{
+					SLogger.getSystemLogger().except(e);
+				}
+				res.put(name, resouce);
+				Sirius.audioManager.addAudio(resouce.getAudio());
+
+				return resouce;
+			} else
+			{
+				SLogger.getSystemLogger().except(new AudioNotSupportedException(
+						"The given audio extension: " + ext.get() + " is not supported!"));
+				return null;
+			}
+		} else
+			return null;
+
 	}
 
 	public MapResource loadMapResource(String name, String p)
@@ -138,6 +203,54 @@ public class ResourceManager
 		}
 
 		return ((ImageResource) res).getImage();
+	}
+
+	/**
+	 * Returns an {@link ByteBuffer} which has already been loaded and cached.<br>
+	 * If the {@link ByteBuffer} was not previously loaded it will throw an error.
+	 * 
+	 * @param cache the cached resource name
+	 * @return the found ByteBuffer or null
+	 */
+	public ByteBuffer getData(String cache)
+	{
+		ResourceBase res = getResource(cache);
+		if (res == null)
+		{
+			SLogger.getSystemLogger().warn("DataResource " + cache + " was not found!");
+			return null;
+		}
+
+		if (!(res instanceof DataResource))
+		{
+			SLogger.getSystemLogger().warn("Found Resource is not an DataResource!");
+		}
+
+		return ((DataResource) res).getData();
+	}
+
+	/**
+	 * Returns an {@link VorbisTrack} which has already been loaded and cached.<br>
+	 * If the {@link VorbisTrack} was not previously loaded it will throw an error.
+	 * 
+	 * @param cache the cached resource name
+	 * @return the found audio or null
+	 */
+	public Audio getAudio(String cache)
+	{
+		ResourceBase res = getResource(cache);
+		if (res == null)
+		{
+			SLogger.getSystemLogger().warn("AudioResource " + cache + " was not found!");
+			return null;
+		}
+
+		if (!(res instanceof AudioResource))
+		{
+			SLogger.getSystemLogger().warn("Found Resource is not an AudioResource!");
+		}
+
+		return ((AudioResource) res).getAudio();
 	}
 
 	/**

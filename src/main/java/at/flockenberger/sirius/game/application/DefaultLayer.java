@@ -2,7 +2,6 @@ package at.flockenberger.sirius.game.application;
 
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
 import at.flockenberger.sirius.engine.render.Renderer;
-import at.flockenberger.sirius.utillity.exceptions.SiriusStubException;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
 /**
@@ -69,9 +68,10 @@ public class DefaultLayer extends LayerBase
 	@Override
 	public void onRender(Renderer render, float alpha)
 	{
+		SLogger.getSystemLogger().debug("DefaultLayer: method stub @ onRender");
 
 	}
-
+	
 	@Override
 	public void onPostProcess(PostProcessor pp)
 	{

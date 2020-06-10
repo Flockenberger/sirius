@@ -397,7 +397,7 @@ public class SiriusFont implements IFreeable
 			uv.v1 = (g.y + g.height) / (float) texture.getHeight();
 			uv.u2 = (g.x + g.width) / (float) texture.getWidth();
 			uv.v2 = g.y / (float) texture.getHeight();
-
+			
 			renderer.draw(texture, drawX, drawY, 0, 0, g.width, g.height, scaleX, scaleY, rot, c);
 
 			drawX += g.width;

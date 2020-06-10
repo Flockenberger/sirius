@@ -23,6 +23,10 @@ import at.flockenberger.sirius.utillity.logging.SLogger;
  * An image can be loaded using the {@link #load(Path)} method. Optionally
  * through the constructor {@link #Image(int, int, ByteBuffer)} the image data
  * can be set manually. Other than that the image is a read-only class.<br>
+ * <br>
+ * The image data itself is stored inside a {@link ByteBuffer} as follows:<br>
+ * <code> data[0] = red<br> data[1] = green<br> data[2] = blue<br> data[3] = alpha<br>
+ * every pixel consumes 4 bytes. The color per pixel is <b> not </b> stored as RGBA value!</code>
  * 
  * 
  * @author Florian Wagner
@@ -144,7 +148,7 @@ public class Image implements IImage, Serializable, Cloneable, IFreeable
 	 * <code> width * height * 4 </code>.<br>
 	 * The pixels can then be filled/set using {@link #setPixel(int, int, Color)},
 	 * {@link #setPixel(int, int, byte, byte, byte, byte)} or
-	 * {@link #setRGB(int, int, int)}.
+	 * {@link #setRGBA(int, int, int)}.
 	 * 
 	 * @param width  the width of the image
 	 * @param height the height of the image
@@ -268,7 +272,7 @@ public class Image implements IImage, Serializable, Cloneable, IFreeable
 		Image image = new Image(w, h);
 		for (int x = x1, xx = 0; x < x2; x++, xx++)
 			for (int y = y1, yy = 0; y < y2; y++, yy++)
-				image.setRGB(xx, yy, getRGB(x, y));
+				image.setRGBA(xx, yy, getRGBA(x, y));
 		return image;
 	}
 
@@ -305,7 +309,7 @@ public class Image implements IImage, Serializable, Cloneable, IFreeable
 	 * @param y the y coordinate of this pixel@param x
 	 * @return the RGBA value of this pixel
 	 */
-	public int getRGB(int x, int y)
+	public int getRGBA(int x, int y)
 	{
 		SUtils.checkIndex(x, getWidth());
 		SUtils.checkIndex(y, getHeight());
@@ -336,7 +340,8 @@ public class Image implements IImage, Serializable, Cloneable, IFreeable
 	public void getPixelDataRaw(int x, int y, int[] dst)
 	{
 		if (dst.length < 4)
-			throw new IllegalArgumentException("Destination array must be at least size 4!");
+			SLogger.getSystemLogger()
+					.except(new IllegalArgumentException("Destination array must be at least size 4!"));
 		int r = this.data.get(4 * (y * getWidth() + x) + 0) & 0xFF;
 		int g = this.data.get(4 * (y * getWidth() + x) + 1) & 0xFF;
 		int b = this.data.get(4 * (y * getWidth() + x) + 2) & 0xFF;
@@ -355,7 +360,7 @@ public class Image implements IImage, Serializable, Cloneable, IFreeable
 	 * @param y    the y coordinate of the pixel
 	 * @param rgba the rgba color value to set
 	 */
-	public void setRGB(int x, int y, int rgba)
+	public void setRGBA(int x, int y, int rgba)
 	{
 		SUtils.checkIndex(x, getWidth());
 		SUtils.checkIndex(y, getHeight());
@@ -409,22 +414,48 @@ public class Image implements IImage, Serializable, Cloneable, IFreeable
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Trims this image to only opaque pixels. Essentially cropping out any
+	 * transparent pixels.
+	 * 
+	 * @return a new cropped Image
 	 */
-	@Override
-	public int getWidth()
+	public Image trimImage()
 	{
-		return this.width;
+		int width = getWidth();
+		int height = getHeight();
+		int top = height / 2;
+		int bottom = top;
+		int left = width / 2;
+		int right = left;
+
+		for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++)
+
+				if (getRGBA(x, y) != 0)
+				{
+					top = Math.min(top, y);
+					bottom = Math.max(bottom, y);
+
+					left = Math.min(left, x);
+					right = Math.max(right, x);
+				}
+
+		return getSubImage(left, top, right - left, bottom - top);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
+	public int getWidth()
+	{ return this.width; }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public int getHeight()
-	{
-		return this.height;
-	}
+	{ return this.height; }
 
 	/**
 	 * {@inheritDoc}
@@ -444,6 +475,7 @@ public class Image implements IImage, Serializable, Cloneable, IFreeable
 	{
 		if (SUtils.checkNull(imagePath, "Path"))
 			return;
+
 		String input = null;
 		try
 		{

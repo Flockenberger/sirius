@@ -10,8 +10,12 @@ import java.nio.file.Path;
  * @author Florian Wagner
  *
  */
-public abstract class ResourceBase {
+public abstract class ResourceBase
+{
 
+	/**
+	 * the path from the resource to load
+	 */
 	protected Path resourceLocation;
 
 	/**
@@ -21,7 +25,8 @@ public abstract class ResourceBase {
 	 * 
 	 * @param location the location of the resource on the hard drive
 	 */
-	public ResourceBase(Path location) {
+	public ResourceBase(Path location)
+	{
 		this.resourceLocation = location;
 		load();
 	}

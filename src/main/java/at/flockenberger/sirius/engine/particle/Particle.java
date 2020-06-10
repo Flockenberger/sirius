@@ -4,7 +4,6 @@ import org.joml.Vector3f;
 
 import at.flockenberger.sirius.engine.Window;
 import at.flockenberger.sirius.engine.graphic.Color;
-import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.utillity.SUtils;
 
 /**
@@ -33,8 +32,7 @@ public class Particle implements IParticle
 	private Color startColor;
 	private Color endColor;
 	private Color color;
-	private Texture texture;
-
+	
 	public Particle(LifeTime lifeTime, long id, double agingSpeed, Vector3f velocity, Vector3f acceleration,
 			Vector3f position, boolean doesAge, Color startColor, Color endColor)
 	{

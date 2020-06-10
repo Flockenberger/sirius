@@ -15,6 +15,7 @@ import at.flockenberger.sirius.engine.event.listener.MouseButtonListener;
 import at.flockenberger.sirius.engine.event.listener.MouseMoveListener;
 import at.flockenberger.sirius.engine.event.listener.MouseScrollListener;
 import at.flockenberger.sirius.engine.graphic.Cursor;
+import at.flockenberger.sirius.utillity.SUtils;
 
 /**
  * <h1>Mouse</h1><br>
@@ -328,6 +329,26 @@ public class Mouse implements InputDevice
 	{
 		pollMousePosition();
 		return y[0];
+	}
+
+	/**
+	 * @return the current x position of the mouse translated with the zero point
+	 *         being in the center of the window.
+	 */
+	public static double getSceneX()
+	{
+		float _activeW = Window.getActiveWidth();
+		return SUtils.map(getX(), 0, _activeW, -_activeW /2f, _activeW/2f);
+	}
+
+	/**
+	 * @return the current y position of the mouse translated with the zero point
+	 *         being in the center of the window.
+	 */
+	public static double getSceneY()
+	{
+		float _activeH = Window.getActiveHeight();
+		return SUtils.map(getY(), 0, _activeH, -_activeH/2f, _activeH/2f);
 	}
 
 	/**

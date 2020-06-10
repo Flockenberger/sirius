@@ -17,11 +17,11 @@ public class Player extends AnimateableEntity
 	public Player()
 	{
 		super();
-		Sirius.resMan.loadImageResource("mc", "/MC_0.2.png");
-		setTexture(Texture.createTexture(Sirius.resMan.getImage("mc")));
+		setTexture(Texture.createTexture(Sirius.resMan.getImage("mc").trimImage()));
 		Animation<TextureRegion> idleAni = new Animation<TextureRegion>(1, new TextureRegion(getTexture()));
 		addAnimation("idle", idleAni);
 		setActiveAnimation("idle");
+
 	}
 
 	@Override
@@ -29,8 +29,10 @@ public class Player extends AnimateableEntity
 	{
 
 		TextureRegion reg = (TextureRegion) activeAnimation().getNextFrame();
-		render.draw(reg, position.x - reg.getWidth() / 2, position.y - reg.getHeight(), reg.getWidth() / 2,
-				reg.getHeight() / 2, reg.getWidth(), reg.getHeight(), 1, -1, 0);
+		render.draw(reg, position.x, position.y, reg.getWidth() / 2f, reg.getHeight() / 2f, reg.getWidth(),
+				reg.getHeight(), 1, -1, 0);
+
+		drawBoundingBox(render);
 
 	}
 
@@ -69,6 +71,8 @@ public class Player extends AnimateableEntity
 	@Override
 	public void update()
 	{
+		super.update();
+
 		float t = Sirius.timer.getFPS();
 		velocity = direction.mul(600f);
 
@@ -88,7 +92,9 @@ public class Player extends AnimateableEntity
 			direction.y = 0;
 			position.y = 0;
 		}
-
+		
+		Sirius.audioManager.getListener().setPosition(getPosition());
+		
 	}
 
 	@Override

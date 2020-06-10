@@ -1,5 +1,6 @@
 package sirius;
 
+import at.flockenberger.sirius.audio.AudioManager;
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.graphic.Cursor;
 import at.flockenberger.sirius.engine.graphic.Icon;
@@ -22,7 +23,7 @@ public class TestGame extends SiriusGame
 	public static void main(String[] args)
 	{
 		SLogger.getSystemLogger().enableDebugOutput();
-		SLogger.getSystemLogger().suppressWarnings();
+		//SLogger.getSystemLogger().suppressWarnings();
 
 		SiriusGame game = new TestGame(800, 600, "Sirius Game");
 
@@ -40,6 +41,7 @@ public class TestGame extends SiriusGame
 	{
 		TestLayer layer = new TestLayer("TestLayer");
 		gameLayers.addLayerActive(layer);
+
 		Mouse.setCursor(new Cursor(icon));
 
 	}
@@ -47,9 +49,22 @@ public class TestGame extends SiriusGame
 	@Override
 	public void loadGameResources()
 	{
-		Sirius.resMan.loadImageResource("icon", "/cursor.png");
-		Sirius.resMan.loadImageResource("font", "/ptsans_00.png");
-		Sirius.resMan.loadURLResource("font_url", "/ptsans.fnt");
+		ResourceManager resMan = Sirius.resMan;
+
+		AudioManager audioManager;
+		audioManager = Sirius.audioManager;
+
+		resMan.loadImageResource("icon", "/cursor.png");
+		resMan.loadImageResource("font", "/ptsans_00.png");
+		resMan.loadURLResource("font_url", "/ptsans.fnt");
+		resMan.loadImageResource("companion", "/companion_0.2.png");
+		resMan.loadImageResource("companion", "/companion_0.2.png");
+		resMan.loadImageResource("texture", "/texture.jpg");
+		resMan.loadImageResource("sheet", "/sprite-animation1.png");
+		resMan.loadImageResource("tiles", "/tiles.png");
+		resMan.loadImageResource("mc", "/MC_0.2.png");
+		resMan.loadAudioResource("bdo", "/bounce.wav");
+		
 	}
 
 }

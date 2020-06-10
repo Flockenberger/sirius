@@ -10,7 +10,6 @@ import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
@@ -21,20 +20,12 @@ import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
-import at.flockenberger.sirius.engine.event.listener.WindowCloseListener;
-import at.flockenberger.sirius.engine.event.listener.WindowContentScaleListener;
-import at.flockenberger.sirius.engine.event.listener.WindowFramebufferSizeListener;
-import at.flockenberger.sirius.engine.event.listener.WindowPositionListener;
-import at.flockenberger.sirius.engine.event.listener.WindowSizeListener;
 import at.flockenberger.sirius.engine.graphic.Icon;
 import at.flockenberger.sirius.engine.input.Keyboard;
 import at.flockenberger.sirius.engine.input.Mouse;
@@ -59,14 +50,7 @@ public class Window implements IFreeable
 	private boolean initialized = false;
 	private Icon icon;
 	private boolean vsync = false;
-	private boolean needSetIcon = false;
 
-	private List<WindowCloseListener> closeListener;
-	private List<WindowSizeListener> sizeListener;
-	private List<WindowFramebufferSizeListener> fbSizeListener;
-	private List<WindowContentScaleListener> contentScaleListener;
-	private List<WindowPositionListener> positionListener;
-	
 	static int[] _width = new int[1];
 	static int[] _height = new int[1];
 	static int[] _size = new int[2];
@@ -74,7 +58,6 @@ public class Window implements IFreeable
 	public static int getActiveWidth()
 	{
 		long _id = GLFW.glfwGetCurrentContext();
-
 		GLFW.glfwGetWindowSize(_id, _width, _height);
 		return _width[0];
 	}
@@ -239,12 +222,6 @@ public class Window implements IFreeable
 				});
 		}
 
-		closeListener = new ArrayList<>();
-		sizeListener = new ArrayList<>();
-		fbSizeListener = new ArrayList<>();
-		contentScaleListener = new ArrayList<>();
-		positionListener = new ArrayList<>();
-
 		Keyboard.assign(this);
 		Mouse.assign(this);
 
@@ -257,7 +234,7 @@ public class Window implements IFreeable
 		}
 
 		GLFW.glfwSetWindowIcon(id, icon.getIcon());
-		
+
 	}
 
 	/**
@@ -321,9 +298,7 @@ public class Window implements IFreeable
 	 * @return true if the window is showing otherwise false
 	 */
 	public boolean isShowing()
-	{
-		return this.showing;
-	}
+	{ return this.showing; }
 
 	/**
 	 * Iconifies (minimizes) the specified window if it was previously restored. If
@@ -409,7 +384,6 @@ public class Window implements IFreeable
 
 		// Terminate GLFW and free the error callback
 		glfwTerminate();
-		glfwSetErrorCallback(null).free();
 
 	}
 
@@ -417,13 +391,12 @@ public class Window implements IFreeable
 	 * @return the id (handle) of this window
 	 */
 	public long getID()
-	{
-		return id;
-	}
+	{ return id; }
 
 	public boolean isVSyncEnabled()
-	{
-		return this.vsync;
-	}
+	{ return this.vsync; }
+
+	public String getTitle()
+	{ return title; }
 
 }

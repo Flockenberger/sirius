@@ -17,7 +17,7 @@ public class RenderSettings extends BaseContainer
 
 	private void putDefaults()
 	{
-		setColor(BACKGROUND, Color.BLUE);
+		setColor(BACKGROUND, Color.BRIGHT_PURPLE);
 		setFloat(ZOOM, 150f);
 	}
 }

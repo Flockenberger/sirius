@@ -6,7 +6,7 @@ import at.flockenberger.sirius.engine.graphic.text.Text;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.graphic.texture.UV;
 
-public abstract class SiriusGame extends AbstractGame
+public abstract class SiriusGame extends GameBase
 {
 	private Text debugText;
 	private Runtime rt = Runtime.getRuntime();
@@ -88,7 +88,7 @@ public abstract class SiriusGame extends AbstractGame
 			debugText.setText("FPS: " + String.valueOf(Sirius.timer.getFPS()) + ", UPS: " + Sirius.timer.getUPS()
 					+ ", Used Memory: " + used + "MB, Free Memory: " + free + "MB, Total Memory: " + total + "MB");
 			debugText.draw();
-			
+
 			Sirius.renderer.end();
 			Sirius.window.update();
 
@@ -98,6 +98,7 @@ public abstract class SiriusGame extends AbstractGame
 			}
 
 		}
+
 	}
 
 }

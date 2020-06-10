@@ -6,28 +6,26 @@ import java.util.Map;
 
 import org.joml.Vector2f;
 
-import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.collision.BoundingBox;
 import at.flockenberger.sirius.engine.component.IComponent;
 import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.render.Renderer;
+import at.flockenberger.sirius.engine.render.Renderer.ShapeType;
+import at.flockenberger.sirius.game.GameObject;
 
-public abstract class Entity implements IFreeable
+public abstract class Entity extends GameObject
 {
 	private Map<String, IComponent> mComponents;
 
-	protected Vector2f position;
 	protected Vector2f direction;
 	protected Vector2f previousPosition;
 	protected Vector2f velocity;
-	protected Vector2f rotation;
-	protected Vector2f scale;
+
 	protected int width;
 	protected int height;
 	private Texture texture;
 	protected Color color;
-	private BoundingBox boundingBox;
 
 	public Entity(Vector2f position)
 	{
@@ -73,55 +71,42 @@ public abstract class Entity implements IFreeable
 
 	}
 
-	public Vector2f getPosition()
+	public void drawBoundingBox(Renderer render)
 	{
-		return position;
+		render.beginShape(ShapeType.LINE);
+		render.rect(position.x, position.y, width, height);
+		render.endShape();
 	}
+
+	public Vector2f getPosition()
+	{ return position; }
 
 	public Vector2f getDirection()
-	{
-		return direction;
-	}
+	{ return direction; }
 
 	public void setDirection(Vector2f direction)
-	{
-		this.direction = direction;
-	}
+	{ this.direction = direction; }
 
 	public Vector2f getVelocity()
-	{
-		return velocity;
-	}
+	{ return velocity; }
 
 	public void setVelocity(Vector2f velocity)
-	{
-		this.velocity = velocity;
-	}
+	{ this.velocity = velocity; }
 
 	public Vector2f getRotation()
-	{
-		return rotation;
-	}
+	{ return rotation; }
 
 	public void setRotation(Vector2f rotation)
-	{
-		this.rotation = rotation;
-	}
+	{ this.rotation = rotation; }
 
 	public Vector2f getScale()
-	{
-		return scale;
-	}
+	{ return scale; }
 
 	public void setScale(Vector2f scale)
-	{
-		this.scale = scale;
-	}
+	{ this.scale = scale; }
 
 	public Texture getTexture()
-	{
-		return texture;
-	}
+	{ return texture; }
 
 	public void setTexture(Texture texture)
 	{
@@ -131,29 +116,19 @@ public abstract class Entity implements IFreeable
 	}
 
 	public Color getColor()
-	{
-		return color;
-	}
+	{ return color; }
 
 	public void setColor(Color color)
-	{
-		this.color = color;
-	}
+	{ this.color = color; }
 
 	public void setPosition(Vector2f position)
-	{
-		this.position = position;
-	}
+	{ this.position = position; }
 
 	public int getWidth()
-	{
-		return this.width;
-	}
+	{ return this.width; }
 
 	public int getHeight()
-	{
-		return this.height;
-	}
+	{ return this.height; }
 
 	public BoundingBox getBoundingBox()
 	{
@@ -161,16 +136,16 @@ public abstract class Entity implements IFreeable
 		return this.boundingBox;
 	}
 
-	public abstract void render(Renderer render);
+	@Override
+	public void update()
+	{
+		getAudioSource().setPosition(getPosition());
+	}
 
-	public abstract void input();
-
-	public abstract void update();
-
-	public abstract void update(float delta);
-
+	@Override
 	public void free()
 	{
+		super.free();
 		if (texture != null)
 			texture.free();
 	}
@@ -196,9 +171,7 @@ public abstract class Entity implements IFreeable
 		for (Class<? extends IComponent> componentType : componentsType)
 		{
 			if (getComponentByType(componentType) == null)
-			{
-				return false;
-			}
+			{ return false; }
 		}
 		return true;
 	}
@@ -214,9 +187,7 @@ public abstract class Entity implements IFreeable
 		for (IComponent componentType : componentsType)
 		{
 			if (getComponentByType(componentType.getClass()) == null)
-			{
-				return false;
-			}
+			{ return false; }
 		}
 		return true;
 	}

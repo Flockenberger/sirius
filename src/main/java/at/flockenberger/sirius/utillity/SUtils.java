@@ -16,6 +16,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -24,7 +25,7 @@ import org.lwjgl.BufferUtils;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
 /**
- * Utillity class.
+ * Utility class.
  * 
  * @author Florian Wagner
  *
@@ -53,6 +54,12 @@ public class SUtils
 		return false;
 	}
 
+	public static Optional<String> getExtensionByStringHandling(String filename)
+	{
+		return Optional.ofNullable(filename).filter(f -> f.contains("."))
+				.map(f -> f.substring(filename.lastIndexOf(".") + 1));
+	}
+
 	/**
 	 * Checks if the given <code>index</code> is within the given bounds.
 	 * 
@@ -68,6 +75,14 @@ public class SUtils
 		if (index > max)
 			return false;
 		return true;
+	}
+
+	public static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity)
+	{
+		ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
+		buffer.flip();
+		newBuffer.put(buffer);
+		return newBuffer;
 	}
 
 	public static ByteBuffer image2Buffer(BufferedImage bi)

@@ -42,6 +42,7 @@ public class Animation<T> implements IFreeable
 	public Animation(float frameDuration, List<? extends T> keyFrames, AnimationMode playMode)
 	{
 		this.frameDuration = frameDuration;
+		@SuppressWarnings("unchecked")
 		T[] frames = (T[]) keyFrames.toArray();
 		setKeyFrames(frames);
 		setAnimationMode(playMode);
@@ -115,9 +116,7 @@ public class Animation<T> implements IFreeable
 	}
 
 	public T[] getKeyFrames()
-	{
-		return keyFrames;
-	}
+	{ return keyFrames; }
 
 	public void setKeyFrame(T key, int index)
 	{
@@ -128,7 +127,7 @@ public class Animation<T> implements IFreeable
 		keyFrames[index] = key;
 	}
 
-	public void setKeyFrames(T... keyFrames)
+	public void setKeyFrames(@SuppressWarnings("unchecked") T... keyFrames)
 	{
 		SUtils.checkNull(keyFrames, "Animation: KeyFrames");
 		this.keyFrames = keyFrames;
@@ -136,14 +135,10 @@ public class Animation<T> implements IFreeable
 	}
 
 	public AnimationMode getAnimationMode()
-	{
-		return aniMode;
-	}
+	{ return aniMode; }
 
 	public void setAnimationMode(AnimationMode playMode)
-	{
-		this.aniMode = playMode;
-	}
+	{ this.aniMode = playMode; }
 
 	public boolean isAnimationFinished(float stateTime)
 	{
@@ -158,24 +153,16 @@ public class Animation<T> implements IFreeable
 	}
 
 	public float getFrameDuration()
-	{
-		return frameDuration;
-	}
+	{ return frameDuration; }
 
 	public float getAnimationDuration()
-	{
-		return animationDuration;
-	}
+	{ return animationDuration; }
 
 	public int getLastFrameNumber()
-	{
-		return lastFrameNumber;
-	}
+	{ return lastFrameNumber; }
 
 	public float getLastStateTime()
-	{
-		return lastStateTime;
-	}
+	{ return lastStateTime; }
 
 	@Override
 	public void free()
