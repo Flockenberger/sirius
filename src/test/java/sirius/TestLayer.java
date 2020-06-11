@@ -114,7 +114,7 @@ public class TestLayer extends LayerBase
 		comp.input();
 		cmp.input();
 		ent.input();
-		if (Keyboard.isKeyTyped(KeyCode.R))
+		if (Keyboard.get().isKeyTyped(KeyCode.R))
 		{
 			ent.getAudioSource().play(Sirius.resMan.getAudio("bdo"));
 		}

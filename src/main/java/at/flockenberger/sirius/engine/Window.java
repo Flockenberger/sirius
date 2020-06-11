@@ -221,10 +221,7 @@ public class Window implements IFreeable
 					}
 				});
 		}
-
-		Keyboard.assign(this);
-		Mouse.assign(this);
-
+		
 		glViewport(0, 0, this.width, this.height);
 
 		if (icon == null)
@@ -234,7 +231,9 @@ public class Window implements IFreeable
 		}
 
 		GLFW.glfwSetWindowIcon(id, icon.getIcon());
-
+		Mouse.get();
+		Keyboard.get();
+		
 	}
 
 	/**

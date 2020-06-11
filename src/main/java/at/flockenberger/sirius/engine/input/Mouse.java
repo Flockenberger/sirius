@@ -28,10 +28,10 @@ import at.flockenberger.sirius.utillity.SUtils;
  * time can be assigned to a {@link Window}. To assign a {@link Mouse} or
  * {@link Keyboard} or any {@link InputDevice} use the method
  * {@link #assign(Window)}. <br>
- * Therefore it is recommended to use the static functionality of the
- * {@link Mouse} class. <br>
- * <b> NOTE: It is important to only call the static mouse methods <b>after</b>
- * the {@link Window#show()} method has been called! </b>
+ * Therefore it is recommended to use the functionality of the {@link Mouse}
+ * class. <br>
+ * <b> NOTE: It is important to only call the mouse methods <b>after</b> the
+ * {@link Window#show()} method has been called! </b>
  * 
  * @author Florian Wagner
  * @see InputDevice
@@ -39,29 +39,80 @@ import at.flockenberger.sirius.utillity.SUtils;
  */
 public class Mouse extends InputDevice
 {
-	private static double[] x;
-	private static double[] y;
-	private static double oldX;
-	private static double oldY;
+	/**
+	 * container for x position polling
+	 */
+	private double[] x;
 
-	private static double dx;
-	private static double dy;
+	/**
+	 * container for y position polling
+	 */
+	private double[] y;
 
-	private static double deltaScrollX;
-	private static double deltaScrollY;
-	private static double scrollX;
-	private static double scrollY;
+	/**
+	 * old x position
+	 */
+	private double oldX;
 
-	private static Map<Long, Mouse> windowCache;
+	/**
+	 * old y position
+	 */
+	private double oldY;
+
+	/**
+	 * delta x position
+	 */
+	private double dx;
+
+	/**
+	 * delta y position
+	 */
+	private double dy;
+
+	/**
+	 * delta scroll x value
+	 */
+	private double deltaScrollX;
+
+	/**
+	 * delta scroll y value
+	 */
+	private double deltaScrollY;
+
+	/**
+	 * current scroll x value
+	 */
+	private double scrollX;
+
+	/**
+	 * current scroll y value
+	 */
+	private double scrollY;
+
 	private List<MouseScrollListener> scrollListener;
 	private List<MouseButtonListener> buttonListener;
 	private List<MouseMoveListener> moveListener;
+
+	/**
+	 * the id of the window associated with this mouse
+	 */
+	private long id;
+
+	/**
+	 * cache for windows and mice
+	 */
+	private static Map<Long, Mouse> windowCache;
 
 	static
 	{
 		windowCache = new HashMap<Long, Mouse>();
 	}
 
+	/**
+	 * Retrieves a {@link Mouse} for the current active {@link Window}
+	 * 
+	 * @return a new, or cached, {@link Mouse} for the current active {@link Window}
+	 */
 	public static Mouse get()
 	{
 		long activeHandle = Window.getActiveHandle();
@@ -75,13 +126,6 @@ public class Mouse extends InputDevice
 		}
 
 	}
-
-	public static void assign(Window w)
-	{
-		windowCache.put(w.getID(), new Mouse(w.getID()));
-	}
-
-	private long id;
 
 	private Mouse(long _id)
 	{
@@ -196,43 +240,43 @@ public class Mouse extends InputDevice
 	/**
 	 * @return true if the left mouse button is pressed
 	 */
-	public static boolean isLeftButtonDown()
+	public boolean isLeftButtonDown()
 	{ return onPressed(getMouseState(MouseButton.LEFT)); }
 
 	/**
 	 * @return true if the left mouse button is clicked
 	 */
-	public static boolean isLeftButtonClicked()
+	public boolean isLeftButtonClicked()
 	{ return onClicked(getMouseState(MouseButton.LEFT)); }
 
 	/**
 	 * @return true if the left mouse button is released
 	 */
-	public static boolean isLeftButtonReleased()
+	public boolean isLeftButtonReleased()
 	{ return onReleased(getMouseState(MouseButton.LEFT)); }
 
 	/**
 	 * @return true if the right mouse button is pressed
 	 */
-	public static boolean isRightButtonDown()
+	public boolean isRightButtonDown()
 	{ return onPressed(getMouseState(MouseButton.RIGHT)); }
 
 	/**
 	 * @return true if the right mouse button is clicked
 	 */
-	public static boolean isRightButtonClicked()
+	public boolean isRightButtonClicked()
 	{ return onClicked(getMouseState(MouseButton.RIGHT)); }
 
 	/**
 	 * @return true if the right mouse button is released
 	 */
-	public static boolean isRightButtonReleased()
+	public boolean isRightButtonReleased()
 	{ return onReleased(getMouseState(MouseButton.RIGHT)); }
 
 	/**
 	 * @return true if the middle mouse button is pressed
 	 */
-	public static boolean isMiddleButtonDown()
+	public boolean isMiddleButtonDown()
 	{
 		InputState newState = getMouseState(MouseButton.MIDDLE);
 		return onPressed(newState);
@@ -241,13 +285,13 @@ public class Mouse extends InputDevice
 	/**
 	 * @return true if the middle mouse button is clicked
 	 */
-	public static boolean isMiddleButtonClicked()
+	public boolean isMiddleButtonClicked()
 	{ return onClicked(getMouseState(MouseButton.MIDDLE)); }
 
 	/**
 	 * @return true if the middle mouse button is released
 	 */
-	public static boolean isMiddleButtonReleased()
+	public boolean isMiddleButtonReleased()
 	{ return onReleased(getMouseState(MouseButton.MIDDLE)); }
 
 	/**
@@ -256,7 +300,7 @@ public class Mouse extends InputDevice
 	 * @param button the button to check
 	 * @return true if pressed otherwise false
 	 */
-	public static boolean isButtonPressed(MouseButton button)
+	public boolean isButtonPressed(MouseButton button)
 	{
 		return onPressed(getMouseState(button));
 	}
@@ -267,7 +311,7 @@ public class Mouse extends InputDevice
 	 * @param button the button to check
 	 * @return true if released otherwise false
 	 */
-	public static boolean isButtonReleased(MouseButton button)
+	public boolean isButtonReleased(MouseButton button)
 	{
 		InputState newState = getMouseState(button);
 		return onReleased(newState);
@@ -279,7 +323,7 @@ public class Mouse extends InputDevice
 	 * @param button the button to check
 	 * @return true if released otherwise false
 	 */
-	public static boolean isButtonClicked(MouseButton button)
+	public boolean isButtonClicked(MouseButton button)
 	{
 		InputState newState = getMouseState(button);
 		return onClicked(newState);
@@ -291,16 +335,16 @@ public class Mouse extends InputDevice
 	 * @param button the button to check the state for
 	 * @return the {@link InputState} of this button
 	 */
-	public static InputState getMouseState(MouseButton button)
+	public InputState getMouseState(MouseButton button)
 	{
-		return InputState.getFromInt(GLFW.glfwGetMouseButton(get().id, button.getID()));
+		return InputState.getFromInt(GLFW.glfwGetMouseButton(this.id, button.getID()));
 	}
 
 	/**
 	 * @return the current x position of the mouse <rb> 0 is the bottom left corner
 	 *         of the window.
 	 */
-	public static double getX()
+	public double getX()
 	{
 		pollMousePosition();
 		return x[0];
@@ -310,7 +354,7 @@ public class Mouse extends InputDevice
 	 * @return the current y position of the mouse <br>
 	 *         0 is the top left corner of the window.
 	 */
-	public static double getY()
+	public double getY()
 	{
 		pollMousePosition();
 		return y[0];
@@ -320,7 +364,7 @@ public class Mouse extends InputDevice
 	 * @return the current x position of the mouse translated with the zero point
 	 *         being in the center of the window.
 	 */
-	public static double getSceneX()
+	public double getSceneX()
 	{
 		float _activeW = Window.getActiveWidth();
 		return SUtils.map(getX(), 0, _activeW, -_activeW / 2f, _activeW / 2f);
@@ -330,7 +374,7 @@ public class Mouse extends InputDevice
 	 * @return the current y position of the mouse translated with the zero point
 	 *         being in the center of the window.
 	 */
-	public static double getSceneY()
+	public double getSceneY()
 	{
 		float _activeH = Window.getActiveHeight();
 		return SUtils.map(getY(), 0, _activeH, -_activeH / 2f, _activeH / 2f);
@@ -340,134 +384,83 @@ public class Mouse extends InputDevice
 	 * @return the previous x value.
 	 * 
 	 */
-	public static double getOldX()
+	public double getOldX()
 	{ return oldX; }
 
 	/**
 	 * @return the previous y value.
 	 */
-	public static double getOldY()
+	public double getOldY()
 	{ return oldX; }
 
 	/**
 	 * @return the delta value of the current and previous x mouse position
 	 */
-	public static double getDX()
+	public double getDX()
 	{ return dx; }
 
 	/**
 	 * @return the delta value of the current and previous y mouse position
 	 */
-	public static double getDY()
+	public double getDY()
 	{ return dy; }
 
 	/**
 	 * @return the delta value from the current and previous x scroll
 	 */
-	public static double getDeltaScrollX()
+	public double getDeltaScrollX()
 	{ return deltaScrollX; }
 
 	/**
 	 * @return the delta value from the current and previous y scroll
 	 */
-	public static double getDeltaScrollY()
+	public double getDeltaScrollY()
 	{ return deltaScrollY; }
 
 	/**
 	 * @return the current x scroll value
 	 */
-	public static double getScrollX()
+	public double getScrollX()
 	{ return scrollX; }
 
 	/**
 	 * @return the current y scroll value
 	 */
-	public static double getScrollY()
+	public double getScrollY()
 	{ return scrollY; }
 
 	/**
 	 * @return true if the mouse is hovering over the window otherwise false
 	 */
-	public static boolean isMouseInWindow()
-	{ return (GLFW.glfwGetWindowAttrib(get().id, GLFW.GLFW_HOVERED) == 1) ? true : false; }
+	public boolean isMouseInWindow()
+	{ return (GLFW.glfwGetWindowAttrib(this.id, GLFW.GLFW_HOVERED) == 1) ? true : false; }
 
 	/**
 	 * Sets the current mouse cursor to the given cursor.
 	 * 
 	 * @param cursor the cursor to set
 	 */
-	public static void setCursor(Cursor cursor)
+	public void setCursor(Cursor cursor)
 	{
 		if (cursor == null)
 		{
 			resetCursor();
 			return;
 		}
-		GLFW.glfwSetCursor(get().id, cursor.getID());
+		GLFW.glfwSetCursor(this.id, cursor.getID());
 	}
 
 	/**
 	 * Resets the current mouse cursor to the default cursor.
 	 */
-	private static void resetCursor()
+	private void resetCursor()
 	{
-		GLFW.glfwSetCursor(get().id, 0);
+		GLFW.glfwSetCursor(this.id, 0);
 	}
 
-	private static void pollMousePosition()
+	private void pollMousePosition()
 	{
-		GLFW.glfwGetCursorPos(get().id, x, y);
-	}
-
-	private static InputState oldState = InputState.RELEASED;
-
-	/**
-	 * Checks whether the the given state <code>newState</code> indicates that a
-	 * one-time click has been issued. <br>
-	 * It is important to use this to get the desired result check otherwise
-	 * repeated clicks or a press can be detected.
-	 * 
-	 * @param newState the state to check
-	 * @return true if it was just a click otherwise false
-	 */
-	protected static boolean onClicked(InputState newState)
-	{
-		boolean retVal = false;
-		if (newState.equals(InputState.PRESSED) && oldState.equals(InputState.RELEASED))
-			retVal = true;
-		oldState = newState;
-		return retVal;
-	}
-
-	/**
-	 * Checks if the given state equals a pressed input action. <br>
-	 * This is for example holding a key or mouse button.
-	 * 
-	 * @param newState the state to check
-	 * @return true if the state equals a pressed state otherwise false
-	 */
-	protected static boolean onPressed(InputState newState)
-	{
-		return newState.equals(InputState.PRESSED);
-	}
-
-	/**
-	 * /** Checks whether the the given state <code>newState</code> indicates that a
-	 * button or key has been released. <br>
-	 * It is important to use this check otherwise repeated clicks or a press can be
-	 * detected.
-	 * 
-	 * @param newState the state to check
-	 * @return true if it was a release action otherwise false
-	 * 
-	 */
-	protected static boolean onReleased(InputState newState)
-	{
-		boolean retVal = false;
-		if (newState.equals(InputState.RELEASED) && oldState.equals(InputState.PRESSED))
-			retVal = true;
-		oldState = newState;
-		return retVal;
+		GLFW.glfwGetCursorPos(this.id, x, y);
 	}
 
 }

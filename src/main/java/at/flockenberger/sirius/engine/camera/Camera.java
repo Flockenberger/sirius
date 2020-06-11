@@ -78,7 +78,7 @@ public class Camera extends GameObject implements ICamera
 	public void input()
 	{
 
-		m_ZoomLevel -= Mouse.getDeltaScrollY();
+		m_ZoomLevel -= Mouse.get().getDeltaScrollY();
 
 	}
 

@@ -42,7 +42,7 @@ public class SUtils
 	 * @param t    the object to check for null
 	 * @param what a parameter to describe what object was null
 	 */
-	public static boolean checkNull(Object t, String what)
+	public static <T extends Object> boolean checkNull(T t, String what)
 	{
 		if (t == null)
 		{
@@ -54,7 +54,19 @@ public class SUtils
 		return false;
 	}
 
-	public static Optional<String> getExtensionByStringHandling(String filename)
+	public static <T extends Object> boolean checkNull(T t, Class cls)
+	{
+		if (t == null)
+		{
+			NullPointerException ex = new NullPointerException("The object of type: " + cls.getName() + " was null!");
+			SLogger.getSystemLogger().except(ex);
+			SLogger.getSystemLogger().trace(ex.getStackTrace());
+			return true;
+		}
+		return false;
+	}
+
+	public static Optional<String> getFileExtention(String filename)
 	{
 		return Optional.ofNullable(filename).filter(f -> f.contains("."))
 				.map(f -> f.substring(filename.lastIndexOf(".") + 1));

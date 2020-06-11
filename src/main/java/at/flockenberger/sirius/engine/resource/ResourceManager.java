@@ -92,7 +92,7 @@ public class ResourceManager
 		if (getResource(name) != null)
 			return (AudioResource) getResource(name);
 
-		Optional<String> ext = SUtils.getExtensionByStringHandling(p);
+		Optional<String> ext = SUtils.getFileExtention(p);
 		if (ext.get() != null)
 		{
 			if (ext.get().equalsIgnoreCase(Audio.SUPPORTED_FORMAT))

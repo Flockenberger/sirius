@@ -10,8 +10,22 @@ import org.lwjgl.glfw.GLFWGamepadState;
 import at.flockenberger.sirius.utillity.SUtils;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
+/**
+ * <h1>Gamepad</h1><br>
+ * The {@link Gamepad} is an {@link InputDevice} and allows the use of external
+ * Gamepads.<br>
+ * 
+ * To check if there is a Gamepad present you can call
+ * {@link Gamepad#getFirstPresent()} which returns the first found
+ * {@link Gamepad}.<br>
+ * GLFW supports up to 16 Gamepads and so does this implementation.<br>
+ * To get multiple {@link Gamepad}s use the {@link #get(Gamepads)} method.
+ * 
+ * @author Florian Wagner
+ *
+ */
 public class Gamepad extends InputDevice
-{	
+{
 	/**
 	 * the current state of the gamepad
 	 */
@@ -23,7 +37,8 @@ public class Gamepad extends InputDevice
 	private int id;
 
 	/**
-	 * cache for the 16 gamepads available
+	 * cache for the 16 gamepads available, we don't want to always create new
+	 * Gamepads instances
 	 */
 	private static Map<Gamepads, Gamepad> cache;
 	static
@@ -52,6 +67,8 @@ public class Gamepad extends InputDevice
 		for (Gamepads g : Gamepads.values())
 			if (isGamepadPresent(g))
 			{ return get(g); }
+		SLogger.getSystemLogger().warn("No Gamepad has been detected!");
+
 		return null;
 	}
 
@@ -93,6 +110,7 @@ public class Gamepad extends InputDevice
 	private Gamepad(int id)
 	{
 		super(InputDevice.Device.GAMEPAD);
+
 		this.id = id;
 		this.currentState = GLFWGamepadState.create();
 	}
@@ -165,6 +183,7 @@ public class Gamepad extends InputDevice
 	public float getAxisValue(GamepadAxis axis)
 	{
 		getGamepadState();
+		SUtils.checkNull(axis, "GamepadAxis");
 		return currentState.axes(axis.getID());
 	}
 
@@ -176,6 +195,7 @@ public class Gamepad extends InputDevice
 	 */
 	public boolean isButtonPressed(GamepadButton button)
 	{
+		SUtils.checkNull(button, "GamepadButton");
 		return onPressed(getButtonState(button));
 	}
 
@@ -187,8 +207,8 @@ public class Gamepad extends InputDevice
 	 */
 	public boolean isButtonReleased(GamepadButton button)
 	{
-		InputState newState = getButtonState(button);
-		return onReleased(newState);
+		SUtils.checkNull(button, "GamepadButton");
+		return onReleased(getButtonState(button));
 	}
 
 	/**
@@ -199,8 +219,8 @@ public class Gamepad extends InputDevice
 	 */
 	public boolean isButtonClicked(GamepadButton button)
 	{
-		InputState newState = getButtonState(button);
-		return onClicked(newState);
+		SUtils.checkNull(button, "GamepadButton");
+		return onClicked(getButtonState(button));
 	}
 
 	/**
@@ -211,6 +231,7 @@ public class Gamepad extends InputDevice
 	 */
 	public InputState getButtonState(GamepadButton button)
 	{
+		SUtils.checkNull(button, "GamepadButton");
 		getGamepadState();
 		return InputState.getFromInt(currentState.buttons(button.getID()));
 	}
@@ -218,61 +239,9 @@ public class Gamepad extends InputDevice
 	/**
 	 * Checks the game state of the this gamepad
 	 * 
-	 * @return
+	 * @return true if successfully fetched otherwise false
 	 */
 	private boolean getGamepadState()
 	{ return GLFW.glfwGetGamepadState(id, currentState); }
-
-	private InputState oldState = InputState.RELEASED;
-
-	/**
-	 * Checks whether the the given state <code>newState</code> indicates that a
-	 * one-time click has been issued. <br>
-	 * It is important to use this to get the desired result check otherwise
-	 * repeated clicks or a press can be detected.
-	 * 
-	 * @param newState the state to check
-	 * @return true if it was just a click otherwise false
-	 */
-	protected boolean onClicked(InputState newState)
-	{
-
-		boolean retVal = false;
-		if (newState.equals(InputState.PRESSED) && oldState.equals(InputState.RELEASED))
-			retVal = true;
-		oldState = newState;
-		return retVal;
-	}
-
-	/**
-	 * Checks if the given state equals a pressed input action. <br>
-	 * This is for example holding a key or mouse button.
-	 * 
-	 * @param newState the state to check
-	 * @return true if the state equals a pressed state otherwise false
-	 */
-	protected boolean onPressed(InputState newState)
-	{
-		return newState.equals(InputState.PRESSED);
-	}
-
-	/**
-	 * /** Checks whether the the given state <code>newState</code> indicates that a
-	 * button or key has been released. <br>
-	 * It is important to use this check otherwise repeated clicks or a press can be
-	 * detected.
-	 * 
-	 * @param newState the state to check
-	 * @return true if it was a release action otherwise false
-	 * 
-	 */
-	protected boolean onReleased(InputState newState)
-	{
-		boolean retVal = false;
-		if (newState.equals(InputState.RELEASED) && oldState.equals(InputState.PRESSED))
-			retVal = true;
-		oldState = newState;
-		return retVal;
-	}
 
 }

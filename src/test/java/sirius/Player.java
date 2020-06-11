@@ -39,28 +39,28 @@ public class Player extends AnimateableEntity
 	@Override
 	public void input()
 	{
-
+		Keyboard kb = Keyboard.get();
 		int val = 1;
-		if (Keyboard.isKeyPressed(KeyCode.W))
+		if (kb.isKeyPressed(KeyCode.W))
 		{
 			direction.y = -val;
 		}
-		if (Keyboard.isKeyPressed(KeyCode.A))
+		if (kb.isKeyPressed(KeyCode.A))
 		{
 			direction.x = -val;
 
 		}
-		if (Keyboard.isKeyPressed(KeyCode.S))
+		if (kb.isKeyPressed(KeyCode.S))
 		{
 			direction.y = val;
 
 		}
-		if (Keyboard.isKeyPressed(KeyCode.D))
+		if (kb.isKeyPressed(KeyCode.D))
 		{
 			direction.x = val;
 
 		}
-		if (Keyboard.isKeyTyped(KeyCode.SPACE) && !jumping)
+		if (kb.isKeyTyped(KeyCode.SPACE) && !jumping)
 		{
 			jumping = true;
 			direction.y -= 1;

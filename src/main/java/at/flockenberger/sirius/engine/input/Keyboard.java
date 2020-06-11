@@ -30,6 +30,14 @@ import at.flockenberger.sirius.engine.event.listener.KeyListener;
 public class Keyboard extends InputDevice
 {
 
+	/**
+	 * the window id associated with this keyboard
+	 */
+	private long id;
+
+	/**
+	 * cache for windows and keyboards
+	 */
 	private static Map<Long, Keyboard> windowCache;
 
 	static
@@ -37,6 +45,12 @@ public class Keyboard extends InputDevice
 		windowCache = new HashMap<Long, Keyboard>();
 	}
 
+	/**
+	 * Retrieves a {@link Keyboard} for the current active {@link Window}
+	 * 
+	 * @return a new, or cached, {@link Keyboard} for the current active
+	 *         {@link Window}
+	 */
 	public static Keyboard get()
 	{
 		long activeHandle = Window.getActiveHandle();
@@ -51,17 +65,10 @@ public class Keyboard extends InputDevice
 
 	}
 
-	public static void assign(Window w)
-	{
-		windowCache.put(w.getID(), new Keyboard(w.getID()));
-	}
-
-	private long id;
-
 	private Keyboard(long _id)
 	{
 		super(InputDevice.Device.KEYBOARD);
-		
+
 		this.id = _id;
 		keyListener = new ArrayList<>();
 
@@ -75,14 +82,14 @@ public class Keyboard extends InputDevice
 
 	}
 
-	private static List<KeyListener> keyListener;
+	private List<KeyListener> keyListener;
 
 	/**
 	 * Adds a {@link KeyListener} to this keyboard.
 	 * 
 	 * @param kl the {@link KeyListener} to add
 	 */
-	public static void addKeyListener(KeyListener kl)
+	public void addKeyListener(KeyListener kl)
 	{
 		keyListener.add(kl);
 	}
@@ -95,7 +102,7 @@ public class Keyboard extends InputDevice
 	/**
 	 * @param kl
 	 */
-	public static void removeKeyListener(KeyListener kl)
+	public void removeKeyListener(KeyListener kl)
 	{
 		keyListener.remove(kl);
 	}
@@ -103,7 +110,7 @@ public class Keyboard extends InputDevice
 	/**
 	 * @return true if the shift key (left OR right) is pressed.
 	 */
-	public static boolean isShiftDown()
+	public boolean isShiftDown()
 	{
 		return (getKeyState(KeyCode.LEFT_SHIFT) == InputState.PRESSED) ? true
 				: (((getKeyState(KeyCode.RIGHT_SHIFT) == InputState.PRESSED) ? true : false));
@@ -112,7 +119,7 @@ public class Keyboard extends InputDevice
 	/**
 	 * @return true if the control key (left OR right) is pressed.
 	 */
-	public static boolean isControlDown()
+	public boolean isControlDown()
 	{
 		return (getKeyState(KeyCode.LEFT_CONTROL) == InputState.PRESSED) ? true
 				: (((getKeyState(KeyCode.RIGHT_CONTROL) == InputState.PRESSED) ? true : false));
@@ -121,7 +128,7 @@ public class Keyboard extends InputDevice
 	/**
 	 * @return true if the alt key (left OR right) is pressed.
 	 */
-	public static boolean isAltDown()
+	public boolean isAltDown()
 	{
 		return (getKeyState(KeyCode.LEFT_ALT) == InputState.PRESSED) ? true
 				: (((getKeyState(KeyCode.RIGHT_ALT) == InputState.PRESSED) ? true : false));
@@ -133,7 +140,7 @@ public class Keyboard extends InputDevice
 	 * @param key the KeyCode to check.
 	 * @return true if the key is currently pressed otherwise false.
 	 */
-	public static boolean isKeyPressed(KeyCode key)
+	public boolean isKeyPressed(KeyCode key)
 	{
 		return onPressed(getKeyState(key));
 	}
@@ -144,7 +151,7 @@ public class Keyboard extends InputDevice
 	 * @param key the KeyCode to check.
 	 * @return true if the key is currently typed otherwise false.
 	 */
-	public static boolean isKeyTyped(KeyCode key)
+	public boolean isKeyTyped(KeyCode key)
 	{
 		return onClicked(getKeyState(key));
 	}
@@ -155,7 +162,7 @@ public class Keyboard extends InputDevice
 	 * @param key the KeyCode to check.
 	 * @return true if the key is currently released otherwise false.
 	 */
-	public static boolean isKeyReleased(KeyCode key)
+	public boolean isKeyReleased(KeyCode key)
 	{
 		return onReleased(getKeyState(key));
 	}
@@ -166,9 +173,9 @@ public class Keyboard extends InputDevice
 	 * @param key the key to check
 	 * @return the key state
 	 */
-	public static InputState getKeyState(KeyCode key)
+	public InputState getKeyState(KeyCode key)
 	{
-		return InputState.getFromInt(GLFW.glfwGetKey(get().id, key.getID()));
+		return InputState.getFromInt(GLFW.glfwGetKey(this.id, key.getID()));
 	}
 
 	/**
@@ -177,59 +184,8 @@ public class Keyboard extends InputDevice
 	 * @param key the key to get the name for
 	 * @return the name of the key
 	 */
-	public static String getKeyName(KeyCode key)
+	public String getKeyName(KeyCode key)
 	{
 		return key.getName();
-	}
-
-	private static InputState oldState = InputState.RELEASED;
-
-	/**
-	 * Checks whether the the given state <code>newState</code> indicates that a
-	 * one-time click has been issued. <br>
-	 * It is important to use this to get the desired result check otherwise
-	 * repeated clicks or a press can be detected.
-	 * 
-	 * @param newState the state to check
-	 * @return true if it was just a click otherwise false
-	 */
-	protected static boolean onClicked(InputState newState)
-	{
-		boolean retVal = false;
-		if (newState.equals(InputState.PRESSED) && oldState.equals(InputState.RELEASED))
-			retVal = true;
-		oldState = newState;
-		return retVal;
-	}
-
-	/**
-	 * Checks if the given state equals a pressed input action. <br>
-	 * This is for example holding a key or mouse button.
-	 * 
-	 * @param newState the state to check
-	 * @return true if the state equals a pressed state otherwise false
-	 */
-	protected static boolean onPressed(InputState newState)
-	{
-		return newState.equals(InputState.PRESSED);
-	}
-
-	/**
-	 * /** Checks whether the the given state <code>newState</code> indicates that a
-	 * button or key has been released. <br>
-	 * It is important to use this check otherwise repeated clicks or a press can be
-	 * detected.
-	 * 
-	 * @param newState the state to check
-	 * @return true if it was a release action otherwise false
-	 * 
-	 */
-	protected static boolean onReleased(InputState newState)
-	{
-		boolean retVal = false;
-		if (newState.equals(InputState.RELEASED) && oldState.equals(InputState.PRESSED))
-			retVal = true;
-		oldState = newState;
-		return retVal;
 	}
 }

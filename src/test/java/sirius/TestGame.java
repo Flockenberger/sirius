@@ -23,7 +23,7 @@ public class TestGame extends SiriusGame
 	public static void main(String[] args)
 	{
 		SLogger.getSystemLogger().enableDebugOutput();
-		//SLogger.getSystemLogger().suppressWarnings();
+		// SLogger.getSystemLogger().suppressWarnings();
 
 		SiriusGame game = new TestGame(800, 600, "Sirius Game");
 
@@ -42,7 +42,7 @@ public class TestGame extends SiriusGame
 		TestLayer layer = new TestLayer("TestLayer");
 		gameLayers.addLayerActive(layer);
 
-		Mouse.setCursor(new Cursor(icon));
+		Mouse.get().setCursor(new Cursor(icon));
 
 	}
 
@@ -64,7 +64,7 @@ public class TestGame extends SiriusGame
 		resMan.loadImageResource("tiles", "/tiles.png");
 		resMan.loadImageResource("mc", "/MC_0.2.png");
 		resMan.loadAudioResource("bdo", "/bounce.wav");
-		
+
 	}
 
 }

@@ -27,8 +27,9 @@ public class TestComponent
 
 	public void input()
 	{
-		float x = (float) Mouse.getX();
-		float y = (float) Mouse.getY();
+		Mouse m = Mouse.get();
+		float x = (float) m.getX();
+		float y = (float) m.getY();
 		if (x >= position.x && x <= position.x + length && y >= position.y && y <= position.y + length)
 		{
 			System.out.println("mouse in");

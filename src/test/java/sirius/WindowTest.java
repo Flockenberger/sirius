@@ -24,18 +24,18 @@ public class WindowTest
 
 		window.show();
 		window.setIcon(ico);
-		Mouse.setCursor(new Cursor(imgicon.getImage().resize(32, 32)));
+		Mouse.get().setCursor(new Cursor(imgicon.getImage().resize(32, 32)));
 
 		while (!window.askClose())
 		{
 			window.update();
 			
-			if (Keyboard.isKeyReleased(KeyCode.A))
+			if (Keyboard.get().isKeyReleased(KeyCode.A))
 			{
 				System.out.println("A");
-			} else if (Keyboard.isKeyPressed(KeyCode.B))
+			} else if (Keyboard.get().isKeyPressed(KeyCode.B))
 				System.out.println("pressed");
-			if (Mouse.isLeftButtonClicked())
+			if (Mouse.get().isLeftButtonClicked())
 			{
 				System.out.println("clicked");
 			}
