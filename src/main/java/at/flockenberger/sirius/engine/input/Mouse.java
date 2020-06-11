@@ -37,7 +37,7 @@ import at.flockenberger.sirius.utillity.SUtils;
  * @see InputDevice
  * @see MouseButton
  */
-public class Mouse implements InputDevice
+public class Mouse extends InputDevice
 {
 	private static double[] x;
 	private static double[] y;
@@ -85,6 +85,7 @@ public class Mouse implements InputDevice
 
 	private Mouse(long _id)
 	{
+		super(InputDevice.Device.MOUSE);
 		this.id = _id;
 		x = new double[1];
 		y = new double[1];
@@ -196,49 +197,37 @@ public class Mouse implements InputDevice
 	 * @return true if the left mouse button is pressed
 	 */
 	public static boolean isLeftButtonDown()
-	{
-		return onPressed(getMouseState(MouseButton.LEFT));
-	}
+	{ return onPressed(getMouseState(MouseButton.LEFT)); }
 
 	/**
 	 * @return true if the left mouse button is clicked
 	 */
 	public static boolean isLeftButtonClicked()
-	{
-		return onClicked(getMouseState(MouseButton.LEFT));
-	}
+	{ return onClicked(getMouseState(MouseButton.LEFT)); }
 
 	/**
 	 * @return true if the left mouse button is released
 	 */
 	public static boolean isLeftButtonReleased()
-	{
-		return onReleased(getMouseState(MouseButton.LEFT));
-	}
+	{ return onReleased(getMouseState(MouseButton.LEFT)); }
 
 	/**
 	 * @return true if the right mouse button is pressed
 	 */
 	public static boolean isRightButtonDown()
-	{
-		return onPressed(getMouseState(MouseButton.RIGHT));
-	}
+	{ return onPressed(getMouseState(MouseButton.RIGHT)); }
 
 	/**
 	 * @return true if the right mouse button is clicked
 	 */
 	public static boolean isRightButtonClicked()
-	{
-		return onClicked(getMouseState(MouseButton.RIGHT));
-	}
+	{ return onClicked(getMouseState(MouseButton.RIGHT)); }
 
 	/**
 	 * @return true if the right mouse button is released
 	 */
 	public static boolean isRightButtonReleased()
-	{
-		return onReleased(getMouseState(MouseButton.RIGHT));
-	}
+	{ return onReleased(getMouseState(MouseButton.RIGHT)); }
 
 	/**
 	 * @return true if the middle mouse button is pressed
@@ -253,17 +242,13 @@ public class Mouse implements InputDevice
 	 * @return true if the middle mouse button is clicked
 	 */
 	public static boolean isMiddleButtonClicked()
-	{
-		return onClicked(getMouseState(MouseButton.MIDDLE));
-	}
+	{ return onClicked(getMouseState(MouseButton.MIDDLE)); }
 
 	/**
 	 * @return true if the middle mouse button is released
 	 */
 	public static boolean isMiddleButtonReleased()
-	{
-		return onReleased(getMouseState(MouseButton.MIDDLE));
-	}
+	{ return onReleased(getMouseState(MouseButton.MIDDLE)); }
 
 	/**
 	 * Checks if the given {@link MouseButton} is pressed
@@ -338,7 +323,7 @@ public class Mouse implements InputDevice
 	public static double getSceneX()
 	{
 		float _activeW = Window.getActiveWidth();
-		return SUtils.map(getX(), 0, _activeW, -_activeW /2f, _activeW/2f);
+		return SUtils.map(getX(), 0, _activeW, -_activeW / 2f, _activeW / 2f);
 	}
 
 	/**
@@ -348,7 +333,7 @@ public class Mouse implements InputDevice
 	public static double getSceneY()
 	{
 		float _activeH = Window.getActiveHeight();
-		return SUtils.map(getY(), 0, _activeH, -_activeH/2f, _activeH/2f);
+		return SUtils.map(getY(), 0, _activeH, -_activeH / 2f, _activeH / 2f);
 	}
 
 	/**
@@ -356,73 +341,55 @@ public class Mouse implements InputDevice
 	 * 
 	 */
 	public static double getOldX()
-	{
-		return oldX;
-	}
+	{ return oldX; }
 
 	/**
 	 * @return the previous y value.
 	 */
 	public static double getOldY()
-	{
-		return oldX;
-	}
+	{ return oldX; }
 
 	/**
 	 * @return the delta value of the current and previous x mouse position
 	 */
 	public static double getDX()
-	{
-		return dx;
-	}
+	{ return dx; }
 
 	/**
 	 * @return the delta value of the current and previous y mouse position
 	 */
 	public static double getDY()
-	{
-		return dy;
-	}
+	{ return dy; }
 
 	/**
 	 * @return the delta value from the current and previous x scroll
 	 */
 	public static double getDeltaScrollX()
-	{
-		return deltaScrollX;
-	}
+	{ return deltaScrollX; }
 
 	/**
 	 * @return the delta value from the current and previous y scroll
 	 */
 	public static double getDeltaScrollY()
-	{
-		return deltaScrollY;
-	}
+	{ return deltaScrollY; }
 
 	/**
 	 * @return the current x scroll value
 	 */
 	public static double getScrollX()
-	{
-		return scrollX;
-	}
+	{ return scrollX; }
 
 	/**
 	 * @return the current y scroll value
 	 */
 	public static double getScrollY()
-	{
-		return scrollY;
-	}
+	{ return scrollY; }
 
 	/**
 	 * @return true if the mouse is hovering over the window otherwise false
 	 */
 	public static boolean isMouseInWindow()
-	{
-		return (GLFW.glfwGetWindowAttrib(get().id, GLFW.GLFW_HOVERED) == 1) ? true : false;
-	}
+	{ return (GLFW.glfwGetWindowAttrib(get().id, GLFW.GLFW_HOVERED) == 1) ? true : false; }
 
 	/**
 	 * Sets the current mouse cursor to the given cursor.

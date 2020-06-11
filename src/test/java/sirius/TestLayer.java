@@ -12,6 +12,9 @@ import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.graphic.text.Text;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.gui.TestComponent;
+import at.flockenberger.sirius.engine.input.Gamepad;
+import at.flockenberger.sirius.engine.input.Gamepads;
+import at.flockenberger.sirius.engine.input.InputDevice;
 import at.flockenberger.sirius.engine.input.KeyCode;
 import at.flockenberger.sirius.engine.input.Keyboard;
 import at.flockenberger.sirius.engine.particle.SimpleParticleEmitter;
@@ -74,6 +77,9 @@ public class TestLayer extends LayerBase
 		c = Color.ORANGE;
 		cmp = new TestComponent();
 		ent = new OtherEntity();
+		
+		InputDevice gp = Gamepad.get(Gamepads.GAMEPAD_1);
+		
 	}
 
 	@Override
@@ -112,7 +118,7 @@ public class TestLayer extends LayerBase
 		{
 			ent.getAudioSource().play(Sirius.resMan.getAudio("bdo"));
 		}
-		
+
 	}
 
 	@Override

@@ -21,13 +21,13 @@ import at.flockenberger.sirius.engine.event.listener.KeyListener;
  * <br>
  * It is recommended to use the static functionality of the {@link Keyboard}
  * class. <br>
- * <b> NOTE: It is important to only call the static mouse methods <b>after</b>
- * the {@link Window#show()} method has been called! </b>
+ * <b> NOTE: It is important to only call the static keyboard methods
+ * <b>after</b> the {@link Window#show()} method has been called! </b>
  * 
  * @author Florian Wagner
  * @see InputDevice
  */
-public class Keyboard implements InputDevice
+public class Keyboard extends InputDevice
 {
 
 	private static Map<Long, Keyboard> windowCache;
@@ -58,8 +58,10 @@ public class Keyboard implements InputDevice
 
 	private long id;
 
-	public Keyboard(long _id)
+	private Keyboard(long _id)
 	{
+		super(InputDevice.Device.KEYBOARD);
+		
 		this.id = _id;
 		keyListener = new ArrayList<>();
 

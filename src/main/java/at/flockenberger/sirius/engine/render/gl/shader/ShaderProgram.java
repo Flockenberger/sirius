@@ -167,7 +167,6 @@ public class ShaderProgram implements IFreeable
 		{
 			s.compileShader();
 			s.attachShader(getID());
-			SLogger.getSystemLogger().debug("Compiled Shader: \n" + s.getShaderCode());
 		}
 
 		glLinkProgram(getID());
