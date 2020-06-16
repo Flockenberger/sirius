@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 
 import at.flockenberger.sirius.utillity.logging.SLogger;
@@ -69,6 +70,7 @@ public class SUtils
 	 * 
 	 * @param t   the object to check for null
 	 * @param cls the original class of the given object <code> t </code>
+	 * @return false if the given Object <code> t </code> was not null
 	 */
 	public static <T extends Object> boolean checkNull(T t, Class<?> cls)
 	{
@@ -77,7 +79,7 @@ public class SUtils
 			NullPointerException ex = new NullPointerException("The object of type: " + cls.getName() + " was null!");
 			SLogger.getSystemLogger().except(ex);
 			SLogger.getSystemLogger().trace(ex.getStackTrace());
-			return true;
+			throw ex;
 		}
 		return false;
 	}
@@ -86,6 +88,19 @@ public class SUtils
 	{
 		return Optional.ofNullable(filename).filter(f -> f.contains("."))
 				.map(f -> f.substring(filename.lastIndexOf(".") + 1));
+	}
+
+	// Precise method, which guarantees v = v1 when t = 1.
+	public static float lerp(float v0, float v1, float t)
+	{
+		return (1 - t) * v0 + t * v1;
+	}
+
+	public static void lerp(Vector2f v1, Vector2f v2, float t)
+	{
+		v1.x = lerp(v1.x, v2.x, t);
+		v1.y = lerp(v1.y, v2.y, t);
+
 	}
 
 	/**

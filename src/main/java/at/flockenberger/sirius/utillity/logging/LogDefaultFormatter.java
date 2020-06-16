@@ -2,7 +2,6 @@ package at.flockenberger.sirius.utillity.logging;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import sun.reflect.Reflection;
 
 /**
  * <h1>LogDefaultFormatter</h1><br>

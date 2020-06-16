@@ -6,11 +6,22 @@ import at.flockenberger.sirius.engine.graphic.text.Text;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.graphic.texture.UV;
 
+/**
+ * <h1>SiriusGame</h1><br>
+ * The main entry point for the Sirius engine.<br>
+ * 
+ * @author Florian Wagner
+ *
+ */
 public abstract class SiriusGame extends GameBase
 {
 	private Text debugText;
 	private Runtime rt = Runtime.getRuntime();
-
+	private float delta;
+	private float accumulator = 0f;
+	private float interval = 1f / TARGET_UPS;
+	private float alpha;
+	
 	public SiriusGame(int width, int height, String title)
 	{
 		super(width, height, title);
@@ -18,13 +29,9 @@ public abstract class SiriusGame extends GameBase
 	}
 
 	@Override
-	
+
 	public void gameLoop()
 	{
-		float delta;
-		float accumulator = 0f;
-		float interval = 1f / TARGET_UPS;
-		float alpha;
 
 		while (running)
 		{
@@ -54,9 +61,11 @@ public abstract class SiriusGame extends GameBase
 			alpha = accumulator / interval;
 
 			fbo.bind();
+
 			render(alpha);
 
 			applyPostProcessing(Sirius.postProcessor);
+
 			Sirius.postProcessor.postProcess();
 
 			fbo.unbind();
@@ -92,7 +101,7 @@ public abstract class SiriusGame extends GameBase
 
 			Sirius.renderer.end();
 			Sirius.window.update();
-			System.out.println();
+
 			if (!Sirius.window.isVSyncEnabled())
 			{
 				sync(TARGET_FPS);
@@ -101,5 +110,4 @@ public abstract class SiriusGame extends GameBase
 		}
 
 	}
-
 }

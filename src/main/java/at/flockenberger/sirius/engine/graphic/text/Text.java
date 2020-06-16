@@ -127,6 +127,7 @@ public class Text implements IFreeable
 		Sirius.renderer.begin();
 		this.font.drawText(Sirius.renderer, message, position.x, position.y, color, scale.x, scale.y, rotation);
 		Sirius.renderer.end();
+		Sirius.renderer.begin();
 	}
 
 	/**

@@ -518,6 +518,11 @@ public class Image implements IImage, Serializable, Cloneable, IFreeable
 		}
 	}
 
+	/**
+	 * Loads the given image from an {@link InputStream}.
+	 * 
+	 * @param is the input stream to load the image from
+	 */
 	public void load(InputStream is)
 	{
 		try

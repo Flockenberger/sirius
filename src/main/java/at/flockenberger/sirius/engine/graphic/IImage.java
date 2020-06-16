@@ -1,5 +1,6 @@
 package at.flockenberger.sirius.engine.graphic;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
 
@@ -35,4 +36,10 @@ public interface IImage
 	 */
 	public void load(Path imagePath);
 
+	/**
+	 * Called to load an Image from the given {@link InputStream}.
+	 * 
+	 * @param is th input stream to load the image from
+	 */
+	public void load(InputStream is);
 }

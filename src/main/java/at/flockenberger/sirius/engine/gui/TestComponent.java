@@ -38,11 +38,13 @@ public class TestComponent
 
 	public void render(Renderer renderer)
 	{
+		if(renderer.isDrawing())
+			renderer.end();
 		renderer.updateMatrix(Sirius.game.getGUICamera());
 		renderer.beginShape(ShapeType.TRIANGLE);
 		renderer.color(Color.GREEN);
 		renderer.rect(position.x - (length / 2f), position.y - (length / 2f), length, length);
 		renderer.endShape();
-
+		renderer.begin();
 	}
 }

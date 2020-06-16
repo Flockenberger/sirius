@@ -8,6 +8,7 @@ import at.flockenberger.sirius.engine.allocate.Allocateable;
 import at.flockenberger.sirius.engine.postprocess.PostProcessor;
 import at.flockenberger.sirius.engine.render.Renderer;
 import at.flockenberger.sirius.utillity.SUtils;
+import at.flockenberger.sirius.utillity.logging.SLogger;
 
 /**
  * <h1>LayerStack</h1><br>
@@ -110,6 +111,9 @@ public class LayerStack extends Allocateable
 			currentLayer = layers.get(name);
 			currentLayer.attach();
 			return true;
+		} else
+		{
+			SLogger.getSystemLogger().warn("No Layer with name: " + name + " found! Sticking with current layer!");
 		}
 		return false;
 	}

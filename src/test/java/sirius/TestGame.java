@@ -1,14 +1,12 @@
 package sirius;
 
 import at.flockenberger.sirius.engine.Sirius;
-import at.flockenberger.sirius.engine.audio.AudioManager;
 import at.flockenberger.sirius.engine.graphic.Cursor;
 import at.flockenberger.sirius.engine.graphic.Icon;
 import at.flockenberger.sirius.engine.input.Mouse;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
-import at.flockenberger.sirius.game.application.SiriusGame;
 import at.flockenberger.sirius.game.application.LayerStack;
-import at.flockenberger.sirius.utillity.logging.SLogger;
+import at.flockenberger.sirius.game.application.SiriusGame;
 
 public class TestGame extends SiriusGame
 {
@@ -22,7 +20,7 @@ public class TestGame extends SiriusGame
 
 	public static void main(String[] args)
 	{
-		SLogger.getSystemLogger().enableDebugOutput();
+		// SLogger.getSystemLogger().enableDebugOutput();
 		// SLogger.getSystemLogger().suppressWarnings();
 
 		SiriusGame game = new TestGame(800, 600, "Sirius Game");
@@ -41,7 +39,7 @@ public class TestGame extends SiriusGame
 	{
 		TestLayer layer = new TestLayer("TestLayer");
 		gameLayers.addLayerActive(layer);
-
+		gameLayers.setActive("test");
 		Mouse.get().setCursor(new Cursor(icon));
 
 	}
@@ -60,7 +58,7 @@ public class TestGame extends SiriusGame
 		resMan.loadImageResource("tiles", "tiles.png");
 		resMan.loadImageResource("mc", "MC_0.2.png");
 		resMan.loadAudioResource("bdo", "bounce.wav");
-
+		resMan.loadImageResource("hsd", "63hsd_1080.png");
 	}
 
 }

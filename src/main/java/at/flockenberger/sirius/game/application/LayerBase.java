@@ -12,8 +12,16 @@ import at.flockenberger.sirius.engine.render.Renderer;
  */
 public abstract class LayerBase implements IFreeable
 {
+	/**
+	 * the name of the layer
+	 */
 	protected String name;
 
+	/**
+	 * Creates a new {@link LayerBase} object.<br>
+	 * 
+	 * @param layerName the name of the layer
+	 */
 	public LayerBase(String layerName)
 	{
 		this.name = layerName;

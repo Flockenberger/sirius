@@ -12,8 +12,6 @@ import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.graphic.text.Text;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.gui.TestComponent;
-import at.flockenberger.sirius.engine.input.Gamepad;
-import at.flockenberger.sirius.engine.input.Gamepads;
 import at.flockenberger.sirius.engine.input.KeyCode;
 import at.flockenberger.sirius.engine.input.Keyboard;
 import at.flockenberger.sirius.engine.particle.SimpleParticleEmitter;
@@ -42,6 +40,7 @@ public class TestLayer extends LayerBase
 	AnimateableValue<Vector2f> vec;
 	OtherEntity ent;
 	Animation<String> posAni;
+	Texture background;
 
 	public TestLayer(String layerName)
 	{
@@ -62,7 +61,7 @@ public class TestLayer extends LayerBase
 	{
 		ResourceManager manager = Sirius.resMan;
 		SLogger.getSystemLogger().debug("TestLayer attached!");
-
+		
 		tex = Texture.createTexture(manager.getImage("texture").resize(32, 32).trimImage());
 		tiles = Texture.createTexture(manager.getImage("tiles"));
 
@@ -76,8 +75,8 @@ public class TestLayer extends LayerBase
 		cmp = new TestComponent();
 		ent = new OtherEntity();
 
-		Gamepad gp = Gamepad.get(Gamepads.GAMEPAD_1);
-
+		// Gamepad gp = Gamepad.get(Gamepads.GAMEPAD_1);
+		// background = Texture.createTexture(Sirius.resMan.getImage("hsd"));
 	}
 
 	@Override
@@ -101,7 +100,7 @@ public class TestLayer extends LayerBase
 		cmp.update();
 		ent.update();
 		cam.update();
-		
+
 		p.collision(ent);
 
 	}
@@ -134,9 +133,17 @@ public class TestLayer extends LayerBase
 	{
 		render.clear(Sirius.renderSettings.getColor(RenderSettings.BACKGROUND));
 
-		render.updateMatrix(cam);
-
+		// draw background
+		if (background != null)
+		{
+			render.updateMatrix(Sirius.game.getGUICamera());
+			render.begin();
+			render.draw(background, 0, 0, 0, 0, Window.getActiveWidth(), Window.getActiveHeight(), 1, 1, 0);
+			render.end();
+		}
+		
 		render.begin();
+		render.updateMatrix(cam);
 
 		p.render(render);
 		comp.render(render);
@@ -146,20 +153,22 @@ public class TestLayer extends LayerBase
 		text.color(c);
 		text.draw();
 
-		render.end();
-
 		drawCenter(render);
+		
 		ent.render(render);
 		cmp.render(render);
-
+		render.end();
+		
 	}
 
 	private void drawCenter(Renderer r)
 	{
+		if(r.isDrawing())r.end();
 		r.beginShape(ShapeType.LINE);
 		r.line(0, Window.getActiveHeight() / 2f, 0, -Window.getActiveHeight() / 2f);
 		r.line(Window.getActiveWidth() / 2f, 0, -Window.getActiveWidth() / 2f, 0);
 		r.endShape();
+		r.begin();
 
 	}
 

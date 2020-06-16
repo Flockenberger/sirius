@@ -37,7 +37,7 @@ public abstract class AnimateableEntity extends Entity
 			activeAnimation = animationCache.get(name);
 		}
 	}
-	
+
 	public Animation<?> activeAnimation()
 	{
 		return activeAnimation;

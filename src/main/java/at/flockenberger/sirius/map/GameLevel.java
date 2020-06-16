@@ -25,12 +25,7 @@ public class GameLevel
 	public GameLevel(Map map)
 	{
 		tileCache = new HashMap<Tile, Texture>();
-		int tileWidth = map.getTileWidth();
-		int tileHeight = map.getTileHeight();
-		List<org.mapeditor.core.TileSet> tileSet = map.getTileSets();
 
-		String imagePath = tileSet.get(0).getTilebmpFile();
-		String imageName = tileSet.get(0).getName();
 		// ResourceManager rm = ResourceManager.get();
 		// rm.loadImageResource(imageName, "/" + imagePath);
 		// Texture tx = Texture.createTexture(rm.getImage(imageName));
@@ -43,6 +38,7 @@ public class GameLevel
 		this.map = map;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void drawLevel()
 	{
 

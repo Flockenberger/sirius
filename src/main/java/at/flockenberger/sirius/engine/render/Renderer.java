@@ -302,11 +302,19 @@ public class Renderer extends Allocateable
 
 	public void drawEntity(Entity entity)
 	{
-		draw(entity.getTexture(), entity.getPosition().x, entity.getPosition().y,
-				entity.getPosition().x + entity.getWidth() / 2f, entity.getPosition().y + entity.getHeight() / 2f,
-				entity.getWidth(), entity.getHeight(), entity.getScale().x, entity.getScale().y,
-				entity.getRotation().y);
-		
+		drawEntity(entity, entity.getTexture());
+	}
+
+	public void drawEntity(Entity entity, Texture t)
+	{
+		draw(t, entity.getPosition().x, entity.getPosition().y, t.getWidth() / 2f, t.getHeight() / 2f,
+				entity.getWidth(), entity.getHeight(), entity.getScale().x, -entity.getScale().y, 0);
+	}
+
+	public void drawEntity(Entity entity, TextureRegion t)
+	{
+		draw(t, entity.getPosition().x, entity.getPosition().y, t.getWidth() / 2f, t.getHeight() / 2f,
+				entity.getWidth(), entity.getHeight(), entity.getScale().x, -entity.getScale().y, 0);
 	}
 
 	/**

@@ -11,13 +11,13 @@ import at.flockenberger.sirius.game.entity.AnimateableEntity;
 
 public class Player extends AnimateableEntity
 {
-	private static final float G = 9.81f;
+//	private static final float G = 9.81f;
 	private boolean jumping;
 
 	public Player()
 	{
 		super();
-		setTexture(Texture.createTexture(Sirius.resMan.getImage("mc").trimImage()));
+		setTexture(Texture.createTexture(Sirius.resMan.getImage("mc").trimImage()), true);
 		Animation<TextureRegion> idleAni = new Animation<TextureRegion>(1, new TextureRegion(getTexture()));
 		addAnimation("idle", idleAni);
 		setActiveAnimation("idle");
@@ -28,12 +28,8 @@ public class Player extends AnimateableEntity
 	public void render(Renderer render)
 	{
 		TextureRegion reg = (TextureRegion) activeAnimation().getNextFrame();
-		render.draw(reg, position.x - reg.getWidth() / 2f, position.y - reg.getHeight() / 2f, reg.getWidth() / 2f,
-				reg.getHeight() / 2f, reg.getWidth(), reg.getHeight(), 1, -1, 0);
-
+		render.drawEntity(this, reg);
 		drawBoundingBox(render);
-
-		super.render(render);
 
 	}
 
@@ -41,7 +37,7 @@ public class Player extends AnimateableEntity
 	public void input()
 	{
 		Keyboard kb = Keyboard.get();
-		int val = 1;
+		int val = 3;
 		if (kb.isShiftDown())
 		{
 			val = 15;

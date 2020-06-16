@@ -4,6 +4,7 @@ import org.joml.Vector2f;
 
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.game.entity.Entity;
+import at.flockenberger.sirius.utillity.SUtils;
 
 /**
  * <h1>EntityFixedCamera</h1><br>
@@ -71,7 +72,7 @@ public class EntityFixedCamera extends Camera
 		update(Sirius.timer.getDelta());
 
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -84,7 +85,8 @@ public class EntityFixedCamera extends Camera
 			pos.x += entity.getWidth() / 2f;
 			pos.y += entity.getHeight() / 2f;
 
-			position.lerp(pos.negate(), lerpFactor);
+			SUtils.lerp(position, pos.negate(), lerpFactor);
+
 		}
 	}
 

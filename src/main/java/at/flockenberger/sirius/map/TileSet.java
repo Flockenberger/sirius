@@ -8,6 +8,7 @@ public class TileSet
 
 	private TextureRegion[] tiles;
 	private TextureRegion[][] tt;
+	@SuppressWarnings("unused")
 	private Texture texture;
 
 	private int tileWidth;

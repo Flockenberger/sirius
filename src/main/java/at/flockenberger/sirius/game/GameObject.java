@@ -49,16 +49,30 @@ public abstract class GameObject implements IFreeable
 	protected BoundingBox boundingBox;
 
 	/**
+	 * flag to tell the engine whether this object is collidable or not
+	 */
+	protected boolean collideable;
+
+	/**
+	 * To set this vector use this method and the
+	 * {@link Vector2f#set(org.joml.Vector2fc)} functionality.
+	 * 
 	 * @return the position of the object
 	 */
 	public abstract Vector2f getPosition();
 
 	/**
+	 * To set this vector use this method and the
+	 * {@link Vector2f#set(org.joml.Vector2fc)} functionality.
+	 * 
 	 * @return the rotation of the object
 	 */
 	public abstract Vector2f getRotation();
 
 	/**
+	 * To set this vector use this method and the
+	 * {@link Vector2f#set(org.joml.Vector2fc)} functionality.
+	 * 
 	 * @return the scale of the object
 	 */
 	public abstract Vector2f getScale();
@@ -68,12 +82,16 @@ public abstract class GameObject implements IFreeable
 	 */
 	protected AudioSource audioSource;
 
+	/**
+	 * Initializes this {@link GameObject}.
+	 */
 	public GameObject()
 	{
 		this.position = new Vector2f(0);
 		this.rotation = new Vector2f(0);
 		this.scale = new Vector2f(1);
 		this.audioSource = new AudioSource(this.position);
+		this.collideable = true;
 	}
 
 	/**
@@ -119,7 +137,8 @@ public abstract class GameObject implements IFreeable
 	public abstract void update(float delta);
 
 	/**
-	 * Constructs and returns a {@link BoundingBox} for this object.
+	 * Constructs and returns a {@link BoundingBox} for this object.<br>
+	 * Not all objects have a {@link BoundingBox} and might even return null.
 	 * 
 	 * @return this object {@link BoundingBox}
 	 */
@@ -150,6 +169,7 @@ public abstract class GameObject implements IFreeable
 	 * The {@link GameObject} class does not, by itself, create the
 	 * {@link BoundingBox} but sub-classes override the {@link #getBoundingBox()}
 	 * method. <br>
+	 * 
 	 * <br>
 	 * <b>Note: </b> This method automatically calls
 	 * {@link #onCollision(GameObject)} on this <b>and</b> the other
@@ -160,18 +180,20 @@ public abstract class GameObject implements IFreeable
 	 */
 	public boolean collision(GameObject other)
 	{
-		SUtils.checkNull(getBoundingBox(), BoundingBox.class);
+		boolean collision = false;
+
 		SUtils.checkNull(other, GameObject.class);
+		SUtils.checkNull(getBoundingBox(), BoundingBox.class);
 		SUtils.checkNull(other.getBoundingBox(), BoundingBox.class);
 
-		boolean coll = getBoundingBox().intersects(other.getBoundingBox());
-		if (coll)
+		collision = getBoundingBox().intersects(other.getBoundingBox());
+		if (collision)
 		{
 			this.onCollision(other);
 			other.onCollision(this);
 		}
 
-		return coll;
+		return collision;
 	}
 
 	/**
@@ -184,4 +206,20 @@ public abstract class GameObject implements IFreeable
 	 */
 	public abstract void onCollision(GameObject e);
 
+	/**
+	 * This flag tells the collision check {@link #collision(GameObject)} whether to
+	 * actually test if a collision has occurred or not.<br>
+	 * 
+	 * @return the collidable flag of this object
+	 */
+	public boolean isCollideable()
+	{ return this.collideable; }
+
+	/**
+	 * Sets the {@link #collideable} flag for this object.<br>
+	 * 
+	 * @param collide boolean flag to set the {@link #collideable} value
+	 */
+	public void setCollideable(boolean collide)
+	{ this.collideable = collide; }
 }
