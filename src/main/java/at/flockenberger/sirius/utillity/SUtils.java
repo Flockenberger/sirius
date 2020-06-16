@@ -9,13 +9,20 @@ import java.awt.image.DataBufferUShort;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.joml.Matrix3f;
@@ -54,7 +61,16 @@ public class SUtils
 		return false;
 	}
 
-	public static <T extends Object> boolean checkNull(T t, Class cls)
+	/**
+	 * 
+	 * Checks if the given {@link Object} <code> t </code> is null. <br>
+	 * If the given object is null a new {@link NullPointerException} will be
+	 * thrown.
+	 * 
+	 * @param t   the object to check for null
+	 * @param cls the original class of the given object <code> t </code>
+	 */
+	public static <T extends Object> boolean checkNull(T t, Class<?> cls)
 	{
 		if (t == null)
 		{
@@ -494,4 +510,75 @@ public class SUtils
 		return new String(data);
 	}
 
+	public static class Buffer
+	{
+		public static String byteBufferToString(ByteBuffer buf)
+		{
+			byte[] bytes;
+			if (buf.hasArray())
+			{
+				bytes = buf.array();
+			} else
+			{
+				buf.rewind();
+				bytes = new byte[buf.remaining()];
+			}
+			return new String(bytes, Charset.defaultCharset());
+		}
+	}
+
+	public static class IO
+	{
+		public static ByteBuffer streamAsByteBuffer(InputStream stream, int bufferSize) throws IOException
+		{
+			ByteBuffer buffer;
+			ReadableByteChannel rbc = Channels.newChannel(stream);
+
+			buffer = BufferUtils.createByteBuffer(bufferSize);
+
+			while (true)
+			{
+				int bytes = rbc.read(buffer);
+				if (bytes == -1)
+				{
+					break;
+				}
+				if (buffer.remaining() == 0)
+				{
+					buffer = resizeBuffer(buffer, buffer.capacity() * 3 / 2); // 50%
+				}
+			}
+
+			buffer.flip();
+			return buffer;
+
+		}
+
+		public static ByteBuffer resourceAsByteBuffer(String resource, int bufferSize) throws IOException
+		{
+			ByteBuffer buffer;
+
+			Path path = Paths.get(resource);
+			if (Files.isReadable(path))
+			{
+				try (SeekableByteChannel fc = Files.newByteChannel(path))
+				{
+					buffer = BufferUtils.createByteBuffer((int) fc.size() + 1);
+					while (fc.read(buffer) != -1)
+					{
+						;
+					}
+				}
+			} else
+			{
+				try (InputStream source = SUtils.class.getClassLoader().getResourceAsStream(resource))
+				{
+					buffer = streamAsByteBuffer(source, bufferSize);
+				}
+			}
+
+			buffer.flip();
+			return buffer;
+		}
+	}
 }

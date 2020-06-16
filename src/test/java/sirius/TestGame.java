@@ -1,7 +1,7 @@
 package sirius;
 
-import at.flockenberger.sirius.audio.AudioManager;
 import at.flockenberger.sirius.engine.Sirius;
+import at.flockenberger.sirius.engine.audio.AudioManager;
 import at.flockenberger.sirius.engine.graphic.Cursor;
 import at.flockenberger.sirius.engine.graphic.Icon;
 import at.flockenberger.sirius.engine.input.Mouse;
@@ -29,7 +29,7 @@ public class TestGame extends SiriusGame
 
 		// this only works because loadGameResources is called in the
 		// games constructor!
-		icon = new Icon(ResourceManager.get().getImage("icon").resize(32, 32));
+		icon = new Icon(Sirius.resMan.getImage("icon").resize(32, 32));
 		game.setGameIcon(icon);
 		// game.setFullscreen();
 		game.start();
@@ -51,19 +51,15 @@ public class TestGame extends SiriusGame
 	{
 		ResourceManager resMan = Sirius.resMan;
 
-		AudioManager audioManager;
-		audioManager = Sirius.audioManager;
-
-		resMan.loadImageResource("icon", "/cursor.png");
-		resMan.loadImageResource("font", "/ptsans_00.png");
-		resMan.loadURLResource("font_url", "/ptsans.fnt");
-		resMan.loadImageResource("companion", "/companion_0.2.png");
-		resMan.loadImageResource("companion", "/companion_0.2.png");
-		resMan.loadImageResource("texture", "/texture.jpg");
-		resMan.loadImageResource("sheet", "/sprite-animation1.png");
-		resMan.loadImageResource("tiles", "/tiles.png");
-		resMan.loadImageResource("mc", "/MC_0.2.png");
-		resMan.loadAudioResource("bdo", "/bounce.wav");
+		resMan.loadImageResource("icon", "cursor.png");
+		resMan.loadImageResource("font", "ptsans_00.png");
+		resMan.loadImageResource("companion", "companion_0.2.png");
+		resMan.loadImageResource("companion", "companion_0.2.png");
+		resMan.loadImageResource("texture", "texture.jpg");
+		resMan.loadImageResource("sheet", "sprite-animation1.png");
+		resMan.loadImageResource("tiles", "tiles.png");
+		resMan.loadImageResource("mc", "MC_0.2.png");
+		resMan.loadAudioResource("bdo", "bounce.wav");
 
 	}
 

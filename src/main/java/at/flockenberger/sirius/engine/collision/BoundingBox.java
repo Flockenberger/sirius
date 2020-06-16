@@ -43,9 +43,7 @@ public class BoundingBox extends Bounds
 
 	@Override
 	public boolean isEmpty()
-	{
-		return getMaxX() < getMinX() || getMaxY() < getMinY() || getMaxZ() < getMinZ();
-	}
+	{ return getMaxX() < getMinX() || getMaxY() < getMinY() || getMaxZ() < getMinZ(); }
 
 	@Override
 	public boolean contains(Vector2f p)

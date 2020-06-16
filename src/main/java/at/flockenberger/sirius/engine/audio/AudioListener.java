@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.audio;
+package at.flockenberger.sirius.engine.audio;
 
 import org.joml.Vector2f;
 import org.lwjgl.openal.AL11;

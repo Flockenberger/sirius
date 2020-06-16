@@ -2,20 +2,17 @@ package at.flockenberger.sirius.engine.resource;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
-import java.nio.file.Path;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
 import com.sun.media.sound.WaveFileReader;
 
-import at.flockenberger.sirius.audio.Audio;
-import at.flockenberger.sirius.audio.Audio;
+import at.flockenberger.sirius.engine.audio.Audio;
 import at.flockenberger.sirius.utillity.logging.SLogger;
 
 /**
@@ -30,7 +27,7 @@ public class AudioResource extends ResourceBase
 
 	private Audio audio;
 
-	public AudioResource(Path location)
+	public AudioResource(InputStream location)
 	{
 		super(location);
 	}
@@ -41,13 +38,9 @@ public class AudioResource extends ResourceBase
 	@Override
 	public void load()
 	{
-		try
-		{
-			audio = create(resourceLocation.toUri().toURL());
-		} catch (MalformedURLException e)
-		{
-			SLogger.getSystemLogger().except(e);
-		}
+
+		audio = create(resourceStream);
+
 	}
 
 	/**
@@ -56,7 +49,7 @@ public class AudioResource extends ResourceBase
 	 * @param path URL to file
 	 * @return Audio containing data, or null if a failure occured
 	 */
-	private Audio create(URL path)
+	private Audio create(InputStream path)
 	{
 		try
 		{
@@ -64,7 +57,7 @@ public class AudioResource extends ResourceBase
 			// and mixing unsigned and signed code
 			// we will use the reader directly
 			WaveFileReader wfr = new WaveFileReader();
-			return create(wfr.getAudioInputStream(new BufferedInputStream(path.openStream())));
+			return create(wfr.getAudioInputStream(new BufferedInputStream(path)));
 		} catch (Exception e)
 		{
 			SLogger.getSystemLogger().error("Unable to create from: " + path + ", " + e.getMessage());
@@ -84,15 +77,15 @@ public class AudioResource extends ResourceBase
 		AudioFormat audioformat = ais.getFormat();
 
 		// get channels
-		at.flockenberger.sirius.audio.AudioFormat channels = at.flockenberger.sirius.audio.AudioFormat.STEREO16;
+		at.flockenberger.sirius.engine.audio.AudioFormat channels = at.flockenberger.sirius.engine.audio.AudioFormat.STEREO16;
 		if (audioformat.getChannels() == 1)
 		{
 			if (audioformat.getSampleSizeInBits() == 8)
 			{
-				channels = at.flockenberger.sirius.audio.AudioFormat.MONO8;
+				channels = at.flockenberger.sirius.engine.audio.AudioFormat.MONO8;
 			} else if (audioformat.getSampleSizeInBits() == 16)
 			{
-				channels = at.flockenberger.sirius.audio.AudioFormat.MONO16;
+				channels = at.flockenberger.sirius.engine.audio.AudioFormat.MONO16;
 			} else
 			{
 				assert false : "Illegal sample size";
@@ -101,10 +94,10 @@ public class AudioResource extends ResourceBase
 		{
 			if (audioformat.getSampleSizeInBits() == 8)
 			{
-				channels = at.flockenberger.sirius.audio.AudioFormat.STEREO8;
+				channels = at.flockenberger.sirius.engine.audio.AudioFormat.STEREO8;
 			} else if (audioformat.getSampleSizeInBits() == 16)
 			{
-				channels = at.flockenberger.sirius.audio.AudioFormat.STEREO16;
+				channels = at.flockenberger.sirius.engine.audio.AudioFormat.STEREO16;
 			} else
 			{
 				assert false : "Illegal sample size";

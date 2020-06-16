@@ -16,6 +16,7 @@ public class TestFilter extends PostProcessingFilter
 	private String vcoord = "v_coord";
 	private int vcoordloc;
 	private String fboTex = "fbo_texture";
+	@SuppressWarnings("unused")
 	private int fboTexloc;
 	private String off = "offset";
 	private int offsetloc;

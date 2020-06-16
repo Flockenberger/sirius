@@ -12,7 +12,9 @@ public interface IFreeable
 {
 
 	/**
-	 * Frees any resources that this object allocated.
+	 * Frees any resources that this object allocated.<br>
+	 * This method needs to be explicitly called. At no point in time (yet) does the
+	 * Sirius System free these resources.
 	 */
 	public void free();
 

@@ -5,8 +5,8 @@ import org.mapeditor.io.TMXMapReader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import at.flockenberger.sirius.audio.AudioManager;
 import at.flockenberger.sirius.engine.allocate.Allocator;
+import at.flockenberger.sirius.engine.audio.AudioManager;
 import at.flockenberger.sirius.engine.graphic.Icon;
 import at.flockenberger.sirius.engine.graphic.text.SiriusFont;
 import at.flockenberger.sirius.engine.particle.ParticleSystem;
@@ -68,6 +68,6 @@ public class Sirius
 		allocator.init();
 		fontDefault = new SiriusFont();
 		particleSystem = new ParticleSystem();
-
+		renderer.init();
 	}
 }

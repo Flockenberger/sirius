@@ -18,6 +18,7 @@ public abstract class SiriusGame extends GameBase
 	}
 
 	@Override
+	
 	public void gameLoop()
 	{
 		float delta;
@@ -91,7 +92,7 @@ public abstract class SiriusGame extends GameBase
 
 			Sirius.renderer.end();
 			Sirius.window.update();
-
+			System.out.println();
 			if (!Sirius.window.isVSyncEnabled())
 			{
 				sync(TARGET_FPS);

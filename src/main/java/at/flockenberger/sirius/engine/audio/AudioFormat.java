@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.audio;
+package at.flockenberger.sirius.engine.audio;
 
 /**
  * <h1>AudioFormat</h1><br>

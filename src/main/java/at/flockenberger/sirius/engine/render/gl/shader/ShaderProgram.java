@@ -146,7 +146,7 @@ public class ShaderProgram implements IFreeable
 
 	public void createProgram()
 	{
-		SLogger.getSystemLogger().info("Creating Shader Program");
+		SLogger.getSystemLogger().debug("Creating Shader Program");
 		if (getID() != -1)
 		{
 			GL20.glDeleteProgram(id);

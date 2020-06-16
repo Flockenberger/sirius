@@ -1,6 +1,6 @@
 package at.flockenberger.sirius.engine.resource;
 
-import java.nio.file.Path;
+import java.io.InputStream;
 
 /**
  * </h1>ResourceBase</h1><br>
@@ -16,7 +16,7 @@ public abstract class ResourceBase
 	/**
 	 * the path from the resource to load
 	 */
-	protected Path resourceLocation;
+	protected InputStream resourceStream;
 
 	/**
 	 * Creates a new ResourceBase.<br>
@@ -25,10 +25,14 @@ public abstract class ResourceBase
 	 * 
 	 * @param location the location of the resource on the hard drive
 	 */
-	public ResourceBase(Path location)
+	public ResourceBase(InputStream location)
 	{
-		this.resourceLocation = location;
-		load();
+		this.resourceStream = location;
+
+		// null check, only load resource if we can actually find it
+		if (this.resourceStream != null)
+			load();
+
 	}
 
 	/**

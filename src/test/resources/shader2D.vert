@@ -18,7 +18,5 @@ void main() {
     textureCoord = texcoord;
     
     mat4 mvp = projView * model;
-    vec3 pos = vec3(position, 0.0);
-    
-    gl_Position = mvp * vec4(pos, 1.0);
+    gl_Position = mvp * vec4(position, 0.0, 1.0);
 }

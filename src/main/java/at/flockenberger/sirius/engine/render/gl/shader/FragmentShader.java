@@ -33,7 +33,7 @@ public class FragmentShader extends Shader
 	@Override
 	public long compileShader()
 	{
-		SLogger.getSystemLogger().info("Compiling Fragment Shader");
+		SLogger.getSystemLogger().debug("Compiling Fragment Shader");
 
 		int sID = -1;
 		sID = glCreateShader(GL20.GL_FRAGMENT_SHADER);

@@ -3,6 +3,7 @@ package sirius;
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.render.Renderer;
+import at.flockenberger.sirius.game.GameObject;
 import at.flockenberger.sirius.game.entity.AnimateableEntity;
 
 public class Companion extends AnimateableEntity
@@ -24,7 +25,7 @@ public class Companion extends AnimateableEntity
 	public void render(Renderer render)
 	{
 		render.begin();
-		render.drawTexture(compantionTex, position.x, position.y); // Draw
+		render.drawTexture(compantionTex, getPosition().x, getPosition().y); // Draw
 		render.end();
 
 		drawBoundingBox(render);
@@ -43,6 +44,12 @@ public class Companion extends AnimateableEntity
 		position.set(player.getPosition());
 		position.x = (float) ((position.x - 24) + Math.sin((float) Sirius.timer.getTime() * 2 * Math.PI) * 10);
 		position.y = (float) ((position.y - 24) + Math.cos((float) Sirius.timer.getTime() * 2 * Math.PI) * 10);
+
+	}
+
+	@Override
+	public void onCollision(GameObject e)
+	{
 
 	}
 

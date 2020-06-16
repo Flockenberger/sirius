@@ -14,7 +14,6 @@ import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.gui.TestComponent;
 import at.flockenberger.sirius.engine.input.Gamepad;
 import at.flockenberger.sirius.engine.input.Gamepads;
-import at.flockenberger.sirius.engine.input.InputDevice;
 import at.flockenberger.sirius.engine.input.KeyCode;
 import at.flockenberger.sirius.engine.input.Keyboard;
 import at.flockenberger.sirius.engine.particle.SimpleParticleEmitter;
@@ -69,17 +68,16 @@ public class TestLayer extends LayerBase
 
 		p = new Player();
 		comp = new Companion(p);
-		cam = new EntityFixedCamera(p);
+		cam = new EntityFixedCamera(p, 0.05f);
 		filter = new TestFilter();
-		manager.loadMapResource("mapTest", "/gameart2d-desert.tmx");
 
 		text = new Text("msg");
 		c = Color.ORANGE;
 		cmp = new TestComponent();
 		ent = new OtherEntity();
-		
-		InputDevice gp = Gamepad.get(Gamepads.GAMEPAD_1);
-		
+
+		Gamepad gp = Gamepad.get(Gamepads.GAMEPAD_1);
+
 	}
 
 	@Override
@@ -97,11 +95,14 @@ public class TestLayer extends LayerBase
 	@Override
 	public void onUpdate()
 	{
+
 		p.update();
 		comp.update();
 		cmp.update();
 		ent.update();
 		cam.update();
+		
+		p.collision(ent);
 
 	}
 
@@ -114,6 +115,7 @@ public class TestLayer extends LayerBase
 		comp.input();
 		cmp.input();
 		ent.input();
+
 		if (Keyboard.get().isKeyTyped(KeyCode.R))
 		{
 			ent.getAudioSource().play(Sirius.resMan.getAudio("bdo"));
@@ -145,18 +147,10 @@ public class TestLayer extends LayerBase
 		text.draw();
 
 		render.end();
+
 		drawCenter(render);
 		ent.render(render);
 		cmp.render(render);
-
-		// render.updateMatrix(Sirius.game.getGUICamera());
-		// render.beginShape(ShapeType.TRIANGLE);
-		// render.color(Color.BRIGHT_ORANGE);
-		// render.rect(pos.x, pos.y, p.getWidth(), p.getHeight());
-		//
-		// render.color(Color.BRIGHT_GREEN);
-		// render.circle(0, 0, 100);
-		// render.endShape();
 
 	}
 

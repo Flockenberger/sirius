@@ -11,7 +11,7 @@ import at.flockenberger.sirius.game.entity.AnimateableEntity;
 
 public class Player extends AnimateableEntity
 {
-	private final float G = 9.81f;
+	private static final float G = 9.81f;
 	private boolean jumping;
 
 	public Player()
@@ -27,12 +27,13 @@ public class Player extends AnimateableEntity
 	@Override
 	public void render(Renderer render)
 	{
-
 		TextureRegion reg = (TextureRegion) activeAnimation().getNextFrame();
-		render.draw(reg, position.x, position.y, reg.getWidth() / 2f, reg.getHeight() / 2f, reg.getWidth(),
-				reg.getHeight(), 1, -1, 0);
+		render.draw(reg, position.x - reg.getWidth() / 2f, position.y - reg.getHeight() / 2f, reg.getWidth() / 2f,
+				reg.getHeight() / 2f, reg.getWidth(), reg.getHeight(), 1, -1, 0);
 
 		drawBoundingBox(render);
+
+		super.render(render);
 
 	}
 
@@ -41,6 +42,10 @@ public class Player extends AnimateableEntity
 	{
 		Keyboard kb = Keyboard.get();
 		int val = 1;
+		if (kb.isShiftDown())
+		{
+			val = 15;
+		}
 		if (kb.isKeyPressed(KeyCode.W))
 		{
 			direction.y = -val;
@@ -73,28 +78,17 @@ public class Player extends AnimateableEntity
 	{
 		super.update();
 
-		float t = Sirius.timer.getFPS();
-		velocity = direction.mul(600f);
-
-		previousPosition.set(position.x, position.y);
-		direction.y -= G;
-
-		if (t <= 0)
-			t = 1;
-
-		position.add(velocity.mul(1 / t));
-
-		direction.x = direction.x * (1 / t);
-		direction.y = direction.y * (1 / t);
-		if (position.y <= 0)
+		if (Sirius.timer.getFPS() > 0)
 		{
-			jumping = false;
-			direction.y = 0;
-			position.y = 0;
+			velocity.set(direction);
+			velocity.mul(100f);
+			velocity.mul(1 / (float) Sirius.timer.getFPS());
+			// velocity.y += G; //gravitation
+			position.add(velocity);
+			direction.mul(0.9f);
 		}
-		
+
 		Sirius.audioManager.getListener().setPosition(getPosition());
-		
 	}
 
 	@Override

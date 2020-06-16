@@ -2,13 +2,14 @@ package at.flockenberger.sirius.game;
 
 import org.joml.Vector2f;
 
-import at.flockenberger.sirius.audio.AudioSource;
 import at.flockenberger.sirius.engine.IFreeable;
+import at.flockenberger.sirius.engine.audio.AudioSource;
 import at.flockenberger.sirius.engine.camera.Camera;
 import at.flockenberger.sirius.engine.collision.BoundingBox;
 import at.flockenberger.sirius.engine.render.Renderer;
 import at.flockenberger.sirius.game.application.LayerBase;
 import at.flockenberger.sirius.game.entity.Entity;
+import at.flockenberger.sirius.utillity.SUtils;
 
 /**
  * </h1>GameObject</h1><br>
@@ -46,6 +47,21 @@ public abstract class GameObject implements IFreeable
 	 * the object bounding box
 	 */
 	protected BoundingBox boundingBox;
+
+	/**
+	 * @return the position of the object
+	 */
+	public abstract Vector2f getPosition();
+
+	/**
+	 * @return the rotation of the object
+	 */
+	public abstract Vector2f getRotation();
+
+	/**
+	 * @return the scale of the object
+	 */
+	public abstract Vector2f getScale();
 
 	/**
 	 * the {@link AudioSource} of this object
@@ -115,9 +131,57 @@ public abstract class GameObject implements IFreeable
 	public AudioSource getAudioSource()
 	{ return this.audioSource; }
 
+	/**
+	 * Frees the {@link AudioSource} of this {@link GameObject}.<br>
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void free()
 	{
 		audioSource.free();
 	}
+
+	/**
+	 * Checks if this {@link GameObject} collides with the given
+	 * <code> other </code> {@link GameObject}.<br>
+	 * It does this by checking the {@link BoundingBox} and calls
+	 * {@link BoundingBox#intersects(at.flockenberger.sirius.engine.collision.Bounds)}
+	 * method.<br>
+	 * The {@link GameObject} class does not, by itself, create the
+	 * {@link BoundingBox} but sub-classes override the {@link #getBoundingBox()}
+	 * method. <br>
+	 * <br>
+	 * <b>Note: </b> This method automatically calls
+	 * {@link #onCollision(GameObject)} on this <b>and</b> the other
+	 * {@link GameObject} given!<br>
+	 * 
+	 * @param other the other {@link GameObject} to test a collision
+	 * @return true if they intersect/collide otherwise false
+	 */
+	public boolean collision(GameObject other)
+	{
+		SUtils.checkNull(getBoundingBox(), BoundingBox.class);
+		SUtils.checkNull(other, GameObject.class);
+		SUtils.checkNull(other.getBoundingBox(), BoundingBox.class);
+
+		boolean coll = getBoundingBox().intersects(other.getBoundingBox());
+		if (coll)
+		{
+			this.onCollision(other);
+			other.onCollision(this);
+		}
+
+		return coll;
+	}
+
+	/**
+	 * This method is called when the {@link #collision(GameObject)} method returns
+	 * true.<br>
+	 * Every {@link GameObject} which is able to handle collisions can override this
+	 * method to automatically get the other object it collided with.
+	 * 
+	 * @param e the other {@link GameObject} this object collided with
+	 */
+	public abstract void onCollision(GameObject e);
+
 }

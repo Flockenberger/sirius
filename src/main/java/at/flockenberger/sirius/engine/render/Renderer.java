@@ -35,6 +35,7 @@ import at.flockenberger.sirius.engine.render.gl.VBO;
 import at.flockenberger.sirius.engine.render.gl.shader.FragmentShader;
 import at.flockenberger.sirius.engine.render.gl.shader.ShaderProgram;
 import at.flockenberger.sirius.engine.render.gl.shader.VertexShader;
+import at.flockenberger.sirius.game.entity.Entity;
 import at.flockenberger.sirius.utillity.SUtils;
 
 /**
@@ -91,9 +92,7 @@ public class Renderer extends Allocateable
 		 * @return the opengl type for this drawing style
 		 */
 		public int getType()
-		{
-			return _type;
-		}
+		{ return _type; }
 	}
 
 	private VAO vao;
@@ -128,7 +127,7 @@ public class Renderer extends Allocateable
 	private Color shapeColor = Color.WHITE;
 
 	/** Initializes the renderer */
-	protected void init()
+	public void init()
 	{
 		/* Setup shader programs */
 		setupShaderProgram();
@@ -208,9 +207,7 @@ public class Renderer extends Allocateable
 	}
 
 	public boolean isDrawing()
-	{
-		return drawing;
-	}
+	{ return drawing; }
 
 	public void end()
 	{
@@ -301,6 +298,15 @@ public class Renderer extends Allocateable
 	public void drawTexture(Texture texture, float x, float y)
 	{
 		drawTexture(texture, x, y, WHITE);
+	}
+
+	public void drawEntity(Entity entity)
+	{
+		draw(entity.getTexture(), entity.getPosition().x, entity.getPosition().y,
+				entity.getPosition().x + entity.getWidth() / 2f, entity.getPosition().y + entity.getHeight() / 2f,
+				entity.getWidth(), entity.getHeight(), entity.getScale().x, entity.getScale().y,
+				entity.getRotation().y);
+		
 	}
 
 	/**
@@ -609,7 +615,7 @@ public class Renderer extends Allocateable
 
 	public void color(Color c)
 	{
-		this.shapeColor = c;
+		this.shapeColor = (c);
 
 	}
 
@@ -625,8 +631,10 @@ public class Renderer extends Allocateable
 
 	public void vertex(float x, float y)
 	{
-		vertices.put(x).put(y).put(shapeColor.getRed()).put(shapeColor.getGreen()).put(shapeColor.getBlue())
-				.put(shapeColor.getAlpha()).put(0).put(0);
+		vertices.put(x).put(y)/**/
+				.put(shapeColor.getRed()).put(shapeColor.getGreen())/**/
+				.put(shapeColor.getBlue()).put(shapeColor.getAlpha())/**/
+				.put(1).put(1);
 
 		numVertices++;
 	}
@@ -664,46 +672,34 @@ public class Renderer extends Allocateable
 		if (shapeType == ShapeType.LINE)
 		{
 			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
+
 			vertex(x, y, 0);
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x + width, y, 0);
 
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x + width, y, 0);
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x + width, y + height, 0);
 
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x + width, y + height, 0);
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x, y + height, 0);
 
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x, y + height, 0);
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x, y, 0);
 		} else
 		{
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x, y, 0);
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x + width, y, 0);
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x + width, y + height, 0);
 
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x + width, y + height, 0);
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x, y + height, 0);
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 			vertex(x, y, 0);
 		}
 	}
 
 	public void circle(float x, float y, float radius, Color c)
 	{
-		color(c);
-		circle(x, y, radius, Math.max(1, (int) (6 * (float) Math.cbrt(radius))));
+
+		circle(x, y, radius, Math.max(1, (int) (6 * (float) Math.cbrt(radius))), c);
 
 	}
 

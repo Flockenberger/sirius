@@ -1,6 +1,6 @@
 package at.flockenberger.sirius.engine.resource;
 
-import java.nio.file.Path;
+import java.io.InputStream;
 
 import at.flockenberger.sirius.engine.graphic.Image;
 
@@ -14,7 +14,8 @@ import at.flockenberger.sirius.engine.graphic.Image;
  * @see ResourceManager
  * @see Image
  */
-public class ImageResource extends ResourceBase {
+public class ImageResource extends ResourceBase
+{
 	private Image tex;
 
 	/**
@@ -22,19 +23,20 @@ public class ImageResource extends ResourceBase {
 	 * 
 	 * @param location The location of the resource on the hard drive
 	 */
-	protected ImageResource(Path location) {
+	protected ImageResource(InputStream location)
+	{
 		super(location);
 	}
 
 	/**
 	 * @return the loaded image
 	 */
-	public Image getImage() {
-		return tex;
-	}
+	public Image getImage()
+	{ return tex; }
 
 	@Override
-	public void load() {
-		tex = new Image(resourceLocation);
+	public void load()
+	{
+		tex = new Image(resourceStream);
 	}
 }

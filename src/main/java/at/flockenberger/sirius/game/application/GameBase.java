@@ -5,10 +5,10 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
-import at.flockenberger.sirius.audio.AudioManager;
 import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.Window;
+import at.flockenberger.sirius.engine.audio.AudioManager;
 import at.flockenberger.sirius.engine.camera.Camera;
 import at.flockenberger.sirius.engine.camera.GUICamera;
 import at.flockenberger.sirius.engine.graphic.Icon;

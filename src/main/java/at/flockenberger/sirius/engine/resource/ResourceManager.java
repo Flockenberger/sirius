@@ -1,17 +1,15 @@
 package at.flockenberger.sirius.engine.resource;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
-import at.flockenberger.sirius.audio.Audio;
-import at.flockenberger.sirius.audio.AudioManager;
 import at.flockenberger.sirius.engine.Sirius;
+import at.flockenberger.sirius.engine.audio.Audio;
+import at.flockenberger.sirius.engine.audio.AudioManager;
 import at.flockenberger.sirius.engine.graphic.Image;
 import at.flockenberger.sirius.utillity.SUtils;
 import at.flockenberger.sirius.utillity.exceptions.AudioNotSupportedException;
@@ -44,36 +42,14 @@ public class ResourceManager
 		res = new HashMap<String, ResourceBase>();
 	}
 
-	public URLResource loadURLResource(String name, String p)
-	{
-		if (getResource(name) != null)
-			return (URLResource) getResource(name);
-
-		URLResource resouce = null;
-		try
-		{
-			resouce = new URLResource(Paths.get(ResourceManager.class.getResource(p).toURI()));
-		} catch (URISyntaxException e)
-		{
-			SLogger.getSystemLogger().except(e);
-		}
-		res.put(name, resouce);
-		return resouce;
-	}
-
 	public DataResource loadDataResource(String name, String p)
 	{
 		if (getResource(name) != null)
 			return (DataResource) getResource(name);
 
 		DataResource resouce = null;
-		try
-		{
-			resouce = new DataResource(Paths.get(ResourceManager.class.getResource(p).toURI()));
-		} catch (URISyntaxException e)
-		{
-			SLogger.getSystemLogger().except(e);
-		}
+		resouce = new DataResource(getResourcePath(p));
+
 		res.put(name, resouce);
 		return resouce;
 	}
@@ -98,15 +74,12 @@ public class ResourceManager
 			if (ext.get().equalsIgnoreCase(Audio.SUPPORTED_FORMAT))
 			{
 				AudioResource resouce = null;
-				try
-				{
-					resouce = new AudioResource(Paths.get(ResourceManager.class.getResource(p).toURI()));
-				} catch (URISyntaxException e)
-				{
-					SLogger.getSystemLogger().except(e);
-				}
+				resouce = new AudioResource(getResourcePath(p));
+
 				res.put(name, resouce);
-				Sirius.audioManager.addAudio(resouce.getAudio());
+				// add the audio to the audio manager if it was loaded
+				if (resouce.getAudio() != null)
+					Sirius.audioManager.addAudio(resouce.getAudio());
 
 				return resouce;
 			} else
@@ -118,23 +91,6 @@ public class ResourceManager
 		} else
 			return null;
 
-	}
-
-	public MapResource loadMapResource(String name, String p)
-	{
-		if (getResource(name) != null)
-			return (MapResource) getResource(name);
-
-		MapResource resouce = null;
-		try
-		{
-			resouce = new MapResource(Paths.get(ResourceManager.class.getResource(p).toURI()));
-		} catch (URISyntaxException e)
-		{
-			SLogger.getSystemLogger().except(e);
-		}
-		res.put(name, resouce);
-		return resouce;
 	}
 
 	/**
@@ -152,13 +108,8 @@ public class ResourceManager
 			return (ImageResource) getResource(name);
 
 		ImageResource resouce = null;
-		try
-		{
-			resouce = new ImageResource(Paths.get(ResourceManager.class.getResource(p).toURI()));
-		} catch (URISyntaxException e)
-		{
-			SLogger.getSystemLogger().except(e);
-		}
+		resouce = new ImageResource(getResourcePath(p));
+
 		res.put(name, resouce);
 		return resouce;
 	}
@@ -169,16 +120,34 @@ public class ResourceManager
 			return (ShaderResource) getResource(name);
 
 		ShaderResource resouce = null;
-		try
-		{
-			resouce = new ShaderResource(Paths.get(ResourceManager.class.getResource(path).toURI()));
-		} catch (URISyntaxException e)
-		{
-			SLogger.getSystemLogger().except(e);
-		}
+		resouce = new ShaderResource(getResourcePath(path));
 
 		res.put(name, resouce);
 		return resouce;
+	}
+
+	private InputStream getResourcePath(String p)
+	{
+		// we check if we are in inside the jar file, which will change the resource
+		// path
+		String protocol = this.getClass().getResource("").getProtocol();
+		boolean isJar = Objects.equals(protocol, "jar");
+
+		// append leading '/'
+		if (!p.startsWith("/"))
+			p = "/" + p;
+
+		if (isJar)
+			p = "/resources" + p;
+
+		InputStream is = ResourceManager.class.getResourceAsStream(p);
+
+		if (is == null)
+		{
+			SLogger.getSystemLogger().error("Could not find resource: " + p);
+			return null;
+		}
+		return is;
 	}
 
 	/**
@@ -254,56 +223,25 @@ public class ResourceManager
 	}
 
 	/**
-	 * Returns an {@link org.mapeditor.core.Map} which has already been loaded and
-	 * cached.<br>
-	 * If the {@link org.mapeditor.core.Map} was not previously loaded it will throw
-	 * an error.
-	 * 
-	 * @param cache the cached resource name
-	 * @return the found map or null
-	 */
-	public org.mapeditor.core.Map getMap(String cache)
-	{
-		ResourceBase res = getResource(cache);
-		if (res == null)
-		{
-			SLogger.getSystemLogger().warn("Map " + cache + " was not found!");
-			return null;
-		}
-
-		if (!(res instanceof MapResource))
-		{
-			SLogger.getSystemLogger().warn("Found Resource is not an MapResource!");
-		}
-
-		return ((MapResource) res).getMap();
-	}
-
-	/**
 	 * Returns an {@link URL} which has been previously loaded and cached using
 	 * {@link #loadURLResource(String, String)}.
 	 * 
 	 * @param cache the string under which the resource has been loaded
 	 * @return the found {@link URL} or null
 	 * @throws MalformedURLException
+	 * 
+	 *                               public URL getURL(String cache) throws
+	 *                               MalformedURLException { ResourceBase res =
+	 *                               getResource(cache); if (res == null) {
+	 *                               SLogger.getSystemLogger().warn("URL " + cache +
+	 *                               " was not found!"); return null; }
+	 * 
+	 *                               if (!(res instanceof URLResource)) {
+	 *                               SLogger.getSystemLogger().warn("Found Resource
+	 *                               is not an URLResource!"); }
+	 * 
+	 *                               return ((URLResource) res).getURL(); }
 	 */
-	public URL getURL(String cache) throws MalformedURLException
-	{
-		ResourceBase res = getResource(cache);
-		if (res == null)
-		{
-			SLogger.getSystemLogger().warn("URL " + cache + " was not found!");
-			return null;
-		}
-
-		if (!(res instanceof URLResource))
-		{
-			SLogger.getSystemLogger().warn("Found Resource is not an URLResource!");
-		}
-
-		return ((URLResource) res).getURL();
-	}
-
 	/**
 	 * Retrieves a cached {@link ImageResource} from the
 	 * {@link ResourceManager}.<br>

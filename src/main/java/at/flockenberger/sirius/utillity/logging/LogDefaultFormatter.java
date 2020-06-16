@@ -2,6 +2,7 @@ package at.flockenberger.sirius.utillity.logging;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import sun.reflect.Reflection;
 
 /**
  * <h1>LogDefaultFormatter</h1><br>
@@ -13,6 +14,8 @@ import java.util.Date;
 public class LogDefaultFormatter extends LogFormatter
 {
 
+	private final String NAME = "[SIRIUS]";
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -20,12 +23,18 @@ public class LogDefaultFormatter extends LogFormatter
 	public String formatLogEntry(LogEntry entry)
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append("[SIRIUS]");
-		sb.append("[" + calcTime(entry.getTimeStamp()) + "]");
-		sb.append("[" + entry.getLevel().getName() + "]");
-		sb.append(": " + entry.getMessage());
-	//	sb.append(" [AT]: " + entry.getSourceClassName() + "." + entry.getSourceMethodName() + "["
-	//			+ entry.getSourceLineNumber() + "]");
+		sb.append(NAME);
+		sb.append("[");
+		sb.append(calcTime(entry.getTimeStamp()));
+		sb.append("]");
+		sb.append("[");
+		sb.append(entry.getLevel().getName());
+		sb.append("]:");
+		sb.append(entry.getMessage());
+// sb.append(
+// entry.getSourceClassName().substring(entry.getSourceClassName().lastIndexOf(".")
+// +1)+ "." + entry.getSourceMethodName() + "["
+// + entry.getSourceLineNumber() + "]");
 		sb.append(System.lineSeparator());
 		return sb.toString();
 	}
@@ -49,17 +58,13 @@ public class LogDefaultFormatter extends LogFormatter
 	 */
 	@Override
 	public String getHead()
-	{
-		return "[SIRIUS]: LOG STARTED " + calcDate(System.currentTimeMillis()) + System.lineSeparator();
-	}
+	{ return NAME + ": LOG STARTED " + calcDate(System.currentTimeMillis()) + System.lineSeparator(); }
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String getTail()
-	{
-		return "[CARDINAL]: LOG STOPPED " + calcDate(System.currentTimeMillis()) + System.lineSeparator();
-	}
+	{ return NAME + ": LOG STOPPED " + calcDate(System.currentTimeMillis()) + System.lineSeparator(); }
 
 }

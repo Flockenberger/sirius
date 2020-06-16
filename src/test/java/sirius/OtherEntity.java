@@ -3,7 +3,9 @@ package sirius;
 import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.render.Renderer;
+import at.flockenberger.sirius.game.GameObject;
 import at.flockenberger.sirius.game.entity.AnimateableEntity;
+import at.flockenberger.sirius.game.entity.Entity;
 
 public class OtherEntity extends AnimateableEntity
 {
@@ -22,7 +24,7 @@ public class OtherEntity extends AnimateableEntity
 	public void render(Renderer render)
 	{
 		render.begin();
-		render.drawTexture(compantionTex, position.x, position.y); // Draw
+		render.drawTexture(compantionTex, position.x - width / 2f, position.y - height / 2f); // Draw
 		render.end();
 
 		drawBoundingBox(render);
@@ -39,9 +41,11 @@ public class OtherEntity extends AnimateableEntity
 	public void update()
 	{
 		super.update();
-		
+
 		audioSource.setPosition(this.position);
 	}
+
+	
 
 	@Override
 	public void free()
@@ -53,5 +57,11 @@ public class OtherEntity extends AnimateableEntity
 	public void update(float delta)
 	{
 
+	}
+
+	@Override
+	public void onCollision(GameObject e)
+	{
+		
 	}
 }

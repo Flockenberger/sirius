@@ -9,11 +9,19 @@ import org.joml.Vector2f;
 import at.flockenberger.sirius.engine.collision.BoundingBox;
 import at.flockenberger.sirius.engine.component.IComponent;
 import at.flockenberger.sirius.engine.graphic.Color;
+import at.flockenberger.sirius.engine.graphic.text.Text;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.render.Renderer;
 import at.flockenberger.sirius.engine.render.Renderer.ShapeType;
 import at.flockenberger.sirius.game.GameObject;
+import at.flockenberger.sirius.utillity.SUtils;
 
+/**
+ * <h1>Entity</h1><br>
+ * 
+ * @author Florian Wagner
+ *
+ */
 public abstract class Entity extends GameObject
 {
 	private Map<String, IComponent> mComponents;
@@ -21,7 +29,7 @@ public abstract class Entity extends GameObject
 	protected Vector2f direction;
 	protected Vector2f previousPosition;
 	protected Vector2f velocity;
-
+	protected Text name;
 	protected int width;
 	protected int height;
 	private Texture texture;
@@ -44,20 +52,28 @@ public abstract class Entity extends GameObject
 
 	public Entity(Vector2f position, Vector2f rotation, Vector2f scale, Texture texture)
 	{
+		SUtils.checkNull(position);
+		SUtils.checkNull(rotation);
+		SUtils.checkNull(scale);
+		SUtils.checkNull(texture);
+
 		this.position = position;
+
+		this.position.x -= texture.getWidth() / 2f;
+		this.position.y -= texture.getHeight() / 2f;
 		this.rotation = rotation;
 		this.scale = scale;
 		this.texture = texture;
 		this.width = texture.getWidth();
 		this.height = texture.getHeight();
 		this.boundingBox = new BoundingBox(this);
+		this.name = new Text("Ana");
 
 	}
 
 	public Entity()
 	{
 		this.mComponents = new HashMap<String, IComponent>(16);
-
 		this.position = new Vector2f(0);
 		this.rotation = new Vector2f(0);
 		this.direction = new Vector2f(0);
@@ -68,18 +84,24 @@ public abstract class Entity extends GameObject
 		this.height = 0;
 		this.color = Color.WHITE;
 		this.boundingBox = new BoundingBox(this);
-
+		this.name = new Text("Ana");
 	}
 
 	public void drawBoundingBox(Renderer render)
 	{
 		render.beginShape(ShapeType.LINE);
-		render.rect(position.x, position.y, width, height);
+		render.rect(getPosition().x, getPosition().y, width, height);
 		render.endShape();
 	}
 
-	public Vector2f getPosition()
-	{ return position; }
+	@Override
+	public void render(Renderer render)
+	{
+		render.begin();
+		name.position(getPosition().x, getPosition().y);
+		name.draw();
+		render.end();
+	}
 
 	public Vector2f getDirection()
 	{ return direction; }
@@ -136,10 +158,148 @@ public abstract class Entity extends GameObject
 		return this.boundingBox;
 	}
 
+	public Vector2f getPosition()
+	{
+		Vector2f vec = new Vector2f(position);
+		vec.x -= width / 2f;
+		vec.y -= height / 2f;
+		return vec;
+	}
+
 	@Override
 	public void update()
 	{
+		this.boundingBox.set(this);
 		getAudioSource().setPosition(getPosition());
+
+	}
+
+	@Override
+	public void update(float delta)
+	{
+		this.boundingBox.set(this);
+		getAudioSource().setPosition(getPosition());
+
+	}
+
+	/**
+	 * Default collision for entities.<br>
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onCollision(GameObject e)
+	{
+
+		float dx = 0;
+		float dy = 0;
+		float dx2 = 0;
+		float dy2 = 0;
+
+		BoundingBox bb = getBoundingBox();
+		BoundingBox bbo = e.getBoundingBox();
+
+		// pull the input for direction
+		input();
+
+		// we go up
+		if (direction.y < 0)
+		{
+
+			dy = Math.abs(bb.getMinY() - bbo.getMaxY());
+
+			dx = Math.abs(bb.getMaxX() - bbo.getMinX()); // left
+			dx2 = Math.abs(bb.getMinX() - bbo.getMaxX()); // right
+
+			if (dy < dx && dy < dx2)
+				position.y = bbo.getMaxY() + bb.getHeight() / 2f;
+
+			// corner cases
+			// case1: left bottom corner
+			else if (dy == dx)
+			{
+				position.y = bbo.getMaxY() + bb.getHeight() / 2f;
+				position.x = bbo.getMinX() - bb.getWidth() / 2f;
+				// case2: right bottom corner
+			} else if (dy == dx2)
+			{
+				position.x = bbo.getMaxX() + bb.getWidth() / 2f;
+				position.y = bbo.getMaxY() + bb.getHeight() / 2f;
+
+			}
+		}
+		// we go down
+		if (direction.y > 0)
+		{
+			dy = Math.abs(bb.getMaxY() - bbo.getMinY());
+
+			dx = Math.abs(bb.getMaxX() - bbo.getMinX()); // left
+			dx2 = Math.abs(bb.getMinX() - bbo.getMaxX()); // right
+
+			if (dy < dx && dy < dx2)
+			{
+				position.y = bbo.getMinY() - bb.getHeight() / 2f;
+				// case1: top left corner
+			} else if (dy == dx)
+			{
+				position.y = bbo.getMinY() - bb.getHeight() / 2f;
+				position.x = bbo.getMinX() - bb.getWidth() / 2f;
+
+				// case2: top right corner
+			} else if (dy == dx2)
+			{
+				position.x = bbo.getMaxX() + bb.getWidth() / 2f;
+				position.y = bbo.getMinY() - bb.getHeight() / 2f;
+			}
+		}
+		// we go right
+		if (direction.x > 0)
+		{
+
+			dx = Math.abs(bb.getMaxX() - bbo.getMinX());
+
+			dy = Math.abs(bb.getMinY() - bbo.getMaxY());
+			dy2 = Math.abs(bb.getMaxY() - bbo.getMinY());
+			if (dx < dy && dx < dy2)
+			{
+				position.x = bbo.getMinX() - bb.getWidth() / 2f;
+			}
+// else if (dx == dy)
+// {
+// position.x = bbo.getMinX() - bb.getWidth() / 2f;
+// position.y = bbo.getMaxY() + bb.getHeight() / 2f;
+//
+// } else if (dx == dy2)
+// {
+// position.y = bbo.getMinY() - bb.getHeight() / 2f;
+// position.x = bbo.getMinX() - bb.getWidth() / 2f;
+// }
+		}
+		// we go left
+		if (direction.x < 0)
+		{
+			dx = Math.abs(bb.getMinX() - bbo.getMaxX());
+
+			dy = Math.abs(bb.getMaxY() - bbo.getMinY());
+			dy2 = Math.abs(bb.getMinY() - bbo.getMaxY());
+
+			if (dx < dy && dx < dy2)
+			{
+				position.x = bbo.getMaxX() + bb.getWidth() / 2f;
+			}
+// else if (dx == dy)
+// {
+// position.x = bbo.getMaxX() + bb.getWidth() / 2f;
+// position.y = bbo.getMinY() - bb.getHeight() / 2f;
+//
+// } else if (dx == dy2)
+// {
+// position.y = bbo.getMaxY() + bb.getHeight() / 2f;
+// position.x = bbo.getMaxX() + bb.getWidth() / 2f;
+//
+// }
+		}
+		// clear the pulled direction as we only use it for calculation
+		direction.x = direction.y = 0;
 	}
 
 	@Override
@@ -166,7 +326,7 @@ public abstract class Entity extends GameObject
 	 * @param componentsType
 	 * @return boolean
 	 */
-	final boolean matchesComponentTypes(List<Class<? extends IComponent>> componentsType)
+	public final boolean matchesComponentTypes(List<Class<? extends IComponent>> componentsType)
 	{
 		for (Class<? extends IComponent> componentType : componentsType)
 		{
@@ -182,7 +342,7 @@ public abstract class Entity extends GameObject
 	 * @param componentsType
 	 * @return boolean
 	 */
-	final boolean matchesComponentTypes(IComponent... componentsType)
+	public final boolean matchesComponentTypes(IComponent... componentsType)
 	{
 		for (IComponent componentType : componentsType)
 		{

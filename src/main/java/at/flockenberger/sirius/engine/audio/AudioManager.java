@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.audio;
+package at.flockenberger.sirius.engine.audio;
 
 import static org.lwjgl.openal.ALC10.alcCloseDevice;
 import static org.lwjgl.openal.ALC10.alcCreateContext;

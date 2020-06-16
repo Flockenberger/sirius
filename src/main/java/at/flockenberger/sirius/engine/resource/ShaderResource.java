@@ -1,11 +1,14 @@
 package at.flockenberger.sirius.engine.resource;
 
-import java.nio.file.Path;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import at.flockenberger.sirius.engine.render.gl.shader.FragmentShader;
 import at.flockenberger.sirius.engine.render.gl.shader.Shader;
 import at.flockenberger.sirius.engine.render.gl.shader.VertexShader;
-import at.flockenberger.sirius.utillity.SUtils;
+import at.flockenberger.sirius.utillity.logging.SLogger;
 
 /**
  * <h1>ShaderResource</h1><br>
@@ -22,7 +25,7 @@ public class ShaderResource extends ResourceBase
 {
 	private String code;
 
-	public ShaderResource(Path location)
+	public ShaderResource(InputStream location)
 	{
 		super(location);
 
@@ -43,7 +46,24 @@ public class ShaderResource extends ResourceBase
 	@Override
 	public void load()
 	{
-		code = SUtils.readFile(resourceLocation);
+		try
+		{
+			InputStreamReader isReader = new InputStreamReader(resourceStream);
+			// Creating a BufferedReader object
+			BufferedReader reader = new BufferedReader(isReader);
+			StringBuffer sb = new StringBuffer();
+			String str;
+			while ((str = reader.readLine()) != null)
+			{
+				sb.append(str + System.lineSeparator());
+			}
+			code = sb.toString();
+			reader.close();
+			isReader.close();
+		} catch (IOException e)
+		{
+			SLogger.getSystemLogger().except(e);
+		}
 	}
 
 }

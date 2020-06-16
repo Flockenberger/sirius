@@ -33,7 +33,7 @@ public class VertexShader extends Shader
 	@Override
 	public long compileShader()
 	{
-		SLogger.getSystemLogger().info("Compiling Vertex Shader");
+		SLogger.getSystemLogger().debug("Compiling Vertex Shader");
 
 		int sID = -1;
 		sID = glCreateShader(GL_VERTEX_SHADER);

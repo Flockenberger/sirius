@@ -1,5 +1,6 @@
 package at.flockenberger.sirius.engine.graphic;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -140,6 +141,16 @@ public class Image implements IImage, Serializable, Cloneable, IFreeable
 	protected Image()
 	{
 		data = BufferUtils.createByteBuffer(0);
+	}
+
+	/**
+	 * 
+	 * @param stream
+	 */
+	public Image(InputStream stream)
+	{
+		SUtils.checkNull(stream, InputStream.class);
+		load(stream);
 	}
 
 	/**
@@ -490,6 +501,7 @@ public class Image implements IImage, Serializable, Cloneable, IFreeable
 				IntBuffer h = stack.mallocInt(1);
 
 				this.data = STBImage.stbi_load(input, w, h, comp, 4);
+
 				if (this.data == null)
 				{
 					SLogger.getSystemLogger().error("Could not load image: " + input);
@@ -504,6 +516,39 @@ public class Image implements IImage, Serializable, Cloneable, IFreeable
 		{
 			SLogger.getSystemLogger().except(e);
 		}
+	}
+
+	public void load(InputStream is)
+	{
+		try
+		{
+			ByteBuffer buffer = SUtils.IO.streamAsByteBuffer(is, 1024);
+
+			STBImage.stbi_set_flip_vertically_on_load(true);
+
+			try (MemoryStack stack = MemoryStack.stackPush())
+			{
+				IntBuffer comp = stack.mallocInt(1);
+				IntBuffer w = stack.mallocInt(1);
+				IntBuffer h = stack.mallocInt(1);
+
+				this.data = STBImage.stbi_load_from_memory(buffer, w, h, comp, 4);
+
+				if (this.data == null)
+				{
+					SLogger.getSystemLogger().error("Could not load image!");
+					return;
+				}
+
+				this.width = w.get();
+				this.height = h.get();
+			}
+
+		} catch (Exception e)
+		{
+			SLogger.getSystemLogger().except(e);
+		}
+
 	}
 
 	/**

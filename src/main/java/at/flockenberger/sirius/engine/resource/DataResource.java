@@ -3,13 +3,6 @@ package at.flockenberger.sirius.engine.resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import org.lwjgl.BufferUtils;
 
 import at.flockenberger.sirius.utillity.SUtils;
 import at.flockenberger.sirius.utillity.logging.SLogger;
@@ -32,7 +25,7 @@ public class DataResource extends ResourceBase
 	 */
 	protected ByteBuffer data;
 
-	public DataResource(Path location)
+	public DataResource(InputStream location)
 	{
 		super(location);
 	}
@@ -40,46 +33,13 @@ public class DataResource extends ResourceBase
 	@Override
 	public void load()
 	{
-		if (Files.isReadable(resourceLocation))
+		try
 		{
-			try (SeekableByteChannel fc = Files.newByteChannel(resourceLocation))
-			{
-				data = BufferUtils.createByteBuffer((int) fc.size() + 1);
-				while (fc.read(data) != -1)
-				{
-					;
-				}
-			} catch (IOException e)
-			{
-				SLogger.getSystemLogger().except(e);
-			}
-		} else
+			this.data = SUtils.IO.streamAsByteBuffer(resourceStream, 1024);
+		} catch (IOException e)
 		{
-			try (InputStream source = DataResource.class.getClassLoader()
-					.getResourceAsStream(resourceLocation.toString());
-					ReadableByteChannel rbc = Channels.newChannel(source))
-			{
-				data = BufferUtils.createByteBuffer(1024);
-
-				while (true)
-				{
-					int bytes = rbc.read(data);
-					if (bytes == -1)
-					{
-						break;
-					}
-					if (data.remaining() == 0)
-					{
-						data = SUtils.resizeBuffer(data, data.capacity() * 3 / 2); // 50%
-					}
-				}
-			} catch (IOException e)
-			{
-				SLogger.getSystemLogger().except(e);
-			}
+			SLogger.getSystemLogger().except(e);
 		}
-		data.flip();
-
 	}
 
 	/**

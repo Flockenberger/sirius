@@ -1,4 +1,4 @@
-package at.flockenberger.sirius.audio;
+package at.flockenberger.sirius.engine.audio;
 
 import org.joml.Vector2f;
 import org.lwjgl.openal.AL11;
@@ -87,7 +87,7 @@ public class AudioSource implements IFreeable
 		setGain(1);
 		setPitch(1);
 		setPosition(new Vector2f(0));
-		setRolloff(1);
+		setRolloff(5);
 		setReferenceDistance(1);
 		setMaxDistance(10);
 	}
@@ -195,9 +195,17 @@ public class AudioSource implements IFreeable
 	public boolean isLooping()
 	{ return this.looping; }
 
+	/**
+	 * @return the rolloff value of this audio source
+	 */
 	public float getRolloff()
 	{ return rolloff; }
 
+	/**
+	 * Sets the rolloff value of this audio source
+	 * 
+	 * @param rolloff the rolloff value
+	 */
 	public void setRolloff(float rolloff)
 	{
 		this.rolloff = rolloff;
@@ -205,18 +213,34 @@ public class AudioSource implements IFreeable
 
 	}
 
+	/**
+	 * @return the reference distance where this source starts to get quieter
+	 */
 	public float getReferenceDistance()
 	{ return referenceDistance; }
 
+	/**
+	 * Sets the reference distance where this source starts to get quieter.
+	 * 
+	 * @param referenceDistance the reference distance
+	 */
 	public void setReferenceDistance(float referenceDistance)
 	{
 		this.referenceDistance = referenceDistance;
 		AL11.alSourcef(this.id, AL11.AL_REFERENCE_DISTANCE, this.referenceDistance);
 	}
 
+	/**
+	 * @return the maximum distance this audio source can still be heard from
+	 */
 	public float getMaxDistance()
 	{ return maxDistance; }
 
+	/**
+	 * Sets the max distance where this audio source can still be heard from
+	 * 
+	 * @param maxDistance the max distance
+	 */
 	public void setMaxDistance(float maxDistance)
 	{
 		this.maxDistance = maxDistance;
@@ -224,6 +248,9 @@ public class AudioSource implements IFreeable
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void free()
 	{
