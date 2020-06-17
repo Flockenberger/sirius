@@ -456,6 +456,7 @@ public abstract class Entity extends GameObject
 //
 // }
 		}
+		
 		// clear the pulled direction as we only use it for calculation
 		direction.x = direction.y = 0;
 

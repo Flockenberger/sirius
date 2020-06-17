@@ -11,8 +11,8 @@ public class OtherEntity extends AnimateableEntity
 	public OtherEntity()
 	{
 		setTexture(Texture.createTexture(Sirius.resMan.getImage("companion").trimImage()), true);
-		position.x = 100;
-
+		position.x = (float) (Math.random() * 600) - 10;
+		position.y = (float) (Math.random() * 700) + 10;
 	}
 
 	@Override

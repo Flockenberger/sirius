@@ -7,12 +7,14 @@ import at.flockenberger.sirius.engine.graphic.texture.TextureRegion;
 import at.flockenberger.sirius.engine.input.KeyCode;
 import at.flockenberger.sirius.engine.input.Keyboard;
 import at.flockenberger.sirius.engine.render.Renderer;
+import at.flockenberger.sirius.game.GameObject;
 import at.flockenberger.sirius.game.entity.AnimateableEntity;
 
 public class Player extends AnimateableEntity
 {
-//	private static final float G = 9.81f;
+	private static final float G = 9.81f;
 	private boolean jumping;
+	private int jumpCount = 0;
 
 	public Player()
 	{
@@ -64,9 +66,20 @@ public class Player extends AnimateableEntity
 		if (kb.isKeyTyped(KeyCode.SPACE) && !jumping)
 		{
 			jumping = true;
-			direction.y -= 1;
+			direction.y -= 20;
 		}
 
+	}
+
+	@Override
+	public void onCollision(GameObject e)
+	{
+		if (e.isCollideable())
+		{
+			applyDefaultCollision(e);
+			jumping = false;
+
+		}
 	}
 
 	@Override
@@ -77,10 +90,17 @@ public class Player extends AnimateableEntity
 		if (Sirius.timer.getFPS() > 0)
 		{
 			velocity.set(direction);
+			velocity.y += G; // gravitation
+
 			velocity.mul(100f);
 			velocity.mul(1 / (float) Sirius.timer.getFPS());
-			// velocity.y += G; //gravitation
 			position.add(velocity);
+			if (position.y > 0)
+			{
+				position.y = 0;
+				jumping = false;
+
+			}
 			direction.mul(0.9f);
 		}
 

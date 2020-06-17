@@ -13,6 +13,7 @@ public class Companion extends AnimateableEntity
 	public Companion(Player p)
 	{
 		setTexture(Texture.createTexture(Sirius.resMan.getImage("companion").trimImage()), true);
+		setCollideable(false);
 		this.player = p;
 	}
 
@@ -34,7 +35,7 @@ public class Companion extends AnimateableEntity
 	public void update()
 	{
 		super.update();
-	
+
 		position.x = SUtils.lerp(position.x,
 				(float) (player.getPosition().x - 15 * Math.sin((float) Sirius.timer.getTime() * 2 * Math.PI)), 0.2f);
 		position.y = SUtils.lerp(position.y,

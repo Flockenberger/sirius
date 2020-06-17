@@ -1,5 +1,8 @@
 package sirius;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.joml.Vector2f;
 
 import at.flockenberger.sirius.engine.Sirius;
@@ -41,7 +44,7 @@ public class TestLayer extends LayerBase
 	OtherEntity ent;
 	Animation<String> posAni;
 	Texture background;
-
+	List<OtherEntity> others = new ArrayList<>();
 	public TestLayer(String layerName)
 	{
 		super(layerName);
@@ -53,7 +56,9 @@ public class TestLayer extends LayerBase
 		tex.free();
 		tiles.free();
 		p.free();
-
+		for(OtherEntity oe : others)
+			oe.free();
+		
 	}
 
 	@Override
@@ -61,7 +66,7 @@ public class TestLayer extends LayerBase
 	{
 		ResourceManager manager = Sirius.resMan;
 		SLogger.getSystemLogger().debug("TestLayer attached!");
-		
+
 		tex = Texture.createTexture(manager.getImage("texture").resize(32, 32).trimImage());
 		tiles = Texture.createTexture(manager.getImage("tiles"));
 
@@ -74,7 +79,9 @@ public class TestLayer extends LayerBase
 		c = Color.ORANGE;
 		cmp = new TestComponent();
 		ent = new OtherEntity();
-
+		for(int i = 0; i<1000; i++) {
+			others.add(new OtherEntity());
+		}
 		// Gamepad gp = Gamepad.get(Gamepads.GAMEPAD_1);
 		// background = Texture.createTexture(Sirius.resMan.getImage("hsd"));
 	}
@@ -102,7 +109,12 @@ public class TestLayer extends LayerBase
 		cam.update();
 
 		p.collision(ent);
-
+		for(OtherEntity oe : others)
+			oe.update();
+		
+		for(OtherEntity oe : others)
+			p.collision(oe);
+		
 	}
 
 	@Override
@@ -114,7 +126,9 @@ public class TestLayer extends LayerBase
 		comp.input();
 		cmp.input();
 		ent.input();
-
+		for(OtherEntity oe : others)
+			oe.input();
+		
 		if (Keyboard.get().isKeyTyped(KeyCode.R))
 		{
 			ent.getAudioSource().play(Sirius.resMan.getAudio("bdo"));
@@ -141,7 +155,7 @@ public class TestLayer extends LayerBase
 			render.draw(background, 0, 0, 0, 0, Window.getActiveWidth(), Window.getActiveHeight(), 1, 1, 0);
 			render.end();
 		}
-		
+
 		render.begin();
 		render.updateMatrix(cam);
 
@@ -154,16 +168,19 @@ public class TestLayer extends LayerBase
 		text.draw();
 
 		drawCenter(render);
+		for(OtherEntity oe : others)
+			oe.render(render);
 		
 		ent.render(render);
 		cmp.render(render);
 		render.end();
-		
+
 	}
 
 	private void drawCenter(Renderer r)
 	{
-		if(r.isDrawing())r.end();
+		if (r.isDrawing())
+			r.end();
 		r.beginShape(ShapeType.LINE);
 		r.line(0, Window.getActiveHeight() / 2f, 0, -Window.getActiveHeight() / 2f);
 		r.line(Window.getActiveWidth() / 2f, 0, -Window.getActiveWidth() / 2f, 0);

@@ -40,7 +40,8 @@ public class BoundingBox extends Bounds
 		this.maxY = minY + height;
 		this.maxZ = minZ + depth;
 	}
-
+	
+	
 	@Override
 	public boolean isEmpty()
 	{ return getMaxX() < getMinX() || getMaxY() < getMinY() || getMaxZ() < getMinZ(); }
