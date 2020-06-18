@@ -435,7 +435,7 @@ public class SUtils
 	 */
 	public static float degToRad(float deg)
 	{
-		return (float) (deg * Math.PI / (float) 180.f);
+		return (float) (deg * Math.PI / 180.f);
 	}
 
 	/**
@@ -446,7 +446,7 @@ public class SUtils
 	 */
 	public static float radToDeg(float rad)
 	{
-		return (float) (rad * 180.0f / (float) Math.PI);
+		return rad * 180.0f / (float) Math.PI;
 	}
 
 	public static double map(double magnitude, double d, double e, double out_min, double out_max)

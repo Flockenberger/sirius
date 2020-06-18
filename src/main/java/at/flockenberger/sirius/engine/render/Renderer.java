@@ -126,7 +126,11 @@ public class Renderer extends Allocateable
 	private ShapeType shapeType = ShapeType.TRIANGLE;
 	private Color shapeColor = Color.WHITE;
 
+	public Texture getWhiteTexture()
+	{ return this.whiteTexture; }
+
 	/** Initializes the renderer */
+	@Override
 	public void init()
 	{
 		/* Setup shader programs */
@@ -226,7 +230,7 @@ public class Renderer extends Allocateable
 			curTex = whiteTexture;
 		}
 
-		if (curTex != texture && texture != null)
+		if ((curTex == null && texture != null) || (curTex != null && !curTex.equals(texture) && texture != null))
 		{
 			flush();
 			curTex = texture;
@@ -266,6 +270,7 @@ public class Renderer extends Allocateable
 		/* Clear vertex data for next batch */
 		vertices.clear();
 		numVertices = 0;
+		this.shapeColor = Color.WHITE;
 	}
 
 	/**
@@ -283,8 +288,8 @@ public class Renderer extends Allocateable
 			bindAndUploadData();
 
 			glDrawArrays(shapeType.getType(), 0, numVertices);
-
 			reset();
+
 		}
 	}
 
@@ -405,10 +410,10 @@ public class Renderer extends Allocateable
 	{
 
 		/* Texture coordinates */
-		s1 = regX / (float) texture.getWidth();
-		t1 = (regY + regHeight) / (float) texture.getHeight();
-		s2 = (regX + regWidth) / (float) texture.getWidth();
-		t2 = regY / (float) texture.getHeight();
+		s1 = regX / texture.getWidth();
+		t1 = (regY + regHeight) / texture.getHeight();
+		s2 = (regX + regWidth) / texture.getWidth();
+		t2 = regY / texture.getHeight();
 
 		switchTexture(texture);
 		drawTextureRegion(x, y, x + regWidth, y + regHeight, s1, t1, s2, t2, c);
@@ -453,12 +458,20 @@ public class Renderer extends Allocateable
 		{
 			flush();
 		}
-
-		float r = c.getRed();
-		float g = c.getGreen();
-		float b = c.getBlue();
-		float a = c.getAlpha();
-
+		float r, g, b, a;
+		if (shapeColor.equals(Color.WHITE))
+		{
+			r = c.getRed();
+			g = c.getGreen();
+			b = c.getBlue();
+			a = c.getAlpha();
+		} else
+		{
+			r = shapeColor.getRed();
+			g = shapeColor.getGreen();
+			b = shapeColor.getBlue();
+			a = shapeColor.getAlpha();
+		}
 		vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(s1).put(t1);
 		vertices.put(x1).put(y2).put(r).put(g).put(b).put(a).put(s1).put(t2);
 		vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(s2).put(t2);
@@ -498,10 +511,20 @@ public class Renderer extends Allocateable
 			flush();
 		}
 
-		float r = c.getRed();
-		float g = c.getGreen();
-		float b = c.getBlue();
-		float a = c.getAlpha();
+		float r, g, b, a;
+		if (shapeColor.equals(Color.WHITE))
+		{
+			r = c.getRed();
+			g = c.getGreen();
+			b = c.getBlue();
+			a = c.getAlpha();
+		} else
+		{
+			r = shapeColor.getRed();
+			g = shapeColor.getGreen();
+			b = shapeColor.getBlue();
+			a = shapeColor.getAlpha();
+		}
 		// bottom left and top right corner points relative to origin
 		final float worldOriginX = x + originX;
 		final float worldOriginY = y + originY;
@@ -826,6 +849,7 @@ public class Renderer extends Allocateable
 	/**
 	 * Dispose renderer and clean up its used data.
 	 */
+	@Override
 	public void free()
 	{
 		MemoryUtil.memFree(vertices);
@@ -854,7 +878,7 @@ public class Renderer extends Allocateable
 		vbo.bind(GL_ARRAY_BUFFER);
 
 		/* Create FloatBuffer */
-		vertices = MemoryUtil.memAllocFloat(4096 * 2);
+		vertices = MemoryUtil.memAllocFloat(4096 * Float.BYTES);
 
 		/* Upload null data to allocate storage for the VBO */
 		long size = vertices.capacity() * Float.BYTES;

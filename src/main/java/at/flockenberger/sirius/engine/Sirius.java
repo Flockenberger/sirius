@@ -61,6 +61,7 @@ public class Sirius
 	{
 		allocator.free();
 		window.free();
+		audioManager.free();
 	}
 
 	public static void init()

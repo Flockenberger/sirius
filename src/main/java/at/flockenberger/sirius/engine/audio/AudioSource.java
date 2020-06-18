@@ -1,7 +1,7 @@
 package at.flockenberger.sirius.engine.audio;
 
 import org.joml.Vector2f;
-import org.lwjgl.openal.AL11;
+import org.lwjgl.openal.AL10;
 
 import at.flockenberger.sirius.engine.IFreeable;
 import at.flockenberger.sirius.utillity.exceptions.AudioNotInitializedException;
@@ -61,7 +61,7 @@ public class AudioSource implements IFreeable
 	 */
 	public AudioSource()
 	{
-		this(AL11.alGenSources());
+		this(AL10.alGenSources());
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class AudioSource implements IFreeable
 	 */
 	public AudioSource(Vector2f position)
 	{
-		this(AL11.alGenSources());
+		this(AL10.alGenSources());
 		this.position = position;
 	}
 
@@ -88,8 +88,8 @@ public class AudioSource implements IFreeable
 		setPitch(1);
 		setPosition(new Vector2f(0));
 		setRolloff(5);
-		setReferenceDistance(1);
-		setMaxDistance(10);
+		setReferenceDistance(10);
+		setMaxDistance(15);
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class AudioSource implements IFreeable
 	{
 		if (isPlaying())
 		{
-			AL11.alSourcePause(this.id);
+			AL10.alSourcePause(this.id);
 		}
 	}
 
@@ -109,7 +109,7 @@ public class AudioSource implements IFreeable
 	 */
 	public void stop()
 	{
-		AL11.alSourceStop(this.id);
+		AL10.alSourceStop(this.id);
 	}
 
 	/**
@@ -117,14 +117,14 @@ public class AudioSource implements IFreeable
 	 */
 	public void resume()
 	{
-		AL11.alSourcePlay(this.id);
+		AL10.alSourcePlay(this.id);
 	}
 
 	/**
 	 * @return true if this source is currently playing a audio otherwise false
 	 */
 	public boolean isPlaying()
-	{ return AL11.alGetSourcei(this.id, AL11.AL_SOURCE_STATE) == AL11.AL_PLAYING; }
+	{ return AL10.alGetSourcei(this.id, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING; }
 
 	/**
 	 * @return the gain parameter of this audio
@@ -140,7 +140,7 @@ public class AudioSource implements IFreeable
 	public void setGain(float gain)
 	{
 		this.gain = gain;
-		AL11.alSourcef(this.id, AL11.AL_GAIN, this.gain);
+		AL10.alSourcef(this.id, AL10.AL_GAIN, this.gain);
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class AudioSource implements IFreeable
 	public void setPitch(float pitch)
 	{
 		this.pitch = pitch;
-		AL11.alSourcef(this.id, AL11.AL_PITCH, this.pitch);
+		AL10.alSourcef(this.id, AL10.AL_PITCH, this.pitch);
 	}
 
 	/**
@@ -174,7 +174,7 @@ public class AudioSource implements IFreeable
 	public void setPosition(Vector2f position)
 	{
 		this.position = position;
-		AL11.alSource3f(this.id, AL11.AL_POSITION, this.position.x, this.position.y, 0);
+		AL10.alSource3f(this.id, AL10.AL_POSITION, this.position.x, this.position.y, 0);
 	}
 
 	/**
@@ -186,7 +186,7 @@ public class AudioSource implements IFreeable
 	public void setLooping(boolean looping)
 	{
 		this.looping = looping;
-		AL11.alSourcei(this.id, AL11.AL_LOOPING, this.looping ? 1 : 0);
+		AL10.alSourcei(this.id, AL10.AL_LOOPING, this.looping ? 1 : 0);
 	}
 
 	/**
@@ -209,7 +209,7 @@ public class AudioSource implements IFreeable
 	public void setRolloff(float rolloff)
 	{
 		this.rolloff = rolloff;
-		AL11.alSourcef(this.id, AL11.AL_ROLLOFF_FACTOR, this.rolloff);
+		AL10.alSourcef(this.id, AL10.AL_ROLLOFF_FACTOR, this.rolloff);
 
 	}
 
@@ -227,7 +227,7 @@ public class AudioSource implements IFreeable
 	public void setReferenceDistance(float referenceDistance)
 	{
 		this.referenceDistance = referenceDistance;
-		AL11.alSourcef(this.id, AL11.AL_REFERENCE_DISTANCE, this.referenceDistance);
+		AL10.alSourcef(this.id, AL10.AL_REFERENCE_DISTANCE, this.referenceDistance);
 	}
 
 	/**
@@ -244,7 +244,7 @@ public class AudioSource implements IFreeable
 	public void setMaxDistance(float maxDistance)
 	{
 		this.maxDistance = maxDistance;
-		AL11.alSourcef(this.id, AL11.AL_MAX_DISTANCE, this.maxDistance);
+		AL10.alSourcef(this.id, AL10.AL_MAX_DISTANCE, this.maxDistance);
 
 	}
 
@@ -255,7 +255,7 @@ public class AudioSource implements IFreeable
 	public void free()
 	{
 		stop();
-		AL11.alDeleteSources(this.id);
+		AL10.alDeleteSources(this.id);
 	}
 
 	/**
@@ -273,7 +273,7 @@ public class AudioSource implements IFreeable
 		} else
 		{
 			stop();
-			AL11.alSourcei(id, AL11.AL_BUFFER, audio.bufferID);
+			AL10.alSourcei(id, AL10.AL_BUFFER, audio.bufferID);
 			resume();
 		}
 	}

@@ -344,57 +344,43 @@ public class Color implements Serializable
 	 * @return Hue component in the range in the range {@code 0.0-360.0}.
 	 */
 	public double getHue()
-	{
-		return RGBtoHSB_(r, g, b)[0];
-	}
+	{ return RGBtoHSB_(r, g, b)[0]; }
 
 	/**
 	 * @return Saturation component in the range in the range {@code 0.0-1.0}.
 	 */
 	public double getSaturation()
-	{
-		return RGBtoHSB_(r, g, b)[1];
-	}
+	{ return RGBtoHSB_(r, g, b)[1]; }
 
 	/**
 	 * @return Brightness component in the range in the range {@code 0.0-1.0}.
 	 */
 	public double getBrightness()
-	{
-		return RGBtoHSB_(r, g, b)[2];
-	}
+	{ return RGBtoHSB_(r, g, b)[2]; }
 
 	/**
 	 * @return the red channel of this color
 	 */
 	public float getRed()
-	{
-		return r;
-	}
+	{ return r; }
 
 	/**
 	 * @return the green channel of this color
 	 */
 	public float getGreen()
-	{
-		return g;
-	}
+	{ return g; }
 
 	/**
 	 * @return the blue channel of this color
 	 */
 	public float getBlue()
-	{
-		return b;
-	}
+	{ return b; }
 
 	/**
 	 * @return the alpha channel of this color
 	 */
 	public float getAlpha()
-	{
-		return a;
-	}
+	{ return a; }
 
 	/**
 	 * Sets the red component of this color
@@ -638,7 +624,7 @@ public class Color implements Serializable
 
 		brightness = cmax;
 		if (cmax != 0)
-			saturation = (double) (cmax - cmin) / cmax;
+			saturation = (cmax - cmin) / cmax;
 		else
 			saturation = 0;
 
@@ -685,7 +671,7 @@ public class Color implements Serializable
 	 */
 	public float[] toFloatArray()
 	{
-		return new float[] { (float) getRed(), (float) getGreen(), (float) getBlue(), (float) getAlpha() };
+		return new float[] { getRed(), getGreen(), getBlue(), getAlpha() };
 	}
 
 	/**
@@ -796,6 +782,39 @@ public class Color implements Serializable
 			SLogger.getSystemLogger().except(new IllegalArgumentException(
 					"Color.rgba's alpha parameter (" + alpha + ") expects color values 0-1"));
 		}
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Float.floatToIntBits(a);
+		result = prime * result + Float.floatToIntBits(b);
+		result = prime * result + Float.floatToIntBits(g);
+		result = prime * result + Float.floatToIntBits(r);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Color other = (Color) obj;
+		if (Float.floatToIntBits(a) != Float.floatToIntBits(other.a))
+			return false;
+		if (Float.floatToIntBits(b) != Float.floatToIntBits(other.b))
+			return false;
+		if (Float.floatToIntBits(g) != Float.floatToIntBits(other.g))
+			return false;
+		if (Float.floatToIntBits(r) != Float.floatToIntBits(other.r))
+			return false;
+		return true;
 	}
 
 	@Override

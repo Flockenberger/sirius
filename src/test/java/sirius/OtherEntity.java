@@ -11,17 +11,14 @@ public class OtherEntity extends AnimateableEntity
 	public OtherEntity()
 	{
 		setTexture(Texture.createTexture(Sirius.resMan.getImage("companion").trimImage()), true);
-		position.x = (float) (Math.random() * 600) - 10;
-		position.y = (float) (Math.random() * 700) + 10;
+		position.x = (float) (Math.random() * 60) - 10;
+		position.y = (float) (Math.random() * 70) + 10;
 	}
 
 	@Override
 	public void render(Renderer render)
 	{
 		render.drawEntity(this);
-
-		drawBoundingBox(render);
-
 	}
 
 	@Override
@@ -34,6 +31,7 @@ public class OtherEntity extends AnimateableEntity
 	public void update()
 	{
 		super.update();
+
 		audioSource.setPosition(this.position);
 	}
 

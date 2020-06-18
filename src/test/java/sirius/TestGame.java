@@ -1,9 +1,7 @@
 package sirius;
 
 import at.flockenberger.sirius.engine.Sirius;
-import at.flockenberger.sirius.engine.graphic.Cursor;
 import at.flockenberger.sirius.engine.graphic.Icon;
-import at.flockenberger.sirius.engine.input.Mouse;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
 import at.flockenberger.sirius.game.application.LayerStack;
 import at.flockenberger.sirius.game.application.SiriusGame;
@@ -29,7 +27,8 @@ public class TestGame extends SiriusGame
 		// games constructor!
 		icon = new Icon(Sirius.resMan.getImage("icon").resize(32, 32));
 		game.setGameIcon(icon);
-		// game.setFullscreen();
+		//game.setFullscreen();
+		
 		game.start();
 
 	}
@@ -39,8 +38,8 @@ public class TestGame extends SiriusGame
 	{
 		TestLayer layer = new TestLayer("TestLayer");
 		gameLayers.addLayerActive(layer);
-		gameLayers.setActive("test");
-		Mouse.get().setCursor(new Cursor(icon));
+		//gameLayers.setActive("test");
+		//Mouse.get().setCursor(new Cursor(icon));
 
 	}
 

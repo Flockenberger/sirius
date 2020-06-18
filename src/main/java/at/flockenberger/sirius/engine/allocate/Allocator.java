@@ -40,7 +40,7 @@ public class Allocator
 	{
 		try
 		{
-			T obj = (T) cls.newInstance();
+			T obj = cls.newInstance();
 			
 			allocs.put(cls, obj);
 			return obj;

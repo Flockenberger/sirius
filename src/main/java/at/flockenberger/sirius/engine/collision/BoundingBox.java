@@ -30,18 +30,27 @@ public class BoundingBox extends Bounds
 
 	public void set(Entity entity)
 	{
-		this.minX = entity.getPosition().x;
-		this.minY = entity.getPosition().y;
+		this.minX = entity.getPosition().x * entity.getScale().x;
+		this.minY = entity.getPosition().y * entity.getScale().y;
 		this.minZ = 0;
-		this.width = entity.getWidth();
-		this.height = entity.getHeight();
+		this.width = entity.getWidth() * entity.getScale().x;
+		this.height = entity.getHeight() * entity.getScale().y;
 		this.depth = 0;
 		this.maxX = minX + width;
 		this.maxY = minY + height;
 		this.maxZ = minZ + depth;
 	}
 	
-	
+		
+	public void set(float minx, float miny, float width, float height) {
+		this.minX = minx;
+		this.minY = miny;
+		this.width = width;
+		this.height = height;
+		this.maxX = minX + width;
+		this.maxY = minY + height;
+		this.maxZ = minZ + depth;
+	}
 	@Override
 	public boolean isEmpty()
 	{ return getMaxX() < getMinX() || getMaxY() < getMinY() || getMaxZ() < getMinZ(); }

@@ -1,7 +1,7 @@
 package at.flockenberger.sirius.engine.audio;
 
 import org.joml.Vector2f;
-import org.lwjgl.openal.AL11;
+import org.lwjgl.openal.AL10;
 
 public class AudioListener
 {
@@ -32,7 +32,7 @@ public class AudioListener
 	public void setPosition(Vector2f position)
 	{
 		this.position = position;
-		AL11.alListener3f(AL11.AL_POSITION, position.x, position.y, 0);
+		AL10.alListener3f(AL10.AL_POSITION, position.x, position.y, 0);
 
 	}
 
@@ -42,7 +42,7 @@ public class AudioListener
 	public void setVelocity(Vector2f velocity)
 	{
 		this.velocity = velocity;
-		AL11.alListener3f(AL11.AL_VELOCITY, velocity.x, velocity.y, 0);
+		AL10.alListener3f(AL10.AL_VELOCITY, velocity.x, velocity.y, 0);
 	}
 
 	public AudioDistanceFunction getDistanceFunction()
@@ -51,7 +51,7 @@ public class AudioListener
 	public void setDistanceFunction(AudioDistanceFunction distancefnct)
 	{
 		this.distancefnct = distancefnct;
-		AL11.alDistanceModel(distancefnct.getDF());
+		AL10.alDistanceModel(distancefnct.getDF());
 	}
 
 }

@@ -14,7 +14,7 @@ import at.flockenberger.sirius.engine.camera.EntityFixedCamera;
 import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.graphic.text.Text;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
-import at.flockenberger.sirius.engine.gui.TestComponent;
+import at.flockenberger.sirius.engine.gui.GUIButton;
 import at.flockenberger.sirius.engine.input.KeyCode;
 import at.flockenberger.sirius.engine.input.Keyboard;
 import at.flockenberger.sirius.engine.particle.SimpleParticleEmitter;
@@ -39,12 +39,13 @@ public class TestLayer extends LayerBase
 	Companion comp;
 	Text text;
 	Color c;
-	TestComponent cmp;
+	GUIButton cmp;
 	AnimateableValue<Vector2f> vec;
 	OtherEntity ent;
 	Animation<String> posAni;
 	Texture background;
 	List<OtherEntity> others = new ArrayList<>();
+
 	public TestLayer(String layerName)
 	{
 		super(layerName);
@@ -56,9 +57,9 @@ public class TestLayer extends LayerBase
 		tex.free();
 		tiles.free();
 		p.free();
-		for(OtherEntity oe : others)
+		for (OtherEntity oe : others)
 			oe.free();
-		
+
 	}
 
 	@Override
@@ -77,11 +78,14 @@ public class TestLayer extends LayerBase
 
 		text = new Text("msg");
 		c = Color.ORANGE;
-		cmp = new TestComponent();
+		cmp = new GUIButton();
 		ent = new OtherEntity();
-		for(int i = 0; i<1000; i++) {
-			others.add(new OtherEntity());
-		}
+
+		cmp.setOnMouseClicked(gui ->
+			{
+
+				p.jump();
+			});
 		// Gamepad gp = Gamepad.get(Gamepads.GAMEPAD_1);
 		// background = Texture.createTexture(Sirius.resMan.getImage("hsd"));
 	}
@@ -109,12 +113,13 @@ public class TestLayer extends LayerBase
 		cam.update();
 
 		p.collision(ent);
-		for(OtherEntity oe : others)
+		for (OtherEntity oe : others)
+		{
 			oe.update();
-		
-		for(OtherEntity oe : others)
 			p.collision(oe);
-		
+
+		}
+
 	}
 
 	@Override
@@ -124,12 +129,11 @@ public class TestLayer extends LayerBase
 		cam.input();
 		p.input();
 		comp.input();
-		cmp.input();
 		ent.input();
-		for(OtherEntity oe : others)
-			oe.input();
-		
-		if (Keyboard.get().isKeyTyped(KeyCode.R))
+		// for (OtherEntity oe : others)
+		// oe.input();
+
+		if (Keyboard.get().isKeyReleased(KeyCode.R))
 		{
 			ent.getAudioSource().play(Sirius.resMan.getAudio("bdo"));
 		}
@@ -159,22 +163,23 @@ public class TestLayer extends LayerBase
 		render.begin();
 		render.updateMatrix(cam);
 
-		p.render(render);
-		comp.render(render);
-
 		Vector2f pos = p.getPosition();
 		text.setText(pos);
 		text.color(c);
 		text.draw();
 
-		drawCenter(render);
-		for(OtherEntity oe : others)
+		p.render(render);
+		comp.render(render);
+
+		for (OtherEntity oe : others)
 			oe.render(render);
-		
+
 		ent.render(render);
 		cmp.render(render);
+
 		render.end();
 
+		drawCenter(render);
 	}
 
 	private void drawCenter(Renderer r)
@@ -182,6 +187,7 @@ public class TestLayer extends LayerBase
 		if (r.isDrawing())
 			r.end();
 		r.beginShape(ShapeType.LINE);
+		r.color(Color.ORANGE);
 		r.line(0, Window.getActiveHeight() / 2f, 0, -Window.getActiveHeight() / 2f);
 		r.line(Window.getActiveWidth() / 2f, 0, -Window.getActiveWidth() / 2f, 0);
 		r.endShape();

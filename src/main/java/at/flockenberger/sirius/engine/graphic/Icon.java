@@ -27,6 +27,7 @@ public class Icon implements Serializable, IFreeable
 	private static final long serialVersionUID = 198567101908440954L;
 	protected GLFWImage.Buffer glfwImageBuffer;
 	protected GLFWImage glfwImage;
+	
 	protected int width;
 	protected int height;
 	protected ByteBuffer buffer;

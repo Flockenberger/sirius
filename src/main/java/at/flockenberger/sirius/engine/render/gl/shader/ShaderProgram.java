@@ -139,6 +139,7 @@ public class ShaderProgram implements IFreeable
 	/**
 	 * Frees the shader program.
 	 */
+	@Override
 	public void free()
 	{
 		GL20.glDeleteProgram(getID());

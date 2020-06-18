@@ -166,7 +166,7 @@ public abstract class Entity extends GameObject
 			render.end();
 
 		render.beginShape(ShapeType.LINE);
-		render.rect(getPosition().x, getPosition().y, getWidth(), getHeight());
+		render.rect(boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getWidth(), boundingBox.getHeight());
 		render.endShape();
 		render.begin();
 	}
@@ -307,7 +307,7 @@ public abstract class Entity extends GameObject
 	{
 		this.boundingBox.set(this);
 		getAudioSource().setPosition(getPosition());
-
+		
 	}
 
 	/**

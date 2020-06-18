@@ -44,6 +44,7 @@ public class LayerStack extends Allocateable
 
 	}
 
+	@Override
 	public void init()
 	{
 		defLayer = new DefaultLayer("default");

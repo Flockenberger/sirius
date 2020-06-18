@@ -14,7 +14,6 @@ public class Player extends AnimateableEntity
 {
 	private static final float G = 9.81f;
 	private boolean jumping;
-	private int jumpCount = 0;
 
 	public Player()
 	{
@@ -38,6 +37,7 @@ public class Player extends AnimateableEntity
 	@Override
 	public void input()
 	{
+		this.scale.y = 1f;
 		Keyboard kb = Keyboard.get();
 		int val = 3;
 		if (kb.isShiftDown())
@@ -65,10 +65,26 @@ public class Player extends AnimateableEntity
 		}
 		if (kb.isKeyTyped(KeyCode.SPACE) && !jumping)
 		{
-			jumping = true;
-			direction.y -= 20;
+			jump();
+			return;
+		}
+		
+		if (kb.isShiftDown())
+		{
+			this.scale.y = 0.5f;
+			this.direction.y += 5;
 		}
 
+	}
+
+	public void jump()
+	{
+		if (!jumping)
+		{
+			jumping = true;
+			direction.y -= 20;
+			getAudioSource().play(Sirius.resMan.getAudio("bdo"));
+		}
 	}
 
 	@Override
@@ -78,7 +94,7 @@ public class Player extends AnimateableEntity
 		{
 			applyDefaultCollision(e);
 			jumping = false;
-
+			
 		}
 	}
 
@@ -117,6 +133,6 @@ public class Player extends AnimateableEntity
 	@Override
 	public void update(float delta)
 	{
-
+		super.update(delta);
 	}
 }

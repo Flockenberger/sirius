@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.openal.AL;
-import org.lwjgl.openal.AL11;
+import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
 
@@ -62,10 +62,10 @@ public class AudioManager implements IFreeable
 
 	public int addAudio(Audio audio)
 	{
-		int buffer = AL11.alGenBuffers();
+		int buffer = AL10.alGenBuffers();
 		audioBuffer.add(buffer);
 		audio.bufferID = buffer;
-		AL11.alBufferData(buffer, audio.audioFormat.getFormat(), audio.audioData, audio.sampleRate);
+		AL10.alBufferData(buffer, audio.audioFormat.getFormat(), audio.audioData, audio.sampleRate);
 		return buffer;
 	}
 
@@ -81,7 +81,7 @@ public class AudioManager implements IFreeable
 
 	private void removeBuffer(int buffer)
 	{
-		AL11.alDeleteBuffers(buffer);
+		AL10.alDeleteBuffers(buffer);
 		audioBuffer.remove(Integer.valueOf(buffer));
 	}
 
@@ -89,7 +89,7 @@ public class AudioManager implements IFreeable
 	public void free()
 	{
 		for (int b : audioBuffer)
-			AL11.alDeleteBuffers(b);
+			AL10.alDeleteBuffers(b);
 
 		alcSetThreadContext(NULL);
 		alcDestroyContext(context);

@@ -115,6 +115,7 @@ public class TextureRegion implements ITextureBase
 	/**
 	 * @return the texture
 	 */
+	@Override
 	public Texture getTexture()
 	{
 		return texture;

@@ -1,5 +1,11 @@
 package at.flockenberger.sirius.engine.animation;
 
+/**
+ * <h1>AnimateableFloat</h1><br>
+ * 
+ * @author Florian Wagner
+ *
+ */
 public class AnimateableFloat extends AnimateableValueBase<Float>
 {
 

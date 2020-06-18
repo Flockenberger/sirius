@@ -257,5 +257,6 @@ public class Texture extends Image implements ITextureBase, IBindable, IFreeable
 	{
 		this.uv = uv2;
 	}
-
+	
+	
 }

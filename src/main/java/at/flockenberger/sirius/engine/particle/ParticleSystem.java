@@ -154,7 +154,7 @@ public class ParticleSystem implements IFreeable
 		 */
 		for (Iterator<Particle> iterator = particles.iterator(); iterator.hasNext();)
 		{
-			Particle par = (Particle) iterator.next();
+			Particle par = iterator.next();
 			if (par.getLifeTime().isDead())
 			{
 				iterator.remove();

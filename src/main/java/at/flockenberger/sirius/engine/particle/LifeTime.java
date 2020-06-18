@@ -24,7 +24,7 @@ public class LifeTime
 	 */
 	public static LifeTime random()
 	{
-		return new LifeTime(Math.random() / (float) 10f);
+		return new LifeTime(Math.random() / 10f);
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class LifeTime
 	 */
 	public double getAgePercent()
 	{
-		return age / (double) lifeTime;
+		return age / lifeTime;
 	}
 
 	/**

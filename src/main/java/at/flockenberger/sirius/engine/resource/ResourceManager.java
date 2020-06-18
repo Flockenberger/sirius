@@ -261,7 +261,7 @@ public class ResourceManager
 			return null;
 		}
 
-		return (ResourceBase) res.get(name);
+		return res.get(name);
 	}
 
 }

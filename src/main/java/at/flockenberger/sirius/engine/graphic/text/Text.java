@@ -118,16 +118,11 @@ public class Text implements IFreeable
 	 */
 	public void draw()
 	{
-		if (Sirius.renderer.isDrawing())
-			Sirius.renderer.end();
-
 		if (this.font == null)
 			this.font = Sirius.fontDefault;
 
-		Sirius.renderer.begin();
 		this.font.drawText(Sirius.renderer, message, position.x, position.y, color, scale.x, scale.y, rotation);
-		Sirius.renderer.end();
-		Sirius.renderer.begin();
+		
 	}
 
 	/**

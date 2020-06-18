@@ -20,23 +20,27 @@ public class PostProcessor extends Allocateable implements PostProcessingPipelin
 		filterList = null;
 	}
 
+	@Override
 	public void init()
 	{
 		filterList = new HashSet<>();
 	}
 
+	@Override
 	public void applyFilter(PostProcessingFilter filter)
 	{
 		if (!filterList.contains(filter))
 			filterList.add(filter);
 	}
 
+	@Override
 	public void removeFilter(PostProcessingFilter filter)
 	{
 		if (filterList.contains(filter))
 			filterList.remove(filter);
 	}
 
+	@Override
 	public void postProcess()
 	{
 		Sirius.renderer.begin();
