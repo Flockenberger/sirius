@@ -15,7 +15,7 @@ import org.lwjgl.glfw.GLFW;
 public enum KeyCode {
 
 	/**
-	 * 
+	 *
 	 */
 	SPACE(32),
 

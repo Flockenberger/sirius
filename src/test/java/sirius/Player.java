@@ -30,7 +30,7 @@ public class Player extends AnimateableEntity
 	{
 		TextureRegion reg = (TextureRegion) activeAnimation().getNextFrame();
 		render.drawEntity(this, reg);
-		drawBoundingBox(render);
+		drawBoundingBox();
 
 	}
 

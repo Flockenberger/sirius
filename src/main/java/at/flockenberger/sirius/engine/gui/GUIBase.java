@@ -5,6 +5,9 @@ import org.joml.Vector2f;
 import at.flockenberger.sirius.engine.event.gui.GUIClickListener;
 import at.flockenberger.sirius.engine.event.gui.GUIEnterListener;
 import at.flockenberger.sirius.engine.event.gui.GUIExitedListener;
+import at.flockenberger.sirius.engine.event.gui.GUIKeyListener;
+import at.flockenberger.sirius.engine.input.KeyCode;
+import at.flockenberger.sirius.engine.input.Keyboard;
 import at.flockenberger.sirius.engine.input.Mouse;
 import at.flockenberger.sirius.engine.render.Renderer;
 
@@ -28,17 +31,17 @@ import at.flockenberger.sirius.engine.render.Renderer;
 public abstract class GUIBase
 {
 	/**
-	 * position of the gui
+	 * position of the GUI
 	 */
 	protected Vector2f position;
 
 	/**
-	 * width of the gui
+	 * width of the GUI
 	 */
 	protected int width;
 
 	/**
-	 * height of the gui
+	 * height of the GUI
 	 */
 	protected int height;
 
@@ -48,29 +51,39 @@ public abstract class GUIBase
 	protected GUIMouseState mouseState;
 
 	/**
-	 * the old / previous mouse state of the gui
+	 * the old / previous mouse state of the GUI
 	 */
 	protected GUIMouseState oldMouseState;
 
 	/**
-	 * the current gui state
+	 * the current GUI state
 	 */
 	protected GUIState guiState;
 
 	/**
-	 * called when this gui was clicked on
+	 * called when this GUI was clicked on
 	 */
 	protected GUIClickListener clickListener;
 
 	/**
-	 * called when the mouse entered this gui
+	 * called when the mouse entered this GUI
 	 */
 	protected GUIEnterListener enteredListener;
 
 	/**
-	 * called when the mouse exited this gui
+	 * called when the mouse exited this GUI
 	 */
 	protected GUIExitedListener exitedListener;
+
+	/**
+	 * key listener for this GUI
+	 */
+	protected GUIKeyListener keyListener;
+
+	/**
+	 * a boolean indicator telling if and when this GUI is active
+	 */
+	protected boolean active;
 
 	/**
 	 * Constructor.<br>
@@ -78,11 +91,21 @@ public abstract class GUIBase
 	 */
 	public GUIBase()
 	{
+		this.active = true;
 		this.position = new Vector2f(0, 0);
 		this.width = 0;
 		this.height = 0;
 		this.mouseState = GUIMouseState.OUTSIDE;
 		this.guiState = GUIState.ENABLED;
+		Keyboard.get().addKeyListener(kl ->
+			{
+				if (this.guiState.equals(GUIState.ENABLED) && this.active == true)
+				{
+					onKey(kl.getKey());
+					if(keyListener != null)
+					keyListener.onKey(kl.getKey());
+				}
+			});
 	}
 
 	/**
@@ -92,7 +115,7 @@ public abstract class GUIBase
 	 * mouse click has occured. If the mouse has entered the GUI
 	 * {@link #onMouseEntered()} will be called vice versa if the mouse has exited
 	 * the GUI {@link #onMouseExited()} will be called.<br>
-	 * Internally this method calls {@link #isMouseInside()} to check whether the
+	 * Internally this method calls {@link #isMouseOver()} to check whether the
 	 * mouse was moved inside the GUI or if it was exited.<br>
 	 * 
 	 */
@@ -101,7 +124,7 @@ public abstract class GUIBase
 		this.oldMouseState = this.mouseState;
 		if (this.guiState.equals(GUIState.ENABLED))
 		{
-			if (isMouseInside())
+			if (isMouseOver())
 			{
 
 				this.mouseState = GUIMouseState.HOVERED;
@@ -129,7 +152,9 @@ public abstract class GUIBase
 				if (clickListener != null)
 					clickListener.onGUIClicked(this);
 			}
+
 		}
+
 	}
 
 	/**
@@ -142,7 +167,7 @@ public abstract class GUIBase
 	 * 
 	 * @return true if inside otherwise false
 	 */
-	public boolean isMouseInside()
+	public boolean isMouseOver()
 	{
 		if (guiState.equals(GUIState.DISABLED))
 			return false;
@@ -160,7 +185,11 @@ public abstract class GUIBase
 	 * @param width the width to set
 	 */
 	public void setWidth(int width)
-	{ this.width = width; }
+	{
+		this.width = width;
+		if (this.width < getMinWidth())
+			this.width = getMinWidth();
+	}
 
 	/**
 	 * Sets the height of this GUI.<br>
@@ -168,7 +197,11 @@ public abstract class GUIBase
 	 * @param height the height to set
 	 */
 	public void setHeight(int height)
-	{ this.height = height; }
+	{
+		this.height = height;
+		if (this.height < getMinHeight())
+			this.height = getMinHeight();
+	}
 
 	/**
 	 * @return the current width of this GUI
@@ -274,11 +307,19 @@ public abstract class GUIBase
 	public abstract void onMouseExited();
 
 	/**
+	 * Called when any key is either pressed or typed and the GUI is active and
+	 * selected.
+	 * 
+	 * @param keyCode the key code that has been typed or pressed
+	 */
+	public abstract void onKey(KeyCode keyCode);
+
+	/**
 	 * Renders the GUI.<br>
 	 * How the GUI is rendered is up to the GUI itself.<br>
 	 * 
-	 * @param render the {@link Renderer} to use for the GUI rendering
+	 * @param renderer the renderer to use for drawing the GUI
 	 */
-	public abstract void render(Renderer render);
+	public abstract void render(Renderer renderer);
 
 }

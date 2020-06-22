@@ -33,7 +33,7 @@ public class Sirius
 	public static ParticleSystem particleSystem;
 	public static TMXMapReader mapReader;
 	public static AudioManager audioManager;
-
+	
 	private final static GsonBuilder gsonB = new GsonBuilder();
 	public static Gson gson;
 
@@ -70,5 +70,6 @@ public class Sirius
 		fontDefault = new SiriusFont();
 		particleSystem = new ParticleSystem();
 		renderer.init();
+		
 	}
 }

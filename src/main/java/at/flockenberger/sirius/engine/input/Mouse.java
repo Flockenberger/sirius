@@ -447,6 +447,7 @@ public class Mouse extends InputDevice
 			resetCursor();
 			return;
 		}
+
 		GLFW.glfwSetCursor(this.id, cursor.getID());
 	}
 

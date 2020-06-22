@@ -22,7 +22,7 @@ import at.flockenberger.sirius.engine.postprocess.PostProcessor;
 import at.flockenberger.sirius.engine.postprocess.TestFilter;
 import at.flockenberger.sirius.engine.render.RenderSettings;
 import at.flockenberger.sirius.engine.render.Renderer;
-import at.flockenberger.sirius.engine.render.Renderer.ShapeType;
+import at.flockenberger.sirius.engine.render.ShapeType;
 import at.flockenberger.sirius.engine.resource.ResourceManager;
 import at.flockenberger.sirius.game.application.LayerBase;
 import at.flockenberger.sirius.utillity.logging.SLogger;
@@ -169,29 +169,30 @@ public class TestLayer extends LayerBase
 		text.draw();
 
 		p.render(render);
-		comp.render(render);
 
 		for (OtherEntity oe : others)
 			oe.render(render);
 
 		ent.render(render);
-		cmp.render(render);
+		comp.render(render);
 
 		render.end();
-
 		drawCenter(render);
+		
+		render.updateMatrix(Sirius.game.getGUICamera());
+		
+		cmp.render(render);
+		
 	}
 
 	private void drawCenter(Renderer r)
 	{
-		if (r.isDrawing())
-			r.end();
+
 		r.beginShape(ShapeType.LINE);
 		r.color(Color.ORANGE);
 		r.line(0, Window.getActiveHeight() / 2f, 0, -Window.getActiveHeight() / 2f);
 		r.line(Window.getActiveWidth() / 2f, 0, -Window.getActiveWidth() / 2f, 0);
 		r.endShape();
-		r.begin();
 
 	}
 

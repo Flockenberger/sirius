@@ -120,7 +120,7 @@ public class Text implements IFreeable
 	{
 		if (this.font == null)
 			this.font = Sirius.fontDefault;
-
+		
 		this.font.drawText(Sirius.renderer, message, position.x, position.y, color, scale.x, scale.y, rotation);
 		
 	}

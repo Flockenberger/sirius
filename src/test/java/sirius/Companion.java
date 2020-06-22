@@ -22,7 +22,7 @@ public class Companion extends AnimateableEntity
 	{
 		render.drawEntity(this);
 
-		drawBoundingBox(render);
+		drawBoundingBox();
 	}
 
 	@Override

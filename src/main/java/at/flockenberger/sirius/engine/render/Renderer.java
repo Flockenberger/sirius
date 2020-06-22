@@ -19,7 +19,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
@@ -46,54 +45,6 @@ import at.flockenberger.sirius.utillity.SUtils;
  */
 public class Renderer extends Allocateable
 {
-
-	/**
-	 * <h1>ShapeType</h1><br>
-	 * The ShapeType defines the immediate drawing style of shapes.<br>
-	 * 
-	 * 
-	 * @author Florian Wagner
-	 *
-	 */
-	public enum ShapeType
-	{
-		/**
-		 * Draws the shape as points
-		 */
-		POINT(GL20.GL_POINTS),
-
-		/**
-		 * Draws the shape as lines
-		 */
-		LINE(GL20.GL_LINES),
-
-		/**
-		 * Draws the shape as triangles<br>
-		 * Also referred to as "filled" drawing
-		 */
-		TRIANGLE(GL20.GL_TRIANGLES),
-
-		/**
-		 * Draws the shape as quads.
-		 */
-		QUAD(GL20.GL_QUADS);
-
-		/**
-		 * the opengl int type
-		 */
-		private final int _type;
-
-		ShapeType(int type)
-		{
-			this._type = type;
-		}
-
-		/**
-		 * @return the opengl type for this drawing style
-		 */
-		public int getType()
-		{ return _type; }
-	}
 
 	private VAO vao;
 	private VBO vbo;
@@ -224,9 +175,10 @@ public class Renderer extends Allocateable
 
 	private void switchTexture(Texture texture)
 	{
-		if (texture == null && curTex != null)
+		if (texture == null)
 		{
-			curTex.unbind();
+			if (curTex != null)
+				curTex.unbind();
 			curTex = whiteTexture;
 		}
 
@@ -459,19 +411,11 @@ public class Renderer extends Allocateable
 			flush();
 		}
 		float r, g, b, a;
-		if (shapeColor.equals(Color.WHITE))
-		{
-			r = c.getRed();
-			g = c.getGreen();
-			b = c.getBlue();
-			a = c.getAlpha();
-		} else
-		{
-			r = shapeColor.getRed();
-			g = shapeColor.getGreen();
-			b = shapeColor.getBlue();
-			a = shapeColor.getAlpha();
-		}
+		r = c.getRed();
+		g = c.getGreen();
+		b = c.getBlue();
+		a = c.getAlpha();
+
 		vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(s1).put(t1);
 		vertices.put(x1).put(y2).put(r).put(g).put(b).put(a).put(s1).put(t2);
 		vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(s2).put(t2);
@@ -512,19 +456,11 @@ public class Renderer extends Allocateable
 		}
 
 		float r, g, b, a;
-		if (shapeColor.equals(Color.WHITE))
-		{
-			r = c.getRed();
-			g = c.getGreen();
-			b = c.getBlue();
-			a = c.getAlpha();
-		} else
-		{
-			r = shapeColor.getRed();
-			g = shapeColor.getGreen();
-			b = shapeColor.getBlue();
-			a = shapeColor.getAlpha();
-		}
+		r = c.getRed();
+		g = c.getGreen();
+		b = c.getBlue();
+		a = c.getAlpha();
+
 		// bottom left and top right corner points relative to origin
 		final float worldOriginX = x + originX;
 		final float worldOriginY = y + originY;
@@ -641,12 +577,16 @@ public class Renderer extends Allocateable
 		numVertices = 0;
 		shapeType = type;
 		switchTexture(null);
+	}
 
+	public void beginShape()
+	{
+		this.beginShape(ShapeType.TRIANGLE);
 	}
 
 	public void color(Color c)
 	{
-		this.shapeColor = (c);
+		this.shapeColor = c;
 
 	}
 
@@ -702,7 +642,6 @@ public class Renderer extends Allocateable
 	{
 		if (shapeType == ShapeType.LINE)
 		{
-			color(shapeColor.getRed(), shapeColor.getGreen(), shapeColor.getBlue(), shapeColor.getAlpha());
 
 			vertex(x, y, 0);
 			vertex(x + width, y, 0);
@@ -717,6 +656,7 @@ public class Renderer extends Allocateable
 			vertex(x, y, 0);
 		} else
 		{
+
 			vertex(x, y, 0);
 			vertex(x + width, y, 0);
 			vertex(x + width, y + height, 0);

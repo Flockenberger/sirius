@@ -6,13 +6,14 @@ import java.util.Map;
 
 import org.joml.Vector2f;
 
+import at.flockenberger.sirius.engine.Sirius;
 import at.flockenberger.sirius.engine.collision.BoundingBox;
 import at.flockenberger.sirius.engine.component.IComponent;
 import at.flockenberger.sirius.engine.graphic.Color;
 import at.flockenberger.sirius.engine.graphic.text.Text;
 import at.flockenberger.sirius.engine.graphic.texture.Texture;
 import at.flockenberger.sirius.engine.render.Renderer;
-import at.flockenberger.sirius.engine.render.Renderer.ShapeType;
+import at.flockenberger.sirius.engine.render.ShapeType;
 import at.flockenberger.sirius.game.GameObject;
 import at.flockenberger.sirius.utillity.SUtils;
 
@@ -160,8 +161,9 @@ public abstract class Entity extends GameObject
 	 * 
 	 * @param render the renderer
 	 */
-	public void drawBoundingBox(Renderer render)
+	public void drawBoundingBox()
 	{
+		Renderer render = Sirius.renderer;
 		if (render.isDrawing())
 			render.end();
 
@@ -307,7 +309,7 @@ public abstract class Entity extends GameObject
 	{
 		this.boundingBox.set(this);
 		getAudioSource().setPosition(getPosition());
-		
+
 	}
 
 	/**
@@ -456,7 +458,7 @@ public abstract class Entity extends GameObject
 //
 // }
 		}
-		
+
 		// clear the pulled direction as we only use it for calculation
 		direction.x = direction.y = 0;
 
